@@ -1,0 +1,15 @@
+# Use an official Python runtime as a parent image
+FROM python:3.9
+
+# Set working directory
+WORKDIR /app
+
+# Install app dependencies
+COPY requirements.txt ./
+RUN pip install -r requirements.txt
+
+# Bundle app source
+COPY . ./
+
+# Run app
+CMD ["flask", "--debug", "run", "--host=0.0.0.0"]

@@ -1,0 +1,35 @@
+version: '3'
+services:
+  api-gateway:
+    build: ./api-gateway
+    depends_on:
+      - frontend
+      - user-service
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    ports:
+      - "8080:80"
+  frontend:
+    build:
+      context: ./frontend
+      #Prod: Dockerfile, Dev: Dockerfile.dev
+      dockerfile: Dockerfile.dev 
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+  user-service:
+    build:
+      context: ./UserService
+      #Prod: Dockerfile, Dev: Dockerfile.dev
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./UserService:/app
+
+
