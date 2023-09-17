@@ -5,7 +5,7 @@ const Footer = () => {
     return (
         <div className="footer">
             <div className="logo-wrapper">
-                <img src="./assets/images/businessLogo.png"/>
+                <img src="./assets/images/businessLogo.png" alt="Pro Connect Logo"/>
                 <p>tache</p>
             </div>
             <div>

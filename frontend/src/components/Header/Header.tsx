@@ -14,7 +14,7 @@ const Header = () => {
         <div className="header">
             <div className="header-start">
                 <div className="logo-wrapper">
-                    <img src="./assets/images/businessLogo.png" className="logo"/>
+                    <img src="./assets/images/businessLogo.png" className="logo" alt="Pro Connect Logo"/>
                     <p>tache</p>
                 </div>
                 <div className="nav-page">

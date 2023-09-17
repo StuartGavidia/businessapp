@@ -3,7 +3,8 @@ interface FeatureData {
     title: string,
     reasonOne: string,
     reasonTwo: string,
-    reasonThree: string
+    reasonThree: string,
+    alt: string
 }
 
 export default FeatureData
