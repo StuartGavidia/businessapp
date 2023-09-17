@@ -5,7 +5,7 @@ import FeatureData from '../../interfaces/FeatureData'
 const Feature = (props: FeatureData) => {
     return (
         <div className="feature-component">
-            <img src={props.imgSource}/>
+            <img src={props.imgSource} alt={props.alt}/>
             <p>{props.title}</p>
             <ul>
                 <li>{props.reasonOne}</li>

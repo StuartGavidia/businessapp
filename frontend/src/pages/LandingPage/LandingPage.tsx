@@ -15,28 +15,32 @@ const LandingPage = () => {
             title: "Calendar",
             reasonOne: "Event Creation: Add, edit, or delete events quickly",
             reasonTwo: "Team Availability: View team schedules for easy planning.",
-            reasonThree: "Public & Private Calendars: Manage team and personal calendars."
+            reasonThree: "Public & Private Calendars: Manage team and personal calendars.",
+            alt: "Calendar"
         },
         {
             imgSource: "./assets/images/analyticsImage.png",
             title: "Analytics",
             reasonOne: "Real-Time Dashboards: Instant insights on key performance indicators.",
             reasonTwo: "Custom Reports: Generate and share tailored analytics.",
-            reasonThree: "Data-Driven Decisions: Use data for smarter strategy and higher profits."
+            reasonThree: "Data-Driven Decisions: Use data for smarter strategy and higher profits.",
+            alt: "Image of Analytics page"
         },
         {
             imgSource: "./assets/images/invoicePicture.jpeg",
             title: "Invoices and Payroll",
             reasonOne: "Invoices: Generate and send bills effortlessly.",
             reasonTwo: "Payroll: Simplify employee payments and taxes.",
-            reasonThree: "Financial Tracking: Monitor invoices and payroll in one place."
+            reasonThree: "Financial Tracking: Monitor invoices and payroll in one place.",
+            alt: "Clipboard"
         },
         {
             imgSource: "./assets/images/communicationImage.jpeg",
             title: "Communication",
             reasonOne: "Chat Rooms: Instant team messaging.",
             reasonTwo: "File Sharing: Easy document exchange.",
-            reasonThree: "Notifications: Real-time updates and alerts."
+            reasonThree: "Notifications: Real-time updates and alerts.",
+            alt: "Microphone for communication"
         }
     ]
     const prices: PriceData[] = [
@@ -58,7 +62,7 @@ const LandingPage = () => {
         <>
             <Header />
             <div className="landing-intro">
-                <img src="./assets/images/peopleWorkingTogether.jpeg"/>
+                <img src="./assets/images/peopleWorkingTogether.jpeg" alt="People working together"/>
                 <p>Unify, Simplify, Amplify: Your Team Management, All in One App.</p>
             </div>
             <div id="features" className="features">
@@ -72,6 +76,7 @@ const LandingPage = () => {
                                 reasonOne={feature.reasonOne}
                                 reasonTwo={feature.reasonTwo}
                                 reasonThree={feature.reasonThree}
+                                alt={feature.alt}
                             />
                         })
                     }

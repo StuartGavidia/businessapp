@@ -11,5 +11,5 @@ RUN pip install -r requirements.txt
 # Bundle app source
 COPY . ./
 
-# Run app
-CMD ["flask", "--debug", "run", "--host=0.0.0.0"]
+# Run boostrap script and then run app on succession
+CMD ["sh", "-c", "flask --debug run --host=0.0.0.0"]

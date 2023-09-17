@@ -27,9 +27,35 @@ services:
       context: ./UserService
       #Prod: Dockerfile, Dev: Dockerfile.dev
       dockerfile: Dockerfile.dev
+    depends_on:
+      - user-db
+    environment:
+      - DATABASE_HOST=user-db
+      - DATABASE_PORT=3306
     ports:
       - "5001:5000"
     volumes:
       - ./UserService:/app
-
+  user-db:
+    build:
+      context: ./user-db
+      dockerfile: Dockerfile.dev
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: user_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - user-db-data:/var/lib/mysql
+      - ./user-db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - ./user-db/my.cnf:/etc/mysql/my.cnf
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-u", "root", "--password=rootpassword"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+volumes:
+  user-db-data:
 
