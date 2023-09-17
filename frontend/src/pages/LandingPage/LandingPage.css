@@ -1,0 +1,39 @@
+.landing-intro {
+    width: 100%;
+    padding: 5%;
+    display: flex;
+    gap: 10%;
+    align-items: center;
+    justify-content: center;
+}
+
+.landing-intro img {
+    width: 30rem;
+    height: 25rem;
+}
+
+.landing-intro p {
+    font-size: 2rem;
+    width: 50%;
+}
+
+.features div {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 auto;
+    
+}
+
+.prices div {
+    width: 100%;
+    display: flex;
+    gap: 5%;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+.features > h2 , .prices > h2, .contact > h2 {
+    font-size: 3rem;
+    display: flex;
+    justify-content: center;
+}

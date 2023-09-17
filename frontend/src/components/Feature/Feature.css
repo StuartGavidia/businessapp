@@ -1,0 +1,13 @@
+.feature-component {
+    width: 40rem;
+    height: 35rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+img {
+    width: 20rem;
+    height: 20rem;
+}

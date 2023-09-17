@@ -23,6 +23,8 @@ At the root of the project run ```docker-compose build```.(Try again if it fails
 * Cd into frontend
 * Run ```npm install {dependency}```
 * Re-build and spin up docker containers again
+* While the container is running, access the container terminal session in Docker Desktop and run ```npm install```
+* Spin up the docker containers again
 
 ## Installing additional dependencies in Flask App (For development)
 * Cd into the corresponding service (ex: UserService). Create a virtual environment using ```python3 -m venv venv```
