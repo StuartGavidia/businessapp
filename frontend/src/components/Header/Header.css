@@ -1,0 +1,54 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 4rem;
+    background-color: #87CEEB;
+    padding-right: 1rem;
+    padding-left: 0.25rem;
+}
+
+.header-start {
+    width: 30%;
+    display: flex;
+    gap: 5%;
+}
+
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    margin-right: 0.4rem;
+}
+
+.nav-page {
+    display: flex;
+    align-items: center;
+}
+
+.nav-page .link {
+    margin-right: 7%;
+    color: white;
+    text-decoration: none;
+}
+
+.logo {
+    width: 2rem;
+    height: 60%;
+    margin-right: 0.3rem;
+}
+
+.signin-component {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    text-decoration: none;
+}
+
+.signin-nav-button {
+    border: none;
+    height: 50%;
+    background-color: white;
+    cursor: pointer;
+}
+  
