@@ -88,9 +88,11 @@ def loginUser():
 
     #this checks if username and password exist
     user = User.query.filter_by(username=username).first()
-    isPasswordCorrect = bcrypt.check_password_hash(user.password_hash, password)
+    if not user:
+        abort(400, description="Incorrect Login")
 
-    if (not user) or (not isPasswordCorrect):
+    isPasswordCorrect = bcrypt.check_password_hash(user.password_hash, password)
+    if not isPasswordCorrect:
         abort(400, description="Incorrect Login")
     
     try:

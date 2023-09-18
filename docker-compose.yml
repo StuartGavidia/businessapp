@@ -3,7 +3,7 @@ services:
   api-gateway:
     build: ./api-gateway
     depends_on:
-      - frontend
+      - client
       - user-service
     healthcheck:
       test: ["CMD", "nginx", "-t"]
@@ -12,15 +12,15 @@ services:
       retries: 3
     ports:
       - "8080:80"
-  frontend:
+  client:
     build:
-      context: ./frontend
+      context: ./client
       #Prod: Dockerfile, Dev: Dockerfile.dev
-      dockerfile: Dockerfile.dev 
+      dockerfile: Dockerfile.dev
     ports:
-      - "3000:3000"
+      - "5173:5173"
     volumes:
-      - ./frontend:/app
+      - ./client:/app
       - /app/node_modules
   user-service:
     build:
