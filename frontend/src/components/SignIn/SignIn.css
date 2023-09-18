@@ -1,0 +1,123 @@
+p {
+    margin: 0;
+}
+
+.signin-input {
+    display: flex;
+    align-items: center;
+    width: 50%;
+}
+
+.signin-page-component {
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+}
+
+.signin-page-component .signin-page-wrapper {
+    width: 60%;
+    height: 30rem;
+}
+
+.signin-page-component .register {
+    display: flex;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.signin-logo-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.signin-logo-wrapper img {
+    height: 3rem;
+    width: 3rem;
+    display: flex;
+    margin-right: 1rem;
+}
+
+.signin-logo-wrapper p {
+    font-size: 2rem;
+}
+
+.blue {
+    color: #71AFD2;
+}
+
+.signin-form {
+    max-height: 100%; /* Set to the maximum height you want */
+    overflow-y: auto;  /* Show vertical scrollbar if necessary */
+    overflow-x: hidden; /* Hide horizontal scrollbar */
+}
+
+.signin-form input[type="text"] {
+    border: 1px solid black;
+    margin-bottom: 1rem;
+}
+
+.signin-form input[type="email"] {
+    border: 1px solid black;
+    margin-bottom: 1rem;
+}
+
+.signin-form input[type="checkbox"] {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.signin-form-extrainfo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.signin-form-button {
+    color: white;
+    background-color: #87CEEB;
+    border-radius: 1rem;
+    height: 3rem;
+    width: 60%;
+    font-size: 2rem;
+    border: 1px solid black;
+    cursor: pointer;
+}
+
+.register .register-header {
+    font-size: 2rem;
+    margin-right: 1rem;
+}
+
+.register .register-button {
+    cursor: pointer;
+}
+
+/*Below is for placeholder customization*/
+.signin-form input::placeholder {
+    color: grey;
+    font-size: 18px;
+}
+
+/* For cross-browser compatibility */
+.signin-form input::-webkit-input-placeholder { /* Chrome, Safari, Opera */
+    color: grey;
+    font-size: 18px;
+}
+
+.signin-form input::-moz-placeholder { /* Firefox 19+ */
+    color: grey;
+    font-size: 18px;
+}
+
+.signin-form input:-ms-input-placeholder { /* IE 10+ */
+    color: grey;
+    font-size: 18px;
+}
+
+.signin-form input:-moz-placeholder { /* Firefox 18- */
+    color: grey;
+    font-size: 18px;
+}

@@ -1,2 +1,2 @@
-FROM mysql:8
+FROM mysql:8.1.0
 RUN mkdir /my_secure_pid && chown mysql:mysql /my_secure_pid

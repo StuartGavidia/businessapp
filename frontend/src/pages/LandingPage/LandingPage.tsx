@@ -69,7 +69,7 @@ const LandingPage = () => {
                 <h2>Features</h2>
                 <div>
                     {
-                        features.map((feature:FeatureData) => {
+                        features.map((feature:FeatureData, i:number) => {
                             return <Feature 
                                 imgSource={feature.imgSource}
                                 title={feature.title}
@@ -77,6 +77,7 @@ const LandingPage = () => {
                                 reasonTwo={feature.reasonTwo}
                                 reasonThree={feature.reasonThree}
                                 alt={feature.alt}
+                                key={i}
                             />
                         })
                     }
@@ -86,10 +87,11 @@ const LandingPage = () => {
                 <h2>Pricing</h2>
                 <div>
                     {
-                        prices.map((currentPrice:PriceData) => {
+                        prices.map((currentPrice:PriceData, i:number) => {
                             return <Price 
                                 price={currentPrice.price}
                                 backgroundColor={currentPrice.backgroundColor}
+                                key={i}
                             />
                         })
                     }
