@@ -26,7 +26,7 @@ const Contact = () => {
       };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="contact-form">
             <div className="names">
                 <div className="input">
                     <label htmlFor="firstName"><span className="required-asterik">*</span> First Name</label>
