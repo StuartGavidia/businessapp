@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import './Registration.css'
 import RegistrationData from '../../interfaces/RegistrationData'
-import Role from './Role'
 import UserServiceAPI from '../../api/userServiceAPI'
 
 const Registration = (props: RegistrationData) => {
@@ -12,23 +11,21 @@ const Registration = (props: RegistrationData) => {
         email: '',
         password: '',
         confirmPassword: '',
-        role: Role.EMPLOYEE,
-        managerCode: ''
+        hasDirectReports: false,
+        managerCode: '',
+        companyCode: '',
+        positionName: ''
     })
     const [error, setError] = useState("");
-
+    
+    const toggleDirectReports = (hasDirectReports: boolean) => {
+        setFormData(prevState => ({ ...prevState, ['hasDirectReports']: hasDirectReports }))
+    }
 
     const handleChange = (e: any) => {
         const { name, value } = e.target;
 
         setFormData(prevState => ({ ...prevState, [name]: value }));
-    };
-
-    const handleRoleChange = (option: string) => {
-        const roleKey = 'role'
-        option === 'Employee'
-        ? setFormData(prevState => ({ ...prevState, [roleKey]:  Role.EMPLOYEE}))
-        : setFormData(prevState => ({ ...prevState, [roleKey]:  Role.MANAGER}))
     };
 
     const handleSubmit = async (e: any) => {
@@ -106,29 +103,40 @@ const Registration = (props: RegistrationData) => {
                     />
                     <div className="role-wrapper">
                         <div
-                            className={`role-option left-choice ${formData.role === Role.EMPLOYEE ? 'highlighted' : ''}`}
-                            onClick={() => handleRoleChange('Employee')}
+                            className={`role-option left-choice ${!formData.hasDirectReports ? 'highlighted' : ''}`}
+                            onClick={() => toggleDirectReports(false)}
                         >
-                            Employee
+                            I have no Direct Reports
                         </div>
                         <div className="separator"></div>
                         <div
-                            className={`role-option right-choice ${formData.role === Role.MANAGER ? 'highlighted' : ''}`}
-                            onClick={() => handleRoleChange('Manager')}
+                            className={`role-option right-choice ${formData.hasDirectReports ? 'highlighted' : ''}`}
+                            onClick={() => toggleDirectReports(true)}
                         >
-                            Manager
+                            I have Direct Reports
                         </div>
                     </div>
-                    {
-                        formData.role === Role.EMPLOYEE &&
-                        <input 
-                            type="text"
-                            name="managerCode"
-                            onChange={handleChange}
-                            placeholder="Manager Code"
-                            required
-                        />
-                    }
+                    <input 
+                        type="text"
+                        name="managerCode"
+                        onChange={handleChange}
+                        placeholder="Manager Code"
+                        required
+                    />
+                    <input 
+                        type="text"
+                        name="positionName"
+                        onChange={handleChange}
+                        placeholder="Position Name (ex: Builder, Chef, Manager ... )"
+                        required
+                    />
+                    <input 
+                        type="text"
+                        name="companyCode"
+                        onChange={handleChange}
+                        placeholder="Company Code"
+                        required
+                    />
                     {
                         error &&
                         <p className="error-message">{error}</p>

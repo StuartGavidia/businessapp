@@ -10,8 +10,7 @@ A centralized application for companies and teams where business owners can acce
 ## How to run the application
 1. Clone the repo locally
 Run ```https://github.com/StuartGavidia/businessapp.git``` in terminal inside directory of your choice.
-2. Install node modules for React development
-Cd into the frontend folder. Then run ```npm install```
+2. Install node modules for React development - cd into the client folder. Then run ```npm install```
 3. Build all of the Docker images and run the containers
 At the root of the project run ```docker-compose build```.(Try again if it fails first time) After the build is complete run ```docker-compose up``` to run the containers. The API gateway routes all request to port 8080, accessing the services through the browser is outline below.
 
@@ -27,8 +26,9 @@ At the root of the project run ```docker-compose build```.(Try again if it fails
 * Spin up the docker containers again
 
 ## Installing additional dependencies in Flask App (For development)
-* Cd into the corresponding service (ex: UserService). Create a virtual environment if you haven't already using ```python3 -m venv venv```
+* Cd into the corresponding service (ex: UserService). Create a virtual environment if you haven't already using ```python3 -m venv .venv```
 * Source into the venv with ```source venv/bin/activate```
+* Make sure to install all the packages listed in requirements.txt by running ```pip install -r requirements.txt```(Only need to be done once on creation of venv)
 * Run ```pip install {dependency}```
 * Run ```pip freeze > requirements.txt``` to move into requiremnts folder
 * Re-build and spin up docker containers again
