@@ -32,3 +32,14 @@ At the root of the project run ```docker-compose build```.(Try again if it fails
 * Run ```pip install {dependency}```
 * Run ```pip freeze > requirements.txt``` to move into requiremnts folder
 * Re-build and spin up docker containers again
+
+## Installing Cypress to test client application
+* In project directory run `npm install cypress`
+* In project directory run `npx cypress open`
+* Cypress app should now be open
+* Click on `E2E Testing`
+* Click on preferred testing browser(Google Chrome for now)
+* Click `Start E2E Testing in Chrome`
+* Google Chrome should open up
+* Brings you to page with specs
+* Click on desired specs to run tests
