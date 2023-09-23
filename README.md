@@ -34,7 +34,6 @@ At the root of the project run ```docker-compose build```.(Try again if it fails
 * Re-build and spin up docker containers again
 
 ## Installing Cypress to test client application
-* In project directory run `npm install cypress`
 * In project directory run `npx cypress open`
 * Cypress app should now be open
 * Click on `E2E Testing`
