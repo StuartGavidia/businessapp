@@ -10,6 +10,7 @@
 //
 //
 // -- This is a parent command --
+
 Cypress.Commands.add('login', (username, password) => {
     cy.visit('http://localhost:8080/');
     cy.get('.signin-nav-button').click();
@@ -29,3 +30,11 @@ Cypress.Commands.add('login', (username, password) => {
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+declare global {
+    namespace Cypress {
+        interface Chainable {
+            login(username: string, password: string): Chainable<void>
+        }
+    }
+}
