@@ -27,7 +27,7 @@ At the root of the project run ```docker-compose build```.(Try again if it fails
 
 ## Installing additional dependencies in Flask App (For development)
 * Cd into the corresponding service (ex: UserService). Create a virtual environment if you haven't already using ```python3 -m venv .venv```
-* Source into the venv with ```source venv/bin/activate```
+* Source into the venv with ```source .venv/bin/activate```
 * Make sure to install all the packages listed in requirements.txt by running ```pip install -r requirements.txt```(Only need to be done once on creation of venv)
 * Run ```pip install {dependency}```
 * Run ```pip freeze > requirements.txt``` to move into requiremnts folder
