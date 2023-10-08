@@ -5,6 +5,7 @@ services:
     depends_on:
       - client
       - user-service
+      - analytics-service
     healthcheck:
       test: ["CMD", "nginx", "-t"]
       interval: 30s
@@ -22,6 +23,51 @@ services:
     volumes:
       - ./client:/app
       - /app/node_modules
+  analytics-service:
+    build:
+      context: ./AnalyticsService
+      #Prod: Dockerfile, Dev: Dockerfile.dev
+      dockerfile: Dockerfile.dev
+    depends_on:
+      - analytics-db
+    environment:
+      - DATABASE_HOST=analytics-db
+      - DATABASE_PORT=3306
+      - FLASK_APP=app.app:create_app
+    ports:
+      - "5002:5000"
+    volumes:
+      - ./AnalyticsService/app:/app/app
+  analytics-service-test:
+    build:
+      context: ./AnalyticsService
+      #Prod: Dockerfile, Dev: Dockerfile.dev
+      dockerfile: Dockerfile.dev
+    command: pytest tests/
+    environment:
+      - "DATABASE_URI=sqlite:///:memory:"
+    volumes:
+      - ./AnalyticsService/tests:/app/tests
+  analytics-db:
+    build:
+      context: ./analytics-db
+      dockerfile: Dockerfile.dev
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: analytics_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpassword
+    ports:
+      - "3307:3306"
+    volumes:
+      - analytics-db-data:/var/lib/mysql
+      - ./analytics-db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - ./analytics-db/my.cnf:/etc/mysql/my.cnf
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-u", "root", "--password=rootpassword"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
   user-service:
     build:
       context: ./UserService
@@ -69,4 +115,5 @@ services:
       retries: 3
 volumes:
   user-db-data:
+  analytics-db-data:
 
