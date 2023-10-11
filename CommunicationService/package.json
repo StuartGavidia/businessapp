@@ -1,0 +1,17 @@
+{
+  "name": "communicationservice",
+  "version": "0.0.0",
+  "private": true,
+  "main": "app/app.js",
+  "scripts": {
+    "start": "nodemon /app/app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongodb": "^6.1.0",
+    "mongoose": "^7.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
