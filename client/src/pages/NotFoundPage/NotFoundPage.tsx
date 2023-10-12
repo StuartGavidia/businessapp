@@ -4,11 +4,16 @@ import { useNavigate } from 'react-router-dom'
 
 const NotFoundPage = () => {
     const navigate = useNavigate();
+
     useEffect(() => {
-        setTimeout(() => {
+        const timer = setTimeout(() => {
             navigate("/")
         }, 3000)
-    })
+
+        return () => {
+            clearTimeout(timer)
+        }
+    }, [])
 
     return (
         <div>
