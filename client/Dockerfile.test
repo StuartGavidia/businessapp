@@ -1,0 +1,27 @@
+# Use the Cypress base image
+FROM cypress/included:13.2.0
+
+# Install Node.js, npm and curl to run your React app
+RUN apt-get update && apt-get install -y curl nodejs npm
+
+# Set work directory
+WORKDIR /app
+
+# Copy package.json and package-lock.json first to leverage Docker cache
+COPY package*.json ./
+
+# Install app dependencies
+RUN npm install
+
+# Copy the rest of your app
+COPY . .
+
+# Copy the test runner script
+COPY test-runner.sh /app/test-runner.sh
+RUN chmod +x /app/test-runner.sh  # Ensure the script is executable
+
+# Override the default ENTRYPOINT from the base image
+ENTRYPOINT []
+
+# Set up the default command to use the script
+CMD ["./test-runner.sh"]

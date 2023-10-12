@@ -33,6 +33,14 @@ declare global {
     }
 }
 
+declare global {
+    namespace Cypress {
+        interface Chainable {
+            login(username: string, password: string): Chainable<any>;
+        }
+    }
+}
+
 Cypress.Commands.add('mount', mount)
 
 // Example use:
