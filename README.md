@@ -42,3 +42,9 @@ At the root of the project run ```docker-compose build```.(Try again if it fails
 * Google Chrome should open up
 * Brings you to page with specs
 * Click on desired specs to run tests
+
+## Running services you are working on (For development)
+* You can build your services and their databases by themselves by ```docker-compose -f docker-compose.{developmentFeatureName}.yml build```
+* You can run your services and their databases by themselves by ```docker-compose -f docker-compose.{developmentFeatureName}.yml up```
+* You can also build the client (with required containers) along with the specific services you are working on by running ```docker-compose -f docker-compose.yml -f docker-compose.{developmentFeatureName}.yml build```
+* You can also run the client (with required containers) along with the specific services you are working on by running ```docker-compose -f docker-compose.yml -f docker-compose.{developmentFeatureName}.yml up```

@@ -1,0 +1,11 @@
+version: '3'
+services:
+  communication-service:
+    build:
+      context: ./CommunicationService
+      #Prod: Dockerfile, Dev: Dockerfile.dev
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5103:5103"
+    volumes:
+      - ./CommunicationService/app:/app/app
