@@ -2,6 +2,7 @@
 This module defines the different routes for the flask app
 """
 
+import os
 from flask_bcrypt import Bcrypt
 from flask import Blueprint, jsonify, request, abort, make_response
 from app.models import User, Company, db
@@ -108,8 +109,17 @@ def login_user():
         #create response object
         res = make_response(jsonify({"message": "User authenticated"}))
 
+        env = os.environ.get('FLASK_ENV', 'development')
+        if env == 'production':
+            secure_flag = True
+        elif env == 'testing':
+            secure_flag = False
+        else:
+            secure_flag = False
+
         #add jwt to cookie
-        res.set_cookie('user_cookie', jwt_token, httponly=True, secure=True, samesite='Strict')
+        res.set_cookie(
+            'user_cookie', jwt_token, httponly=True, secure=secure_flag, samesite='Strict')
         return res, 200
     except Exception as e:
         print(e)
@@ -123,8 +133,17 @@ def logout():
     """
     res = make_response(jsonify({"message": "Logged out"}))
 
-    # Set the cookie's expiration date to a past date, effectively removing it
-    res.set_cookie('user_cookie', '', expires=0, httponly=True, secure=True, samesite='Strict')
+    env = os.environ.get('FLASK_ENV', 'development')
+    if env == 'production':
+        secure_flag = True
+    elif env == 'testing':
+        secure_flag = False
+    else:
+        secure_flag = False
+
+    #set the cookie's expiration date to a past date, effectively removing it
+    res.set_cookie(
+        'user_cookie', '', expires=0, httponly=True, secure=secure_flag, samesite='Strict')
 
     return res, 200
 

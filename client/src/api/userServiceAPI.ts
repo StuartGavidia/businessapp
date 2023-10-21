@@ -17,6 +17,8 @@ class UserServiceAPI {
     public async registerUser(userData: RegistrationFormData) {
         return await fetch('/users/register', {
             method: 'POST',
+            mode: 'cors',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -38,6 +40,8 @@ class UserServiceAPI {
     public async loginUser(userData: SignInFormData) {
         return fetch('/users/login', {
             method: 'POST',
+            mode: 'cors',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -57,7 +61,11 @@ class UserServiceAPI {
     }
 
     public async logoutUser() {
-        const response = await fetch('/users/logout', { method: 'POST' });
+        const response = await fetch('/users/logout', {
+          method: 'POST',
+          mode: 'cors',
+          credentials: 'include'
+        });
 
         if (!response.ok) {
             throw new Error('Failed to logout user');
@@ -67,7 +75,11 @@ class UserServiceAPI {
     }
 
     public async isLoggedIn() {
-        const response = await fetch('/users/isLoggedIn', { method: 'GET'});
+        const response = await fetch('/users/isLoggedIn', {
+          method: 'GET',
+          mode: 'cors',
+          credentials: 'include'
+        });
 
         if (!response.ok) {
             throw new Error('User is not authenticated or logged in');
