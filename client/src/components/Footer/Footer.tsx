@@ -1,6 +1,6 @@
 import './Footer.css'
 
-const Footer = () => {
+const Footer:React.FC = () => {
     return (
         <div className="footer">
             <div className="logo-wrapper">

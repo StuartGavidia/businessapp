@@ -1,7 +1,7 @@
 import './DashboardPage.css'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 
-const DashboardPage = () => {
+const DashboardPage:React.FC = () => {
 
     const navigate = useNavigate();
 
@@ -36,13 +36,13 @@ const DashboardPage = () => {
                             <img src="./assets/images/communicationFeature.png" alt="Communication feature logo"/>
                             <p>Inbox</p>
                         </NavLink>
-                        <NavLink to="/dashboard/settings" className="feature-div">  
+                        <NavLink to="/dashboard/settings" className="feature-div">
                             <img src="./assets/images/settingsFeature.png" alt="Settings feature logo"/>
                             <p>Settings</p>
                         </NavLink>
                     </div>
                     <div className="logout">
-                        <div onClick={handleLogout} className="logout-div">  
+                        <div onClick={handleLogout} className="logout-div">
                             <img src="./assets/images/logoutFeature.png" alt="Logout feature logo"/>
                             <p>Logout</p>
                         </div>

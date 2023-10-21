@@ -1,10 +1,17 @@
-from flask import Flask
-from app.models import User, Company, db
-from app.routes import routes
+"""
+This module intializes the flask app
+"""
+
 import os
+from flask import Flask
+from app.models import db
+from app.routes import routes
 from app.config import ProductionConfig, TestingConfig, DevelopmentConfig
 
 def create_app(config_object = None):
+    """
+    Takes a config_object and initializes a flask app
+    """
     app = Flask(__name__)
 
     if config_object:

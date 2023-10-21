@@ -1,3 +1,5 @@
+import { RegistrationFormData, SignInFormData } from "../utils/types";
+
 class UserServiceAPI {
     private static instance: UserServiceAPI;
   
@@ -12,7 +14,7 @@ class UserServiceAPI {
       return UserServiceAPI.instance;
     }
   
-    public async registerUser(userData: any) {
+    public async registerUser(userData: RegistrationFormData) {
         return await fetch('/users/register', {
             method: 'POST',
             headers: {
@@ -33,7 +35,7 @@ class UserServiceAPI {
         })
     }
 
-    public async loginUser(userData: any) {
+    public async loginUser(userData: SignInFormData) {
         return fetch('/users/login', {
             method: 'POST',
             headers: {
@@ -55,5 +57,5 @@ class UserServiceAPI {
     }
   }
   
-  export default UserServiceAPI;
+export default UserServiceAPI;
   

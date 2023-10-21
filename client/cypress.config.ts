@@ -1,4 +1,5 @@
 import { defineConfig } from "cypress";
+import codeCoverageTask from "@cypress/code-coverage/task";
 
 const baseUrl = process.env.BASE_URL || 'http://localhost:5173';
 
@@ -12,6 +13,7 @@ export default defineConfig({
     baseUrl: baseUrl,
     setupNodeEvents(on, config) {
       // implement node event listeners here
+      console.log(on, config)
     },
   },
   component: {
@@ -20,7 +22,7 @@ export default defineConfig({
       bundler: "vite",
     },
     setupNodeEvents(on, config) {
-      require("@cypress/code-coverage/task")(on, config);
+      codeCoverageTask(on, config);
 
       return config;
     },

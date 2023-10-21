@@ -1,0 +1,53 @@
+name: Linting
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Client React App Linting
+      continue-on-error: true
+      run: |
+        cd client
+        npm install
+        npm run lint
+
+    - name: Communication Service Express App Linting
+      continue-on-error: true
+      run: |
+        cd CommunicationService
+        npm install
+        npm run lint
+
+    - name: User Service Lint Flask app
+      continue-on-error: true
+      run: |
+        cd UserService
+        pip install -r requirements.txt
+        pylint $(git ls-files '*.py')
+
+    - name: Analytics Service Lint Flask app
+      continue-on-error: true
+      run: |
+        cd AnalyticsService
+        pip install -r requirements.txt
+        pylint $(git ls-files '*.py')
+

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './Contact.css'
 
-const Contact = () => {
+const Contact:React.FC = () => {
 
     const [formData, setFormData] = useState({
         firstName: "",
@@ -12,14 +12,14 @@ const Contact = () => {
         message: ""
     })
 
-    const handleChange = (e: any) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prevState => ({ ...prevState, [name]: value }));
     };
 
-    const handleSubmit = async (e: any) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        
+
         console.log(formData)
         //Here we need to send this data to a backend service for saving. I think we can put this in the
         //communications service. Let's create a table for contact messages.
@@ -30,7 +30,7 @@ const Contact = () => {
             <div className="names">
                 <div className="input">
                     <label htmlFor="firstName"><span className="required-asterik">*</span> First Name</label>
-                    <input 
+                    <input
                         id="firstName"
                         type="text"
                         name="firstName"
@@ -41,7 +41,7 @@ const Contact = () => {
                 </div>
                 <div className="input">
                     <label htmlFor="lastName"><span className="required-asterik">*</span> Last Name</label>
-                    <input 
+                    <input
                         id="lastName"
                         type="text"
                         name="lastName"
@@ -53,7 +53,7 @@ const Contact = () => {
             </div>
             <div className="input">
                 <label htmlFor="company"><span className="required-asterik">*</span> Company</label>
-                <input 
+                <input
                     id="company"
                     type="text"
                     name="company"
@@ -64,7 +64,7 @@ const Contact = () => {
             </div>
             <div className="input">
                 <label htmlFor="email"><span className="required-asterik">*</span> Email</label>
-                <input 
+                <input
                     id="email"
                     type="text"
                     name="email"
@@ -75,7 +75,7 @@ const Contact = () => {
             </div>
             <div className="input">
                 <label htmlFor="phoneNumber"><span className="required-asterik">*</span> Phone Number</label>
-                <input 
+                <input
                     id="phoneNumber"
                     type="text"
                     name="phoneNumber"
@@ -86,7 +86,7 @@ const Contact = () => {
             </div>
             <div className="input message-wrapper">
                 <label htmlFor="message">Message</label>
-                <input 
+                <input
                     type="text"
                     name="message"
                     value={formData.message}

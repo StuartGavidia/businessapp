@@ -1,4 +1,4 @@
-name: CI
+name: Testing
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
     - name: Build user-service-test for Testing
       run: |
         docker-compose -f docker-compose.yml build user-service-test
-      
+
     - name: Run user-service-test for Testing
       run: |
         docker-compose -f docker-compose.yml run user-service-test
@@ -36,7 +36,7 @@ jobs:
     - name: Build client-test for Testing
       run: |
         docker-compose -f docker-compose.yml build client-test
-      
+
     - name: Run client-test for Testing
       run: |
         docker-compose -f docker-compose.yml run client-test

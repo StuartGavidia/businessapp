@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import './SignIn.css'
-import SignInData from '../../interfaces/SignInData'
 import UserServiceAPI from '../../api/userServiceAPI'
 import { useNavigate } from 'react-router-dom'
+import SignInProps from '../../interfaces/SignInProps'
 
-const SignIn = (props: SignInData) => {
+const SignIn: React.FC<SignInProps> = ({ setIsLoggingIn }) => {
 
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
@@ -14,25 +14,29 @@ const SignIn = (props: SignInData) => {
     })
     const [error, setError] = useState("")
 
-    const handleChange = (e: any) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, type } = e.target;
         const value = type === 'checkbox' ? e.target.checked : e.target.value;
 
         setFormData(prevState => ({ ...prevState, [name]: value }));
     };
 
-    const handleSubmit = async (e: any) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         console.log(formData)
         //need to send this data to user service for login confirmation
         try {
             await UserServiceAPI.getInstance().loginUser(formData);
             alert("Login succesful!")
-            props.setIsLoggingIn(true)
+            setIsLoggingIn(true)
             setError("");
             navigate("/dashboard")
-          } catch (err: any) {
-            setError(err.message);
+          } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("An error occurred")
+            }
         }
     };
     
@@ -45,7 +49,7 @@ const SignIn = (props: SignInData) => {
                 </div>
                 <div className="register">
                     <p className="register-header">Sign in to tache</p>
-                    <p className="blue register-button" onClick={() => props.setIsLoggingIn(false)}>Register</p>
+                    <p className="blue register-button" onClick={() => setIsLoggingIn(false)}>Register</p>
                 </div>
                 <form onSubmit={handleSubmit} className="signin-form">
                     <input 

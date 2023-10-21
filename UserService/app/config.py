@@ -1,3 +1,9 @@
+"""
+This module contains configuration settings for the application.
+
+It currently includes settings for the database.
+"""
+
 import os
 
 #Read database configuration from environment variables

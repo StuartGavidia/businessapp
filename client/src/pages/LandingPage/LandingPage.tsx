@@ -7,7 +7,7 @@ import Price from '../../components/Price/Price'
 import PriceData from '../../interfaces/PriceData'
 import Contact from '../../components/Contact/Contact'
 
-const LandingPage = () => {
+const LandingPage:React.FC = () => {
     const features: FeatureData[] = [
         {
             imgSource: "./assets/images/calendarImage.jpg",
@@ -69,7 +69,7 @@ const LandingPage = () => {
                 <div>
                     {
                         features.map((feature:FeatureData, i:number) => {
-                            return <Feature 
+                            return <Feature
                                 imgSource={feature.imgSource}
                                 title={feature.title}
                                 reasonOne={feature.reasonOne}
@@ -87,7 +87,7 @@ const LandingPage = () => {
                 <div>
                     {
                         prices.map((currentPrice:PriceData, i:number) => {
-                            return <Price 
+                            return <Price
                                 price={currentPrice.price}
                                 backgroundColor={currentPrice.backgroundColor}
                                 key={i}
