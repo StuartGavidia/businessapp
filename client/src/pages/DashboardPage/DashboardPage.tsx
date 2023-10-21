@@ -1,11 +1,30 @@
 import './DashboardPage.css'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import UserServiceAPI from '../../api/userServiceAPI';
+import { useEffect } from 'react'
 
 
 const DashboardPage:React.FC = () => {
 
     const navigate = useNavigate();
+    let inactivityTimer: number;
+
+    useEffect(() => {
+      document.addEventListener('mousemove', resetTimer);
+      document.addEventListener('keypress', resetTimer);
+
+      return () => {
+        //when the component unmounts this cleans up event listeners
+        document.removeEventListener('mousemove', resetTimer);
+        document.removeEventListener('keypress', resetTimer);
+      };
+    }, []);
+
+    const resetTimer = () => {
+      window.clearTimeout(inactivityTimer);
+
+      inactivityTimer = window.setTimeout(handleLogout, 15 * 60 * 1000); // 15 minutes
+    };
 
     const handleLogout = async () => {
         try {
