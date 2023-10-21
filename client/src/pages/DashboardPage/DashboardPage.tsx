@@ -1,14 +1,23 @@
 import './DashboardPage.css'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import UserServiceAPI from '../../api/userServiceAPI';
+
 
 const DashboardPage:React.FC = () => {
 
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        //TODO: Implement logout api route in user service and connect here
-        //for now logout just goes to signin page
-
+    const handleLogout = async () => {
+        try {
+            await UserServiceAPI.getInstance().logoutUser();
+            alert("Logout succesful!")
+        } catch (err: unknown) {
+          if (err instanceof Error) {
+            console.log("Error Logging out user");
+          } else {
+            console.log("An error has ocurred")
+          }
+        }
         navigate('/signin')
     }
 

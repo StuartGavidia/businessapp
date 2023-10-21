@@ -48,3 +48,11 @@ At the root of the project run ```docker-compose build```.(Try again if it fails
 * You can run your services and their databases by themselves by ```docker-compose -f docker-compose.{developmentFeatureName}.yml up```
 * You can also build the client (with required containers) along with the specific services you are working on by running ```docker-compose -f docker-compose.yml -f docker-compose.{developmentFeatureName}.yml build```
 * You can also run the client (with required containers) along with the specific services you are working on by running ```docker-compose -f docker-compose.yml -f docker-compose.{developmentFeatureName}.yml up```
+
+## Check linting for Client, CommunicationService(for development):
+* Cd into respective directory(client or CommunicationService)
+* Run ```npm run lint```
+
+## Check linting for AnalyticsServiec, UserService(for development):
+* Cd into respective directory(AnalyticsService or UserService)
+* Run ```pylint $(git ls-files '*.py')```

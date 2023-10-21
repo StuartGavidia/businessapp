@@ -22,10 +22,6 @@ services:
     volumes:
       - ./client:/app
       - /app/node_modules
-  client-test:
-    build:
-      context: ./client
-      dockerfile: Dockerfile.test
   user-service:
     build:
       context: ./UserService
@@ -41,16 +37,6 @@ services:
       - "5001:5000"
     volumes:
       - ./UserService/app:/app/app
-  user-service-test:
-    build:
-      context: ./UserService
-      #Prod: Dockerfile, Dev: Dockerfile.dev
-      dockerfile: Dockerfile.dev
-    command: pytest tests/
-    environment:
-      - "DATABASE_URI=sqlite:///:memory:"
-    volumes:
-      - ./UserService/tests:/app/tests
   user-db:
     build:
       context: ./user-db

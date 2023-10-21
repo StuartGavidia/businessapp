@@ -6,6 +6,7 @@ from flask_bcrypt import Bcrypt
 from flask import Blueprint, jsonify, request, abort, make_response
 from app.models import User, Company, db
 from app.utils import generate_code, create_jwt
+from app.decorators import token_required
 
 routes = Blueprint('routes', __name__)
 bcrypt = Bcrypt()
@@ -113,6 +114,25 @@ def login_user():
     except Exception as e:
         print(e)
         return jsonify({"error": str(e)}), 400
+
+
+@routes.route('/users/logout', methods=['POST'])
+def logout():
+    """
+    This route clears jwt and logs user out
+    """
+    res = make_response(jsonify({"message": "Logged out"}))
+
+    # Set the cookie's expiration date to a past date, effectively removing it
+    res.set_cookie('user_cookie', '', expires=0, httponly=True, secure=True, samesite='Strict')
+
+    return res, 200
+
+@routes.route('/users/isLoggedIn', methods=['GET'])
+@token_required
+def is_logged_in():
+    """This route checks if a user is logged in"""
+    return jsonify({'status': 'authenticated'}), 200
 
 @routes.errorhandler(400)
 def bad_request(error):

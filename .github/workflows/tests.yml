@@ -16,15 +16,15 @@ jobs:
 
     - name: Build user-service-test for Testing
       run: |
-        docker-compose -f docker-compose.yml build user-service-test
+        docker-compose -f docker-compose.tests.yml build user-service-test
 
     - name: Run user-service-test for Testing
       run: |
-        docker-compose -f docker-compose.yml run user-service-test
+        docker-compose -f docker-compose.tests.yml run user-service-test
 
     - name: Cleanup Docker Service 1
       if: always()
-      run: docker-compose -f docker-compose.yml down
+      run: docker-compose -f docker-compose.tests.yml down
 
   client-test:
     runs-on: ubuntu-latest
@@ -35,12 +35,12 @@ jobs:
 
     - name: Build client-test for Testing
       run: |
-        docker-compose -f docker-compose.yml build client-test
+        docker-compose -f docker-compose.tests.yml build client-test
 
     - name: Run client-test for Testing
       run: |
-        docker-compose -f docker-compose.yml run client-test
+        docker-compose -f docker-compose.tests.yml run client-test
 
     - name: Cleanup Docker Service 2
       if: always()
-      run: docker-compose -f docker-compose.yml down
+      run: docker-compose -f docker-compose.tests.yml down

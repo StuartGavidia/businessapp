@@ -4,6 +4,7 @@ This module contains utility methods that are needed for the app functionality
 
 import string
 import random
+import datetime
 import jwt
 
 def generate_code(length=6):
@@ -21,7 +22,8 @@ def create_jwt(user_id, company_id, position_name, status):
         'user_id': user_id,
         'company_id': company_id,
         'position_name': position_name,
-        'status': status
+        'status': status,
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
     }
     secret = 'we_need_to_change_this'
     token = jwt.encode(payload, secret, algorithm='HS256')
