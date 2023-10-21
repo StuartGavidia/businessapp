@@ -1,28 +1,32 @@
+"""
+This module defines the different routes for the flask app
+"""
+
+from flask_bcrypt import Bcrypt
 from flask import Blueprint, jsonify, request, abort, make_response
 from app.models import User, Company, db
-import random
-import string
-import jwt
-from flask_bcrypt import Bcrypt
-from app.utils import generate_code, create_jwt, decode_jwt
+from app.utils import generate_code, create_jwt
 
 routes = Blueprint('routes', __name__)
 bcrypt = Bcrypt()
 
 @routes.route("/users")
 def users():
+    """Test route"""
     return {"message": "The Users is here"}
 
 @routes.route("/users/register", methods=['POST'])
-def registerUser():
+def register_user():
+    """
+    This route registers a user
+    """
     data = request.json  # Get JSON payload from the client
     first_name = data.get('firstName', '')
     last_name = data.get('lastName', '')
     username = data.get('username', '')
     email = data.get('email', '')
     password = data.get('password', '')
-    confirm_password = data.get('confirmPassword', '')
-    hasDirectReports = data.get('hasDirectReports', '')
+    has_direct_reports = data.get('hasDirectReports', '')
     manager_code = data.get('managerCode', '')
     company_code = data.get('companyCode', '')
     position_name = data.get('positionName', '')
@@ -46,7 +50,7 @@ def registerUser():
     company_id = company.id
 
     current_manager_code = None
-    if hasDirectReports:
+    if has_direct_reports:
         sample_code = generate_code()
         all_manager_codes = get_all_manager_codes()
         while sample_code in all_manager_codes:
@@ -74,11 +78,15 @@ def registerUser():
 
     db.session.add(new_user)
     db.session.commit()
-    
+
     return jsonify({"message": "User successfully registered"}), 201
 
 @routes.route("/users/login", methods=['POST'])
-def loginUser():
+def login_user():
+    """
+    This route ensures that user provided the correct
+    credentials and logs them in
+    """
     data = request.json  # Get JSON payload from the client
     username = data.get('username', '')
     password = data.get('password', '')
@@ -88,10 +96,10 @@ def loginUser():
     if not user:
         abort(400, description="Incorrect Login")
 
-    isPasswordCorrect = bcrypt.check_password_hash(user.password_hash, password)
-    if not isPasswordCorrect:
+    is_password_correct = bcrypt.check_password_hash(user.password_hash, password)
+    if not is_password_correct:
         abort(400, description="Incorrect Login")
-    
+
     try:
         #creating jwt
         jwt_token = create_jwt(user.id, user.company_id, user.position_name, user.status)
@@ -105,10 +113,16 @@ def loginUser():
     except Exception as e:
         print(e)
         return jsonify({"error": str(e)}), 400
-    
+
 @routes.errorhandler(400)
 def bad_request(error):
+    """
+    Error handler
+    """
     return jsonify({'error': str(error.description)}), 400
 
 def get_all_manager_codes():
+    """
+    Extracts all manager codes from user db
+    """
     return [result[0] for result in db.session.query(User.manager_code).distinct().all()]

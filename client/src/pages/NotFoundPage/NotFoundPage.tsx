@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import './NotFoundPage.css'
 import { useNavigate } from 'react-router-dom'
 
-const NotFoundPage = () => {
+const NotFoundPage:React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -13,7 +13,7 @@ const NotFoundPage = () => {
         return () => {
             clearTimeout(timer)
         }
-    }, [])
+    }, [navigate])
 
     return (
         <div>

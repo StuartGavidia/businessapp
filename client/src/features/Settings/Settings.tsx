@@ -1,6 +1,6 @@
 import './Settings.css'
 
-const Settings = () => {
+const Settings:React.FC = () => {
     return (
         <div className="settings-content">
             <h1>Settings Feature</h1>

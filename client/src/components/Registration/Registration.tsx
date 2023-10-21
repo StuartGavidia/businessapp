@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import './Registration.css'
-import RegistrationData from '../../interfaces/RegistrationData'
 import UserServiceAPI from '../../api/userServiceAPI'
+import RegistrationProps from '../../interfaces/RegistrationProps'
 
-const Registration = (props: RegistrationData) => {
+const Registration: React.FC<RegistrationProps> = ({ setIsLoggingIn }) => {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -22,13 +22,13 @@ const Registration = (props: RegistrationData) => {
         setFormData(prevState => ({ ...prevState, ['hasDirectReports']: hasDirectReports }))
     }
 
-    const handleChange = (e: any) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
 
         setFormData(prevState => ({ ...prevState, [name]: value }));
     };
 
-    const handleSubmit = async (e: any) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         
         if (formData.password !== formData.confirmPassword) {
@@ -40,10 +40,14 @@ const Registration = (props: RegistrationData) => {
         try {
             await UserServiceAPI.getInstance().registerUser(formData);
             alert("Registration was succesful!")
-            props.setIsLoggingIn(true)
+            setIsLoggingIn(true)
             setError("");
-          } catch (err: any) {
-            setError(err.message);
+          } catch (err: unknown) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("An error occurred");
+            }
         }
     };
 
@@ -56,7 +60,7 @@ const Registration = (props: RegistrationData) => {
                 </div>
                 <div className="register">
                     <p className="register-header">Register to tache</p>
-                    <p className="blue register-button" onClick={() => props.setIsLoggingIn(true)}>Log in</p>
+                    <p className="blue register-button" onClick={() => setIsLoggingIn(true)}>Log in</p>
                 </div>
                 <form onSubmit={handleSubmit} className="signin-form">
                     <input 

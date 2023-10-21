@@ -1,6 +1,6 @@
 import './Dashboard.css'
 
-const Dashboard = () => {
+const Dashboard:React.FC = () => {
     return (
         <div className="dashboard-content">
             <h1>Dashboard Feature</h1>

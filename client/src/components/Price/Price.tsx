@@ -1,11 +1,11 @@
 import './Price.css'
 import PriceData from '../../interfaces/PriceData'
 
-const Price = (props: PriceData) => {
+const Price:React.FC<PriceData> = ({ price, backgroundColor }) => {
 
     return (
-        <div className="price-container" style={{backgroundColor: props.backgroundColor}}>
-            <p>{props.price}</p>
+        <div className="price-container" style={{backgroundColor: backgroundColor}}>
+            <p>{price}</p>
         </div>
     )
 }

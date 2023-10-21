@@ -20,12 +20,14 @@ import "@cypress/code-coverage/support";
 // require('./commands')
 
 import { mount } from 'cypress/react18'
+import '../../src/index.css';
 
 // Augment the Cypress namespace to include type definitions for
 // your custom command.
 // Alternatively, can be defined in cypress/support/component.d.ts
 // with a <reference path="./component" /> at the top of your spec.
 declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
             mount: typeof mount
@@ -34,9 +36,10 @@ declare global {
 }
 
 declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Cypress {
         interface Chainable {
-            login(username: string, password: string): Chainable<any>;
+            login(username: string, password: string): Chainable<void>;
         }
     }
 }

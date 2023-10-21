@@ -1,6 +1,6 @@
 import './Calendar.css'
 
-const Calendar = () => {
+const Calendar:React.FC = () => {
     return (
         <div className="calendar-content">
             <h1>Calendar Feature</h1>

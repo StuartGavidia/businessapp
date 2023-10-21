@@ -3,7 +3,7 @@ import './SignInPage.css'
 import SignIn from '../../components/SignIn/SignIn'
 import Registration from '../../components/Registration/Registration'
 
-const SignInPage = () => {
+const SignInPage:React.FC = () => {
 
     const [isLoggingIn, setIsLoggingIn] = useState(true)
 
@@ -17,7 +17,7 @@ const SignInPage = () => {
                 }
             </div>
             <div className="half info-container">
-                
+
             </div>
         </div>
     )
