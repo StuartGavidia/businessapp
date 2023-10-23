@@ -4,7 +4,6 @@ This module intializes the flask app
 
 import os
 from flask import Flask
-from flask_cors import CORS
 from app.models import db
 from app.routes import routes
 from app.config import ProductionConfig, TestingConfig, DevelopmentConfig
@@ -29,7 +28,5 @@ def create_app(config_object = None):
     db.init_app(app)
 
     app.register_blueprint(routes)
-
-    CORS(app, supports_credentials=True)
 
     return app
