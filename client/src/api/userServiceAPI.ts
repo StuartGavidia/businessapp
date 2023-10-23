@@ -2,18 +2,18 @@ import { RegistrationFormData, SignInFormData } from "../utils/types";
 
 class UserServiceAPI {
     private static instance: UserServiceAPI;
-  
+
     private constructor() {
       // private constructor so no outsider can create an instance
     }
-  
+
     public static getInstance(): UserServiceAPI {
       if (!UserServiceAPI.instance) {
         UserServiceAPI.instance = new UserServiceAPI();
       }
       return UserServiceAPI.instance;
     }
-  
+
     public async registerUser(userData: RegistrationFormData) {
         return await fetch('/users/register', {
             method: 'POST',
@@ -55,7 +55,30 @@ class UserServiceAPI {
             console.log(data.message);
         })
     }
+
+    public async logoutUser() {
+        const response = await fetch('/users/logout', {
+          method: 'POST'
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to logout user');
+        }
+
+        return response
+    }
+
+    public async isLoggedIn() {
+        const response = await fetch('/users/isLoggedIn', {
+          method: 'GET'
+        });
+
+        if (!response.ok) {
+            throw new Error('User is not authenticated or logged in');
+        }
+
+        return response
+    }
   }
-  
+
 export default UserServiceAPI;
-  

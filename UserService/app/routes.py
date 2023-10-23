@@ -2,10 +2,12 @@
 This module defines the different routes for the flask app
 """
 
+import os
 from flask_bcrypt import Bcrypt
 from flask import Blueprint, jsonify, request, abort, make_response
 from app.models import User, Company, db
 from app.utils import generate_code, create_jwt
+from app.decorators import token_required
 
 routes = Blueprint('routes', __name__)
 bcrypt = Bcrypt()
@@ -107,12 +109,49 @@ def login_user():
         #create response object
         res = make_response(jsonify({"message": "User authenticated"}))
 
+        env = os.environ.get('FLASK_ENV', 'development')
+        if env == 'production':
+            secure_flag = True
+        elif env == 'testing':
+            secure_flag = False
+        else:
+            secure_flag = False
+
         #add jwt to cookie
-        res.set_cookie('user_cookie', jwt_token, httponly=True, secure=True, samesite='Strict')
+        res.set_cookie(
+            'user_cookie', jwt_token, httponly=True, secure=secure_flag, samesite='Strict')
         return res, 200
     except Exception as e:
         print(e)
         return jsonify({"error": str(e)}), 400
+
+
+@routes.route('/users/logout', methods=['POST'])
+def logout():
+    """
+    This route clears jwt and logs user out
+    """
+    res = make_response(jsonify({"message": "Logged out"}))
+
+    env = os.environ.get('FLASK_ENV', 'development')
+    if env == 'production':
+        secure_flag = True
+    elif env == 'testing':
+        secure_flag = False
+    else:
+        secure_flag = False
+
+    #set the cookie's expiration date to a past date, effectively removing it
+    res.set_cookie(
+        'user_cookie', '', expires=0, httponly=True, secure=secure_flag, samesite='Strict')
+
+    return res, 200
+
+@routes.route('/users/isLoggedIn', methods=['GET'])
+@token_required
+def is_logged_in():
+    """This route checks if a user is logged in"""
+    return jsonify({'status': 'authenticated'}), 200
 
 @routes.errorhandler(400)
 def bad_request(error):

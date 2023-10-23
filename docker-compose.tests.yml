@@ -1,0 +1,16 @@
+version: '3'
+services:
+  user-service-test:
+    build:
+      context: ./UserService
+      #Prod: Dockerfile, Dev: Dockerfile.dev
+      dockerfile: Dockerfile.dev
+    command: pytest tests/
+    environment:
+      - "DATABASE_URI=sqlite:///:memory:"
+    volumes:
+      - ./UserService/tests:/app/tests
+  client-test:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.test
