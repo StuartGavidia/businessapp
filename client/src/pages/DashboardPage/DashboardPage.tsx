@@ -42,7 +42,10 @@ const DashboardPage:React.FC = () => {
 
     return (
         <div className="dashboard-container">
-            <div className="dashboard-nav">
+            <div className="sidebar">
+              <h1>Testsdigjsijsijfhfs</h1>
+            </div>
+            {/* <div className="dashboard-nav">
                 <div className="dashboard-nav-wrapper">
                     <div className="title">
                         <h1>ABC</h1>
@@ -76,7 +79,7 @@ const DashboardPage:React.FC = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
             <div className="dashboard-main">
                 <div className="dashboard-section-top">
                     <div className="dashboard-section-top-wrapper">

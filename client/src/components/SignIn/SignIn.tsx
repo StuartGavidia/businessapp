@@ -3,9 +3,14 @@ import './SignIn.css'
 import UserServiceAPI from '../../api/userServiceAPI'
 import { useNavigate } from 'react-router-dom'
 import SignInProps from '../../interfaces/SignInProps'
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Image from 'react-bootstrap/Image';
+import Stack from 'react-bootstrap/Stack';
 
 const SignIn: React.FC<SignInProps> = ({ setIsLoggingIn }) => {
-
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: '',
@@ -39,53 +44,71 @@ const SignIn: React.FC<SignInProps> = ({ setIsLoggingIn }) => {
             }
         }
     };
-    
+
     return (
-        <div className="signin-page-component">
-            <div className="signin-page-wrapper">
-                <div className="signin-logo-wrapper">
-                    <img src="./assets/images/businessLogo.png" alt="Pro Connect Business Logo"/>
-                    <p>tache</p>
-                </div>
-                <div className="register">
-                    <p className="register-header">Sign in to tache</p>
-                    <p className="blue register-button" onClick={() => setIsLoggingIn(false)}>Register</p>
-                </div>
-                <form onSubmit={handleSubmit} className="signin-form">
-                    <input 
-                        type="text"
-                        name="username"
-                        onChange={handleChange}
-                        placeholder="Username"
-                        required
-                    />
-                    <input 
-                        type="text"
-                        name="password"
-                        onChange={handleChange}
-                        placeholder="Password"
-                        required
-                    />
-                    <div className="signin-form-extrainfo">
-                        <div className="signin-input">
-                            <input 
-                                id="remember-me" 
-                                type="checkbox"
-                                name="rememberMe"
-                                onChange={handleChange}
-                            />
-                            <label htmlFor="remember-me">Remember Me</label>
-                        </div>
-                        <p className="blue">Forgot your password?</p>
-                    </div>
-                    {
-                        error &&
-                        <p className="error-message">{error}</p>
-                    }
-                    <button className="signin-form-button">Sign In</button>
-                </form>
-            </div>
+      <div className="signin-content" style={{width: "100%", maxWidth: "450px"}}>
+        <Stack direction="horizontal" gap={3}>
+          <Image
+            src="./assets/images/businessLogo.png"
+            alt="ABC Logo"
+            style={{ width: '3rem', height: '3rem' }}
+          />
+          <h2>ABC</h2>
+        </Stack>
+        <div className="mt-5">
+          <Row className="align-items-center">
+            <Col>
+              <p className="h2">Sign in to abc</p>
+            </Col>
+            <Col>
+              <p className="signin-helper" onClick={() => setIsLoggingIn(false)}>Register</p>
+            </Col>
+          </Row>
         </div>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group controlId="username" className="mb-3">
+              <Form.Control
+                type="text"
+                placeholder="Username"
+                name="username"
+                onChange={handleChange}
+                required
+              />
+          </Form.Group>
+          <Form.Group controlId="password" className="mb-3">
+              <Form.Control
+                type="password"
+                placeholder="Password"
+                name="password"
+                onChange={handleChange}
+                required
+              />
+          </Form.Group>
+          <div className="mb-3">
+            <Row className="align-items-center">
+              <Col>
+                <Form.Check
+                  type="checkbox"
+                  label="Remember Me"
+                  id="remember-me"
+                  name="rememberMe"
+                  onChange={handleChange}
+                />
+              </Col>
+              <Col>
+                <p className="signin-helper">Forgot your Password?</p>
+              </Col>
+            </Row>
+            {
+              error &&
+              <p className="error-message">{error}</p>
+            }
+          </div>
+          <Button variant="primary" type="submit" className="w-100">
+              Sign In
+          </Button>
+        </Form>
+      </div>
     )
 }
 
