@@ -55,11 +55,11 @@ const DashboardPage:React.FC = () => {
       <>
         <div className="wrapper">
           <div className="sidebar d-none d-lg-block">
-            <Offcanvas show={show} onHide={handleClose} responsive="lg">
+            <Offcanvas show={show} onHide={handleClose} responsive="lg" style={{height: "100%", backgroundColor: "#87CEEB"}}>
               <Offcanvas.Header closeButton>
                 <Offcanvas.Title>Click X to close</Offcanvas.Title>
               </Offcanvas.Header>
-              <Offcanvas.Body className="justify-content-center">
+              <Offcanvas.Body className="justify-content-center" style={{height: "100%"}}>
                 <Sidebar />
               </Offcanvas.Body>
             </Offcanvas>
@@ -69,7 +69,7 @@ const DashboardPage:React.FC = () => {
               <i className="bi bi-list d-lg-none" onClick={handleShow} style={{fontSize: '3rem', cursor: "pointer"}}></i>
               <Navbar style={{flex: "1"}}>
                 <Container>
-                  <Navbar.Brand>NavBar text</Navbar.Brand>
+                  <Navbar.Brand>Title is ABC?</Navbar.Brand>
                   <Navbar.Toggle />
                   <Navbar.Collapse className="justify-content-end">
                     <Navbar.Text onClick={handleLogout} style={{cursor: "pointer"}}>

@@ -44,10 +44,10 @@ const Sidebar:React.FC = () => {
     return (
       <>
         <Tab.Container id="list-group-tabs-example" defaultActiveKey="/dashboard">
-          <Row style={{width: "100%"}}>
+          <Row className="sidebar-tabs-wrapper">
             <Col>
               <ListGroup className="p-2">
-                <h1 className="mb-4">Dashboard</h1>
+                <h1 className="mb-4">ABC</h1>
                 {
                   routes.map((route: NavRoute) => {
                     return (

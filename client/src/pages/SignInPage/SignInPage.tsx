@@ -2,7 +2,9 @@ import { useState } from 'react'
 import './SignInPage.css'
 import SignIn from '../../components/SignIn/SignIn'
 import Registration from '../../components/Registration/Registration'
-import { Container, Row, Col } from 'react-bootstrap'
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 
 const SignInPage:React.FC = () => {
 
