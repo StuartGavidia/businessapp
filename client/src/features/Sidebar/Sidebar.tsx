@@ -5,14 +5,20 @@ import Row from 'react-bootstrap/Row';
 import Tab from 'react-bootstrap/Tab';
 import { Link, useLocation } from "react-router-dom"
 
+interface NavRoute {
+  name: string,
+  route: string,
+  icon: string
+}
+
 const Sidebar:React.FC = () => {
     const location = useLocation();
 
-    const routes: any[] = [
+    const routes: NavRoute[] = [
       {
         name: "Dashboard",
         route: "/dashboard",
-        icon: "bi bi-bar-chart-fill"
+        icon: "bi bi-window-fullscreen"
       },
       {
         name: "Analytics",
@@ -22,17 +28,17 @@ const Sidebar:React.FC = () => {
       {
         name: "Team",
         route: "/dashboard/team",
-        icon: "bi bi-bar-chart-fill"
+        icon: "bi bi-person-circle"
       },
       {
         name: "Inbox",
         route: "/dashboard/communication",
-        icon: "bi bi-bar-chart-fill"
+        icon: "bi bi-chat-dots-fill"
       },
       {
         name: "Settings",
         route: "/dashboard/settings",
-        icon: "bi bi-bar-chart-fill"
+        icon: "bi bi-gear"
       }
     ]
     return (
@@ -43,7 +49,7 @@ const Sidebar:React.FC = () => {
               <ListGroup className="p-2">
                 <h1 className="mb-4">Dashboard</h1>
                 {
-                  routes.map((route: any) => {
+                  routes.map((route: NavRoute) => {
                     return (
                       <ListGroup.Item
                         action

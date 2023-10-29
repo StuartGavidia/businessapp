@@ -142,7 +142,7 @@ const Registration: React.FC<RegistrationProps> = ({ setIsLoggingIn }) => {
                 variant="primary"
                 checked={formData.hasDirectReports}
                 value="1"
-                onChange={(e) => toggleDirectReports(true)}
+                onChange={() => toggleDirectReports(true)}
               >
                 Has Direct Reports
               </ToggleButton>
@@ -152,7 +152,7 @@ const Registration: React.FC<RegistrationProps> = ({ setIsLoggingIn }) => {
                 variant="primary"
                 checked={!formData.hasDirectReports}
                 value="2"
-                onChange={(e) => toggleDirectReports(false)}
+                onChange={() => toggleDirectReports(false)}
             >
               Has No Direct Reports
               </ToggleButton>

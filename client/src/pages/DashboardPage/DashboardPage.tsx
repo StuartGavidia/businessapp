@@ -1,10 +1,11 @@
 import './DashboardPage.css'
 import { Outlet, useNavigate } from 'react-router-dom'
 import UserServiceAPI from '../../api/userServiceAPI';
-import { useEffect, useState } from 'react';
-import Button from 'react-bootstrap/Button';
+import { useEffect, useState, useCallback, useRef } from 'react';
+import Navbar from 'react-bootstrap/Navbar';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import Sidebar from '../../features/Sidebar/Sidebar';
+import Container from 'react-bootstrap/Container';
 
 
 const DashboardPage:React.FC = () => {
@@ -14,7 +15,30 @@ const DashboardPage:React.FC = () => {
     const handleShow = () => setShow(true);
 
     const navigate = useNavigate();
-    let inactivityTimer: number;
+    const inactivityTimer = useRef<number | null>(null);
+
+    const handleLogout = useCallback(async () => {
+      try {
+        await UserServiceAPI.getInstance().logoutUser();
+        alert("Logout successful!")
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          console.log("Error Logging out user");
+        } else {
+          console.log("An error has occurred")
+        }
+      }
+      navigate('/signin');
+    }, [navigate]);
+
+
+    const resetTimer = useCallback(() => {
+      if (inactivityTimer.current !== null) {
+        window.clearTimeout(inactivityTimer.current);
+      }
+      inactivityTimer.current = window.setTimeout(handleLogout, 15 * 60 * 1000); // 15 minutes
+    }, [handleLogout]);
+
 
     useEffect(() => {
       document.addEventListener('mousemove', resetTimer);
@@ -25,27 +49,7 @@ const DashboardPage:React.FC = () => {
         document.removeEventListener('mousemove', resetTimer);
         document.removeEventListener('keypress', resetTimer);
       };
-    }, []);
-
-    const resetTimer = () => {
-      window.clearTimeout(inactivityTimer);
-
-      inactivityTimer = window.setTimeout(handleLogout, 15 * 60 * 1000); // 15 minutes
-    };
-
-    const handleLogout = async () => {
-        try {
-            await UserServiceAPI.getInstance().logoutUser();
-            alert("Logout succesful!")
-        } catch (err: unknown) {
-          if (err instanceof Error) {
-            console.log("Error Logging out user");
-          } else {
-            console.log("An error has ocurred")
-          }
-        }
-        navigate('/signin')
-    }
+    }, [resetTimer]);
 
     return (
       <>
@@ -62,12 +66,18 @@ const DashboardPage:React.FC = () => {
           </div>
           <div className="main-panel">
             <div className="main-panel-navbar">
-              <Button variant="primary" className="d-lg-none" onClick={handleShow}>
-                Launch
-              </Button>
-              <div onClick={handleLogout}>
-                <p>Logout</p>
-              </div>
+              <i className="bi bi-list d-lg-none" onClick={handleShow} style={{fontSize: '3rem', cursor: "pointer"}}></i>
+              <Navbar style={{flex: "1"}}>
+                <Container>
+                  <Navbar.Brand>NavBar text</Navbar.Brand>
+                  <Navbar.Toggle />
+                  <Navbar.Collapse className="justify-content-end">
+                    <Navbar.Text onClick={handleLogout} style={{cursor: "pointer"}}>
+                      Logout
+                    </Navbar.Text>
+                  </Navbar.Collapse>
+                </Container>
+              </Navbar>
             </div>
             <div className="content">
               <Outlet />
