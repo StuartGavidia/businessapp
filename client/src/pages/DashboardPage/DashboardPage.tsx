@@ -1,13 +1,44 @@
 import './DashboardPage.css'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import UserServiceAPI from '../../api/userServiceAPI';
-import { useEffect } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react';
+import Navbar from 'react-bootstrap/Navbar';
+import Offcanvas from 'react-bootstrap/Offcanvas';
+import Sidebar from '../../features/Sidebar/Sidebar';
+import Container from 'react-bootstrap/Container';
 
 
 const DashboardPage:React.FC = () => {
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     const navigate = useNavigate();
-    let inactivityTimer: number;
+    const inactivityTimer = useRef<number | null>(null);
+
+    const handleLogout = useCallback(async () => {
+      try {
+        await UserServiceAPI.getInstance().logoutUser();
+        alert("Logout successful!")
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          console.log("Error Logging out user");
+        } else {
+          console.log("An error has occurred")
+        }
+      }
+      navigate('/signin');
+    }, [navigate]);
+
+
+    const resetTimer = useCallback(() => {
+      if (inactivityTimer.current !== null) {
+        window.clearTimeout(inactivityTimer.current);
+      }
+      inactivityTimer.current = window.setTimeout(handleLogout, 15 * 60 * 1000); // 15 minutes
+    }, [handleLogout]);
+
 
     useEffect(() => {
       document.addEventListener('mousemove', resetTimer);
@@ -18,76 +49,42 @@ const DashboardPage:React.FC = () => {
         document.removeEventListener('mousemove', resetTimer);
         document.removeEventListener('keypress', resetTimer);
       };
-    }, []);
-
-    const resetTimer = () => {
-      window.clearTimeout(inactivityTimer);
-
-      inactivityTimer = window.setTimeout(handleLogout, 15 * 60 * 1000); // 15 minutes
-    };
-
-    const handleLogout = async () => {
-        try {
-            await UserServiceAPI.getInstance().logoutUser();
-            alert("Logout succesful!")
-        } catch (err: unknown) {
-          if (err instanceof Error) {
-            console.log("Error Logging out user");
-          } else {
-            console.log("An error has ocurred")
-          }
-        }
-        navigate('/signin')
-    }
+    }, [resetTimer]);
 
     return (
-        <div className="dashboard-container">
-            <div className="dashboard-nav">
-                <div className="dashboard-nav-wrapper">
-                    <div className="title">
-                        <h1>ABC</h1>
-                    </div>
-                    <div className="dashboard-features">
-                        <NavLink to="/dashboard" className="feature-div">
-                            <img src="./assets/images/dashboardFeature.png" alt="Dashboard feature logo"/>
-                            <p>Dashboard</p>
-                        </NavLink>
-                        <NavLink to="/dashboard/analytics" className="feature-div">
-                            <img src="./assets/images/analyticsFeature.png" alt="Analytics feature logo"/>
-                            <p>Analytics</p>
-                        </NavLink>
-                        <NavLink to="/dashboard/team" className="feature-div">
-                            <img src="./assets/images/teamFeature.png" alt="Team feature logo"/>
-                            <p>Team</p>
-                        </NavLink>
-                        <NavLink to="/dashboard/communication" className="feature-div">
-                            <img src="./assets/images/communicationFeature.png" alt="Communication feature logo"/>
-                            <p>Inbox</p>
-                        </NavLink>
-                        <NavLink to="/dashboard/settings" className="feature-div">
-                            <img src="./assets/images/settingsFeature.png" alt="Settings feature logo"/>
-                            <p>Settings</p>
-                        </NavLink>
-                    </div>
-                    <div className="logout">
-                        <div onClick={handleLogout} className="logout-div">
-                            <img src="./assets/images/logoutFeature.png" alt="Logout feature logo"/>
-                            <p>Logout</p>
-                        </div>
-                    </div>
-                </div>
+      <>
+        <div className="wrapper">
+          <div className="sidebar d-none d-lg-block">
+            <Offcanvas show={show} onHide={handleClose} responsive="lg" style={{height: "100%", backgroundColor: "#87CEEB"}}>
+              <Offcanvas.Header closeButton>
+                <Offcanvas.Title>Click X to close</Offcanvas.Title>
+              </Offcanvas.Header>
+              <Offcanvas.Body className="justify-content-center" style={{height: "100%"}}>
+                <Sidebar />
+              </Offcanvas.Body>
+            </Offcanvas>
+          </div>
+          <div className="main-panel">
+            <div className="main-panel-navbar">
+              <i className="bi bi-list d-lg-none" onClick={handleShow} style={{fontSize: '3rem', cursor: "pointer"}}></i>
+              <Navbar style={{flex: "1"}}>
+                <Container>
+                  <Navbar.Brand>Title is ABC?</Navbar.Brand>
+                  <Navbar.Toggle />
+                  <Navbar.Collapse className="justify-content-end">
+                    <Navbar.Text onClick={handleLogout} style={{cursor: "pointer"}}>
+                      Logout
+                    </Navbar.Text>
+                  </Navbar.Collapse>
+                </Container>
+              </Navbar>
             </div>
-            <div className="dashboard-main">
-                <div className="dashboard-section-top">
-                    <div className="dashboard-section-top-wrapper">
-                        <p>This is the header</p>
-                    </div>
-                </div>
-                <div className="dashboard-section-bottom">
-                    <Outlet />
-                </div>
+            <div className="content">
+              <Outlet />
             </div>
+          </div>
         </div>
+      </>
     )
 }
 
