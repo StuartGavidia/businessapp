@@ -1,16 +1,17 @@
 import './Footer.css'
+import Container from 'react-bootstrap/Container';
 
 const Footer:React.FC = () => {
     return (
-        <div className="footer">
-            <div className="logo-wrapper">
-                <img src="./assets/images/businessLogo.png" alt="Pro Connect Logo"/>
-                <p>tache</p>
-            </div>
-            <div>
-                <p>© 2023 - Tache</p>
-            </div>
+      <Container fluid className="bg-body-tertiary py-3">
+        <div className="d-flex justify-content-between align-items-center">
+          <span>
+            <img src="./assets/images/businessLogo.png" alt="Pro Connect Logo" style={{height: 32, width: 32}}/>
+            ABC
+          </span>
+          <span>© 2023 - Tache</span>
         </div>
+      </Container>
     )
 }
 

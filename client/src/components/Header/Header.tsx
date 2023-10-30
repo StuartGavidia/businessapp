@@ -1,5 +1,9 @@
 import './Header.css'
-import { NavLink } from 'react-router-dom'
+import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import { NavLink } from 'react-router-dom';
 
 const Header:React.FC = () => {
 
@@ -10,22 +14,24 @@ const Header:React.FC = () => {
     }
 
     return (
-        <div className="header">
-            <div className="header-start">
-                <div className="logo-wrapper">
-                    <img src="./assets/images/businessLogo.png" className="logo" alt="Pro Connect Logo"/>
-                    <p>tache</p>
-                </div>
-                <div className="nav-page">
-                    <NavLink to="/" className="link" onClick={() => scrollToProjects('features')}>Features</NavLink>
-                    <NavLink to="/" className="link" onClick={() => scrollToProjects('prices')}>Pricing</NavLink>
-                    <NavLink to="/" className="link" onClick={() => scrollToProjects('contact')}>Contact</NavLink>
-                </div>
-            </div>
-            <NavLink className="signin-component" to="/signin">
-                <button className="signin-nav-button">Sign in/Up</button>
-            </NavLink>
-        </div>
+      <Navbar key='sm' expand='sm' className="bg-body-tertiary mb-3" sticky="top">
+        <Container fluid>
+          <Navbar.Brand href="#"><img src="./assets/images/businessLogo.png" alt="Pro Connect Logo" style={{height: 32, width: 32}}/> ABC</Navbar.Brand>
+          <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-sm`} />
+          <Navbar.Collapse id="basic-navbar-nav">
+              <Nav className="me-auto">
+                <Nav.Link onClick={() => scrollToProjects('features')}>Features</Nav.Link>
+                <Nav.Link onClick={() => scrollToProjects('prices')}>Pricing</Nav.Link>
+                <Nav.Link onClick={() => scrollToProjects('contact')}>Contact</Nav.Link>
+              </Nav>
+              <NavLink className="navlink-landing" to="/signin">
+                <Button variant="outline-success" className="ms-auto">
+                  Sign in/Up
+                </Button>
+              </NavLink>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
     )
 }
 

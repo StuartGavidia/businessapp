@@ -1,10 +1,9 @@
 interface FeatureData {
-    imgSource: string,
     title: string,
     reasonOne: string,
     reasonTwo: string,
     reasonThree: string,
-    alt: string
+    icon: string
 }
 
 export default FeatureData
