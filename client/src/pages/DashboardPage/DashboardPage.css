@@ -1,3 +1,9 @@
+@media (max-width: 500px) {
+  .custom-offcanvas {
+    width: 80% !important;
+  }
+}
+
 .wrapper {
     display: flex;
     height: 100vh;
@@ -18,9 +24,17 @@
 }
 
 .main-panel-navbar {
-  flex: 0 0 10%;
+  flex: 0 0 auto; /* Use auto instead of a percentage to fit content */
   display: flex;
+  width: 100%; /* Ensure the navbar takes up the full width */
 }
+
+/* Add this to remove padding from the container if needed */
+.main-panel-navbar .container {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 
 .content {
   flex: 0 0 90%;
