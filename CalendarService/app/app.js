@@ -11,5 +11,5 @@ app.get('/calendar', (req, res) => {
 
 app.listen(PORT, HOST, () => {
   // eslint-disable-next-line no-console
-  console.log(`Running on http://${HOST}:${PORT}`)
+  console.log(`Running on http://${HOST}:${PORT}`);
 });
