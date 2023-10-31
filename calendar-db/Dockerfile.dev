@@ -1,0 +1,16 @@
+# Use the official PostgreSQL image as a parent image
+FROM postgres:13
+
+# Set environment variables if necessary (these are just examples)
+ENV POSTGRES_DB=dbname
+ENV POSTGRES_USER=username
+ENV POSTGRES_PASSWORD=password
+
+# Copy the initialization scripts from your host to the container's entrypoint directory
+COPY ./docker-entrypoint-initdb.d/ /docker-entrypoint-initdb.d/
+
+EXPOSE 5433
+
+# Set the default command to run when starting the container
+# This is typically not necessary as it's inherited from the base image
+CMD ["postgres"]

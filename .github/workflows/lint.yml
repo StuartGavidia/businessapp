@@ -37,6 +37,13 @@ jobs:
         npm install
         npm run lint
 
+    - name: Calendar Service Express App Linting
+      continue-on-error: true
+      run: |
+        cd CalendarService
+        npm install
+        npm run lint
+
     - name: User Service Lint Flask app
       continue-on-error: true
       run: |

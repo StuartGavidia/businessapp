@@ -1,0 +1,30 @@
+version: '3'
+services:
+  calendar-service:
+    build:
+      context: ./CalendarService
+      #Prod: Dockerfile, Dev: Dockerfile.dev
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5104:5104"
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./CalendarService/app:/usr/app/app
+    depends_on:
+      - calendar-db
+  calendar-db:
+    build:
+      context: ./calendar-db
+      #Prod: Dockerfile, Dev: Dockerfile.dev
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=username
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=calendar-db
+    volumes:
+      - calendar-db-data:/var/lib/postgresql/data
+volumes:
+  calendar-db-data:
