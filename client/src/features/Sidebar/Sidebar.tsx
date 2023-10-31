@@ -36,6 +36,11 @@ const Sidebar:React.FC = () => {
         icon: "bi bi-chat-dots-fill"
       },
       {
+        name: "Calendar",
+        route: "/dashboard/calendar",
+        icon: "bi bi-calendar"
+      },
+      {
         name: "Settings",
         route: "/dashboard/settings",
         icon: "bi bi-gear"
