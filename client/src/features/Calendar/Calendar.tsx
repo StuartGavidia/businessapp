@@ -3,9 +3,10 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
-import { useState } from 'react'
+import Modal from 'react-bootstrap/Modal'
+import Button from 'react-bootstrap/Button'
+import { useState, useEffect } from 'react'
+import UserServiceAPI from '../../api/userServiceAPI'
 
 const Calendar:React.FC = () => {
 
@@ -55,6 +56,22 @@ const Calendar:React.FC = () => {
   const handleEventMouseLeave = (info: any) => {
     info.el.style.borderColor = '';
   }
+
+  const [data, setData] = useState(undefined)
+
+  useEffect(() => {
+    //test for getting users in company - remove after testing
+    const fetchData = async () => {
+      try {
+        const result = await UserServiceAPI.getInstance().usersInCompany();
+        setData(result);
+      } catch (e) {
+        console.error("Does not work", e);
+      }
+    };
+    fetchData();
+    console.log(data)
+  }, [])
 
   return (
     <>
