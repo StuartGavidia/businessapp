@@ -64,7 +64,18 @@ class User(db.Model):
     company_as_ceo = db.relationship('Company', foreign_keys=[Company.ceo_id], back_populates='ceo')
 
     def __repr__(self):
-        return f'<User {self.username}>'
+      return f'<User {self.username}>'
+
+    def to_dict(self):
+      return {
+        'id': self.id,
+        'username': self.username,
+        'first_name': self.first_name,
+        'last_name': self.last_name,
+        'position_name': self.position_name,
+        'company_id': self.company_id,
+        'status': self.status
+      }
 
 class Feature(db.Model):
     """

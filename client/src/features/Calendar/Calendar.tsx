@@ -64,13 +64,14 @@ const Calendar:React.FC = () => {
     const fetchData = async () => {
       try {
         const result = await UserServiceAPI.getInstance().usersInCompany();
+        console.log(result)
+        console.log(data)
         setData(result);
       } catch (e) {
         console.error("Does not work", e);
       }
     };
     fetchData();
-    console.log(data)
   }, [])
 
   return (

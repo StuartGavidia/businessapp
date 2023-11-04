@@ -8,9 +8,12 @@ from flask import Blueprint, jsonify, request, abort, make_response
 from app.models import User, Company, db
 from app.utils import generate_code, create_jwt, decode_jwt
 from app.decorators import token_required
+import redis
+import json
 
 routes = Blueprint('routes', __name__)
 bcrypt = Bcrypt()
+cache = redis.Redis(host='caching-layer', port=6379, db=0)
 
 @routes.route("/users")
 def users():
@@ -177,21 +180,50 @@ def usersInCompany():
         return jsonify({'message': 'Token is invalid!'}), 401
 
     company_id = payload['company_id']
+    users_in_company = None
+    redis_key = f"users_in_company_{payload['company_id']}"
 
     try:
-      users_in_company = User.query.filter_by(company_id=company_id).all()
-    except Exception as e:
-      return jsonify({'message': 'Could not fetch users from the database.', 'error': str(e)}), 500
+        users_in_company_json = cache.get(redis_key)
 
-    users_data = [{
-        'user_id': user.id,
-        'username': user.username,
-        'first_name': user.first_name,
-        'last_name': user.last_name,
-        'company_id': user.company_id,
-        'position_name': user.position_name,
-        'status': user.status
-      } for user in users_in_company if user.id != payload['user_id']]
+        #cache miss
+        if users_in_company_json is None:
+            users_in_company = User.query.filter_by(company_id=company_id).all()
+
+            users_in_company_json = json.dumps([{
+                'user_id': user.id,
+                'username': user.username,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'company_id': user.company_id,
+                'position_name': user.position_name,
+                'status': user.status
+            } for user in users_in_company if int(user.id) != payload['user_id']])
+
+            cache.set(redis_key, users_in_company_json)
+
+            users_data = json.loads(users_in_company_json)
+        #cache hit
+        else:
+            users_data = json.loads(users_in_company_json)
+
+    except redis.RedisError as e:
+        print(f"Redis error occurred when accessing key: {redis_key} - {e}")
+
+        try:
+            users_in_company = User.query.filter_by(company_id=company_id).all()
+
+            users_data = [{
+                'user_id': user.id,
+                'username': user.username,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'company_id': user.company_id,
+                'position_name': user.position_name,
+                'status': user.status
+            } for user in users_in_company if int(user.id) != payload['user_id']]
+        except Exception as e:
+            return jsonify({'message': 'Could not fetch users from the database.', 'error': str(e)}), 500
 
     if not users_data:
         abort(400, description="Incorrect Login")
