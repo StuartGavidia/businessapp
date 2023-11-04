@@ -84,6 +84,13 @@ def register_user():
     db.session.add(new_user)
     db.session.commit()
 
+    #after succesfully registering user, clear the users from company cache
+    cache_key = f"users_in_company_{company_id}"
+    try:
+        cache.delete(cache_key)
+    except redis.RedisError as e:
+        print(f"Unable to clear cache for {cache_key}: {e}")
+
     return jsonify({"message": "User successfully registered"}), 201
 
 @routes.route("/users/login", methods=['POST'])
@@ -200,7 +207,7 @@ def usersInCompany():
                 'status': user.status
             } for user in users_in_company if int(user.id) != payload['user_id']])
 
-            cache.set(redis_key, users_in_company_json)
+            cache.set(redis_key, users_in_company_json, ex=120)
 
             users_data = json.loads(users_in_company_json)
         #cache hit
