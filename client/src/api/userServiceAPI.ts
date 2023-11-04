@@ -74,10 +74,23 @@ class UserServiceAPI {
         });
 
         if (!response.ok) {
-            throw new Error('User is not authenticated or logged in');
+          throw new Error('User is not authenticated or logged in');
         }
 
         return response
+    }
+
+    public async usersInCompany() {
+      const response = await fetch('/users/usersInCompany', {
+        method: 'GET'
+      });
+
+      if (!response.ok) {
+        throw new Error('User is not authenticated or logged in');
+      }
+
+      const data = response.json();
+      return data;
     }
   }
 

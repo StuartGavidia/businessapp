@@ -54,7 +54,7 @@ const Sidebar:React.FC = () => {
               <ListGroup className="p-2">
                 <h1 className="mb-4">ABC</h1>
                 {
-                  routes.map((route: NavRoute) => {
+                  routes.map((route: NavRoute, index: number) => {
                     return (
                       <ListGroup.Item
                         action
@@ -62,6 +62,7 @@ const Sidebar:React.FC = () => {
                         to={route.route}
                         active={location.pathname === route.route}
                         className="mb-2"
+                        key={index}
                       >
                         <div className="feature-wrapper">
                           <i className={route.icon}></i>
