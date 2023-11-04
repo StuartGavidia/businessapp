@@ -13,6 +13,7 @@ import Settings from './features/Settings/Settings'
 import UserServiceAPI from './api/userServiceAPI'
 import ProtectedRouteProps from './interfaces/ProtectedRouteProps'
 import AppConfigLayout from './layouts/AppConfigLayout'
+import { ThemeProvider } from './theme/ThemeContext';
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> =  ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
