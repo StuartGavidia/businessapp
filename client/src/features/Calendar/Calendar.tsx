@@ -54,7 +54,11 @@ const Calendar:React.FC = () => {
   })
 
   const handleModalSubmit = () => {
+    //TODO: send eventData to backend for persistence
     console.log(eventData)
+
+    //TODO: reset eventData to empty
+
     toggleEventModal()
   }
 
@@ -69,14 +73,28 @@ const Calendar:React.FC = () => {
       window.open(info.event.url);
     }
 
+    //TODO: check if event was created by user
+    //only user who created event can modify. Everyone else can only update status
+    //as a side note, it might be helpful to create an appconfig (singleton)
+
     console.log(info)
     setEventStructure(prev => ({ ...prev, action: 'Edit', type: 'Event' }));
+
+    //TODO: fetch event data and prepulate the eventData
+    //Also when event modal is toggled, the data should show the data not an editable visual
+    //meaning we need to add an edit button to allow the modifcation of the data(we can do this with
+    //help of setEventStructure above?)
+
+
     toggleEventModal()
   }
 
   const handleSelect = (selectionInfo:any) => {
     console.log(selectionInfo)
     setEventStructure(prev => ({ ...prev, action: 'Add', type: 'Event' }));
+
+    //TODO: using what is selected, preset the startTime and endTIme for event
+
     toggleEventModal()
   }
 
@@ -140,6 +158,8 @@ const Calendar:React.FC = () => {
     </div>
   );
 
+  //TODO: fetch employees in company in database
+  //When we do this fetch, we can also fetch the events and populate
   const employees: Employee[] = [
     {
       userId: "1",
@@ -151,13 +171,13 @@ const Calendar:React.FC = () => {
       userId: "2",
       firstName: "Jimmy",
       lastName: "John",
-      picture: "../assets/images/defaultProfilePicture.png"
+      picture: "../assets/images/defaultProfilePicture.jpeg"
     },
     {
       userId: "3",
       firstName: "Lebron",
       lastName: "James",
-      picture: "../assets/images/defaultProfilePicture.png"
+      picture: "../assets/images/defaultProfilePicture.jpeg"
     }
   ]
 
@@ -166,7 +186,7 @@ const Calendar:React.FC = () => {
     firstName: employee.firstName,
     lastName: employee.lastName,
     label: `${employee.firstName} ${employee.lastName}`,
-    picture: employee.picture
+    picture: employee.picture || "../assets/images/defaultProfilePicture.jpeg"
   }));
 
   return (
