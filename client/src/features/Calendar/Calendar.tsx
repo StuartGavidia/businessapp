@@ -10,9 +10,10 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
 import Select from 'react-select';
-import { useState, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import UserServiceAPI from '../../api/userServiceAPI'
 import { MultiValue } from 'react-select';
+import CalendarServiceAPI from '../../api/calendarServiceAPI'
 
 interface EventStructure {
   action: string,
@@ -53,14 +54,40 @@ const Calendar:React.FC = () => {
     status: ''
   })
 
+  const formRef = useRef<HTMLFormElement>(null);
+
   const handleModalSubmit = () => {
-    //TODO: send eventData to backend for persistence
-    console.log(eventData)
-
-    //TODO: reset eventData to empty
-
-    toggleEventModal()
+    if (formRef.current instanceof HTMLFormElement) {
+      formRef.current.submit();
+    }
   }
+
+  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    //TODO: handle put requests to update an event, we can just check the eventStructure action
+
+    try {
+      await CalendarServiceAPI.getInstance().createEvent(eventData);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+          console.log(err.message)
+      } else {
+          console.log("An error occured")
+      }
+    }
+
+    setEventData({
+      title: '',
+      location: '',
+      description: '',
+      startTime: '',
+      endTime: '',
+      eventAttendees: [],
+      status: ''
+    })
+    toggleEventModal()
+  };
 
   const toggleEventModal = () => {
     setShowEventModal((prev: boolean) => !prev)
@@ -160,6 +187,8 @@ const Calendar:React.FC = () => {
 
   //TODO: fetch employees in company in database
   //When we do this fetch, we can also fetch the events and populate
+  //TODO: check if we can fetch employees only when the Select component appears or is clicked in
+  //instead of 'only' on component mount
   const employees: Employee[] = [
     {
       userId: "1",
@@ -223,7 +252,7 @@ const Calendar:React.FC = () => {
           <Modal.Title>{eventStructure.action} {eventStructure.type}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form>
+          <Form ref={formRef} onSubmit={handleFormSubmit}>
             <Row className="mb-3">
               <Col md={6}>
                 <Form.Group controlId="title">
