@@ -9,16 +9,21 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
+import Container from 'react-bootstrap/Container'
+import Badge from 'react-bootstrap/Badge';
+import ListGroup from 'react-bootstrap/ListGroup'
 import Select from 'react-select';
 import { useState, useRef, useEffect } from 'react'
 import UserServiceAPI from '../../api/userServiceAPI'
 import { MultiValue } from 'react-select';
 import CalendarServiceAPI from '../../api/calendarServiceAPI'
 import { useAppConfig } from '../../providers/AppConfigProvider'
+import { convertDateToString } from '../../utils/date'
 
 interface EventStructure {
   action: string,
   type: string,
+  canEdit?: boolean
 }
 
 interface Employee {
@@ -44,7 +49,7 @@ interface EventData {
 const Calendar:React.FC = () => {
 
   const [showEventModal, setShowEventModal] = useState(false)
-  const [eventStructure, setEventStructure] = useState<EventStructure>({ action: '', type: '' });
+  const [eventStructure, setEventStructure] = useState<EventStructure>({ action: '', type: '', canEdit: false });
   const [eventData, setEventData] = useState<EventData>({
     title: '',
     location: '',
@@ -55,18 +60,9 @@ const Calendar:React.FC = () => {
     status: ''
   })
 
-  const { setAppConfig } = useAppConfig();
+  const { appConfig } = useAppConfig();
 
-  const formRef = useRef<HTMLFormElement>(null);
-
-  const handleModalSubmit = () => {
-    if (formRef.current instanceof HTMLFormElement) {
-      formRef.current.submit();
-    }
-  }
-
-  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleFormSubmit = async () => {
 
     //TODO: handle put requests to update an event, we can just check the eventStructure action
 
@@ -80,6 +76,8 @@ const Calendar:React.FC = () => {
       }
     }
 
+    //TODO: add event to event list for calendar, or update event in calendar list if it was an edit
+
     setEventData({
       title: '',
       location: '',
@@ -89,6 +87,7 @@ const Calendar:React.FC = () => {
       eventAttendees: [],
       status: ''
     })
+    setEventStructure(prev => ({ action: 'Create', type: 'Meeting Event', canEdit: false }));
     toggleEventModal()
   };
 
@@ -103,16 +102,35 @@ const Calendar:React.FC = () => {
       window.open(info.event.url);
     }
 
-    const { appConfig } = useAppConfig();
-    const userId = appConfig.userId
+    const userId = "1" //appConfig.userId
+    const eventUserId = info.event.extendedProps.userId
+    const canEdit = userId == eventUserId
 
-    //TODO: check if event was created by user
-    //only user who created event can modify. Everyone else can only update status
-    //as a side note, it might be helpful to create an appconfig (singleton)
-    //Next TODO: need to add additional props to event objects which includes userId for who created
+
+    //TODO: Add the ability for everyone to update their own status, and display statuses of everyone
 
     console.log(info)
-    setEventStructure(prev => ({ ...prev, action: 'Edit', type: 'Event' }));
+    setEventStructure(prev => ({ ...prev, action: "View", type: 'Event', canEdit: canEdit }));
+
+    const startDate = info.event.start
+    const endDate = info.event.end
+    const startStr = convertDateToString(startDate)
+    const endStr = convertDateToString(endDate)
+    const location = info.event.extendedProps.location
+    const title = info.event.title
+    const description = info.event.extendedProps.description
+    const attendees = info.event.extendedProps.attendees
+
+
+    setEventData(prevData => ({
+      ...prevData,
+      startTime: startStr,
+      endTime: endStr,
+      location: location,
+      title: title,
+      description: description,
+      eventAttendees: attendees
+    }));
 
     //TODO: fetch event data and prepulate the eventData
     //Also when event modal is toggled, the data should show the data not an editable visual
@@ -124,15 +142,40 @@ const Calendar:React.FC = () => {
   }
 
   const handleSelect = (selectionInfo:any) => {
-    console.log(selectionInfo)
-    setEventStructure(prev => ({ ...prev, action: 'Add', type: 'Event' }));
+    //ensure reset of eventData
+    setEventData(
+      {
+        title: '',
+        location: '',
+        description: '',
+        startTime: '',
+        endTime: '',
+        eventAttendees: [],
+        status: ''
+      }
+    )
 
-    //TODO: using what is selected, preset the startTime and endTIme for event
+    setEventStructure(prev => ({ ...prev, action: 'Add', type: 'Event' }));
+    const startStr = selectionInfo.startStr
+    const endStr = selectionInfo.endStr
+
+    setEventData(prevData => ({
+      ...prevData,
+      startTime: startStr + "T00:00",
+      endTime: endStr + "T00:00"
+    }));
 
     toggleEventModal()
   }
 
   const handleCreateMeeting = () => {
+    setEventData({title: '',
+    location: '',
+    description: '',
+    startTime: '',
+    endTime: '',
+    eventAttendees: [],
+    status: ''})
     setEventStructure(prev => ({ ...prev, action: 'Create', type: 'Meeting Event' }));
     toggleEventModal()
   };
@@ -183,6 +226,10 @@ const Calendar:React.FC = () => {
         ...prevData,
         eventAttendees: attendees
       }));
+  }
+
+  const handleEditClick = () => {
+    setEventStructure(prev => ({ ...prev, action: 'Edit' }));
   }
 
   const formatOptionLabel = ({ label, picture }: Employee) => (
@@ -246,8 +293,62 @@ const Calendar:React.FC = () => {
         }}
         titleFormat={{ year: 'numeric', month: 'long', day: 'numeric' }}
         events={[
-          { title: 'event 1', date: '2023-10-01' },
-          { title: 'event 2', date: '2023-10-02' }
+          {
+            title: 'event 1',
+            start: '2023-11-01T15:20',
+            end: '2023-11-05T17:20',
+            extendedProps: {
+              userId: "1",
+              location: "Zoom",
+              description: "This is the event description",
+              attendees: [
+                {
+                  userId: "1",
+                  firstName: "Joe",
+                  lastName: "John",
+                  picture: "../assets/images/defaultProfilePicture.jpeg",
+                  label: "Joe John",
+                  status: "Accepted"
+                },
+                {
+                  userId: "2",
+                  firstName: "Jimmy",
+                  lastName: "John",
+                  picture: "../assets/images/defaultProfilePicture.jpeg",
+                  label: "Jimmy John",
+                  status: "Pending"
+                },
+              ]
+            }
+          },
+          {
+            title: 'event 2',
+            start: '2023-11-02T15:20',
+            end: '2023-11-02T17:20',
+            extendedProps: {
+              userId: "2",
+              location: "PLU",
+              description: "Super Epic Description",
+              attendees: [
+                {
+                  userId: "1",
+                  firstName: "Joe",
+                  lastName: "John",
+                  picture: "../assets/images/defaultProfilePicture.jpeg",
+                  label: "Joe John",
+                  status: "Accepted"
+                },
+                {
+                  userId: "2",
+                  firstName: "Jimmy",
+                  lastName: "John",
+                  picture: "../assets/images/defaultProfilePicture.jpeg",
+                  label: "Jimmy John",
+                  status: "Accepted"
+                },
+              ]
+            }
+          }
         ]}
         eventClick={handleEventClick}
         eventMouseEnter={handleEventMouseEnter}
@@ -259,100 +360,163 @@ const Calendar:React.FC = () => {
           <Modal.Title>{eventStructure.action} {eventStructure.type}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form ref={formRef} onSubmit={handleFormSubmit}>
-            <Row className="mb-3">
-              <Col md={6}>
-                <Form.Group controlId="title">
-                  <Form.Label>Title</Form.Label>
+
+          {
+            eventStructure.action == "View" ? (
+              <Container>
+                <Row>
+                  <Col md={6}>
+                    <p>Title: {eventData.title}</p>
+                  </Col>
+                  <Col md={6}>
+                    <p>Location: {eventData.location}</p>
+                  </Col>
+                </Row>
+                <p>Description: {eventData.description}</p>
+                <Row>
+                  <Col md={6}>
+                    <p>Start Time: {eventData.startTime}</p>
+                  </Col>
+                  <Col md={6}>
+                    <p>End Time: {eventData.endTime}</p>
+                  </Col>
+                </Row>
+                <p>Attendees:</p>
+                <ListGroup as="ol">
+                  {
+                    eventData.eventAttendees.map((employee: Employee) => {
+                      return (
+                        <ListGroup.Item
+                          as="li"
+                          className="d-flex justify-content-between align-items-start"
+                        >
+                          <div className="ms-2 me-auto">
+                            <div className="fw-bold">{employee.label}</div>
+                          </div>
+                          <Badge bg="primary" pill>
+                            {employee.status}
+                          </Badge>
+                        </ListGroup.Item>
+                      )
+                    })
+                  }
+                </ListGroup>
+              </Container>
+            ) :
+            (
+              <Form>
+                <Row className="mb-3">
+                  <Col md={6}>
+                    <Form.Group controlId="title">
+                      <Form.Label>Title</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Title"
+                        autoFocus
+                        name="title"
+                        onChange={handleEventChange}
+                        value={eventData.title}
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group controlId="location">
+                      <Form.Label>Location</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Location"
+                        autoFocus
+                        name="location"
+                        onChange={handleEventChange}
+                        value={eventData.location}
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+                <Form.Group
+                  className="mb-3"
+                  controlId="description"
+                >
+                  <Form.Label>Description</Form.Label>
                   <Form.Control
-                    type="text"
-                    placeholder="Title"
-                    autoFocus
-                    name="title"
+                    as="textarea"
+                    rows={3}
+                    name="description"
                     onChange={handleEventChange}
+                    value={eventData.description}
                     required
                   />
                 </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group controlId="location">
-                  <Form.Label>Location</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Location"
-                    autoFocus
-                    name="location"
-                    onChange={handleEventChange}
-                    required
-                  />
+                <Row className="mb-3">
+                  <Col md={6}>
+                    <Form.Group controlId="startTime">
+                      <Form.Label>Start Time</Form.Label>
+                      <Form.Control
+                        type="datetime-local"
+                        autoFocus
+                        name="startTime"
+                        onChange={handleEventChange}
+                        value={eventData.startTime}
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group controlId="endTime">
+                      <Form.Label>End Time</Form.Label>
+                      <Form.Control
+                        type="datetime-local"
+                        name="endTime"
+                        onChange={handleEventChange}
+                        value={eventData.endTime}
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+                <Form.Group as={Row} className="mb-3" controlId="eventAttendees">
+                  <Form.Label column sm={2}>
+                    Attendees
+                  </Form.Label>
+                  <Col sm={10}>
+                    <Select
+                      isMulti
+                      name="attendees"
+                      options={employeeOptions}
+                      className="basic-multi-select"
+                      classNamePrefix="select"
+                      formatOptionLabel={formatOptionLabel}
+                      getOptionValue={option => option.userId}
+                      onChange={handleAttendeesEventChange}
+                      value={eventData.eventAttendees}
+                    />
+                  </Col>
                 </Form.Group>
-              </Col>
-            </Row>
-            <Form.Group
-              className="mb-3"
-              controlId="description"
-            >
-              <Form.Label>Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                name="description"
-                onChange={handleEventChange}
-                required
-              />
-            </Form.Group>
-            <Row className="mb-3">
-              <Col md={6}>
-                <Form.Group controlId="startTime">
-                  <Form.Label>Start Time</Form.Label>
-                  <Form.Control
-                    type="datetime-local"
-                    autoFocus
-                    name="startTime"
-                    onChange={handleEventChange}
-                    required
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group controlId="endTime">
-                  <Form.Label>End Time</Form.Label>
-                  <Form.Control
-                    type="datetime-local"
-                    name="endTime"
-                    onChange={handleEventChange}
-                    required
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <Form.Group as={Row} className="mb-3" controlId="eventAttendees">
-              <Form.Label column sm={2}>
-                Attendees
-              </Form.Label>
-              <Col sm={10}>
-                <Select
-                  isMulti
-                  name="attendees"
-                  options={employeeOptions}
-                  className="basic-multi-select"
-                  classNamePrefix="select"
-                  formatOptionLabel={formatOptionLabel}
-                  getOptionValue={option => option.userId}
-                  onChange={handleAttendeesEventChange}
-                  value={eventData.eventAttendees}
-                />
-              </Col>
-            </Form.Group>
-          </Form>
+              </Form>
+            )
+          }
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={toggleEventModal}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleModalSubmit}>
-            Save Changes
-          </Button>
+          {
+            eventStructure.action == "View" && eventStructure.canEdit &&
+            <Button variant="secondary" onClick={handleEditClick}>
+              Edit
+            </Button>
+          }
+          {
+            eventStructure.action == "Edit" &&
+            <Button variant="primary" onClick={handleFormSubmit}>
+              Save Changes
+            </Button>
+          }
+          {
+            eventStructure.action == "View" &&
+            <Button variant="secondary">
+              Update your Status
+            </Button>
+          }
         </Modal.Footer>
       </Modal>
     </>

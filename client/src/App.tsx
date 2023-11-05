@@ -12,7 +12,7 @@ import Communication from './features/Communication/Communication'
 import Settings from './features/Settings/Settings'
 import UserServiceAPI from './api/userServiceAPI'
 import ProtectedRouteProps from './interfaces/ProtectedRouteProps'
-import { AppConfigProvider } from './providers/AppConfigProvider'
+import AppConfigLayout from './layouts/AppConfigLayout'
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> =  ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -47,8 +47,8 @@ function App() {
   return (
     <Routes>
       <Route path="" element={<LandingPage />}/>
-      <AppConfigProvider>
-        <Route path="signIn" element={<SignInPage />}/>
+      <Route path="signIn" element={<SignInPage />}/>
+      <Route element={<AppConfigLayout />}>
         <Route path="/dashboard" element={
           <ProtectedRoute>
             <DashboardPage />
@@ -60,7 +60,7 @@ function App() {
           <Route path="communication" element={<Communication />}/>
           <Route path="settings" element={<Settings />}/>
         </Route>
-      </AppConfigProvider>
+      </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )
