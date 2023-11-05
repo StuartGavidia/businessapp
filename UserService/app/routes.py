@@ -125,7 +125,7 @@ def login_user():
         )
 
         #create response object
-        res = make_response(jsonify({"message": "User authenticated"}))
+        res = make_response(jsonify({"userId": user.id}))
 
         env = os.environ.get('FLASK_ENV', 'development')
         if env == 'production':

@@ -14,6 +14,7 @@ import { useState, useRef, useEffect } from 'react'
 import UserServiceAPI from '../../api/userServiceAPI'
 import { MultiValue } from 'react-select';
 import CalendarServiceAPI from '../../api/calendarServiceAPI'
+import { useAppConfig } from '../../providers/AppConfigProvider'
 
 interface EventStructure {
   action: string,
@@ -53,6 +54,8 @@ const Calendar:React.FC = () => {
     eventAttendees: [],
     status: ''
   })
+
+  const { setAppConfig } = useAppConfig();
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -100,9 +103,13 @@ const Calendar:React.FC = () => {
       window.open(info.event.url);
     }
 
+    const { appConfig } = useAppConfig();
+    const userId = appConfig.userId
+
     //TODO: check if event was created by user
     //only user who created event can modify. Everyone else can only update status
     //as a side note, it might be helpful to create an appconfig (singleton)
+    //Next TODO: need to add additional props to event objects which includes userId for who created
 
     console.log(info)
     setEventStructure(prev => ({ ...prev, action: 'Edit', type: 'Event' }));
