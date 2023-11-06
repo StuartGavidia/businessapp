@@ -70,7 +70,7 @@ app.post('/calendar/event', authenticate, async (req, res) => {
 
     await pool.query('COMMIT');
 
-    res.status(201).json({ message: 'Event created successfully', eventId });
+    res.status(201).json({ message: 'Event created successfully', eventId: eventId });
   } catch (error) {
     await pool.query('ROLLBACK');
     console.error('Error creating event', error);

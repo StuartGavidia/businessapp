@@ -42,7 +42,8 @@ interface EventData {
   startTime: string, //YYYY-MM-DDTHH:MM
   endTime: string, //YYYY-MM-DDTHH:MM,
   eventAttendees: Employee[],
-  status: string
+  status: string,
+  id?: string
 }
 
 
@@ -57,26 +58,140 @@ const Calendar:React.FC = () => {
     startTime: '',
     endTime: '',
     eventAttendees: [],
-    status: ''
+    status: '',
+    id: ''
   })
+  const [events, setEvents] = useState([
+    {
+      title: 'event 1',
+      start: '2023-11-01T15:20',
+      end: '2023-11-05T17:20',
+      extendedProps: {
+        userId: "1",
+        location: "Zoom",
+        description: "This is the event description",
+        attendees: [
+          {
+            userId: "1",
+            firstName: "Joe",
+            lastName: "John",
+            picture: "../assets/images/defaultProfilePicture.jpeg",
+            label: "Joe John",
+            status: "Accepted"
+          },
+          {
+            userId: "2",
+            firstName: "Jimmy",
+            lastName: "John",
+            picture: "../assets/images/defaultProfilePicture.jpeg",
+            label: "Jimmy John",
+            status: "Pending"
+          },
+        ],
+        id: "1"
+      }
+    },
+    {
+      title: 'event 2',
+      start: '2023-11-02T15:20',
+      end: '2023-11-02T17:20',
+      extendedProps: {
+        userId: "2",
+        location: "PLU",
+        description: "Super Epic Description",
+        attendees: [
+          {
+            userId: "1",
+            firstName: "Joe",
+            lastName: "John",
+            picture: "../assets/images/defaultProfilePicture.jpeg",
+            label: "Joe John",
+            status: "Accepted"
+          },
+          {
+            userId: "2",
+            firstName: "Jimmy",
+            lastName: "John",
+            picture: "../assets/images/defaultProfilePicture.jpeg",
+            label: "Jimmy John",
+            status: "Accepted"
+          },
+        ],
+        id: "2"
+      }
+    }
+  ])
 
   const { appConfig } = useAppConfig();
 
   const handleFormSubmit = async () => {
-
+    let eventId: string | undefined = eventData.id || undefined
     //TODO: handle put requests to update an event, we can just check the eventStructure action
 
     try {
-      await CalendarServiceAPI.getInstance().createEvent(eventData);
+      eventId = await CalendarServiceAPI.getInstance().createEvent(eventData);
     } catch (err: unknown) {
       if (err instanceof Error) {
           console.log(err.message)
       } else {
-          console.log("An error occured")
+          console.log("An error occured, event will not persist")
       }
     }
 
-    //TODO: add event to event list for calendar, or update event in calendar list if it was an edit
+    if (eventStructure.action == "Add" || eventStructure.action == "Create") {
+      setEvents(prev => [
+        ...prev,
+        {
+          title: eventData.title,
+          start: eventData.startTime,
+          end: eventData.endTime,
+          extendedProps: {
+            userId: "1", // Replace with appConfig.userId or the actual userId
+            location: eventData.location,
+            description: eventData.description,
+            attendees: eventData.eventAttendees.map(attendee => ({
+              ...attendee,
+              picture: attendee.picture || "../assets/images/defaultProfilePicture.jpeg", // Provide a default picture path if `picture` is undefined
+              label: attendee.label || `${attendee.firstName} ${attendee.lastName}`, // Construct a default label if `label` is undefined
+              status: attendee.status || 'Pending', // Provide a default status if `status` is undefined
+            })),
+            id: eventId || ""
+          }
+        }
+      ]);
+    } else {
+      setEvents((prevEvents) => {
+        const eventIndex = prevEvents.findIndex(event => event.extendedProps.id === eventId);
+
+        if (eventIndex === -1) return prevEvents;
+
+        const newEventValues = {
+          title: eventData.title,
+          start: eventData.startTime,
+          end: eventData.endTime,
+          extendedProps: {
+            userId: "1", // Replace with appConfig.userId or the actual userId
+            location: eventData.location,
+            description: eventData.description,
+            attendees: eventData.eventAttendees.map(attendee => ({
+              ...attendee,
+              picture: attendee.picture || "../assets/images/defaultProfilePicture.jpeg", // Provide a default picture path if `picture` is undefined
+              label: attendee.label || `${attendee.firstName} ${attendee.lastName}`, // Construct a default label if `label` is undefined
+              status: attendee.status || 'Pending', // Provide a default status if `status` is undefined
+            })),
+            id: eventId || ""
+          }
+        }
+
+        const updatedEvents = [...prevEvents];
+        updatedEvents[eventIndex] = {
+          ...updatedEvents[eventIndex],
+          ...newEventValues,
+        };
+
+        return updatedEvents;
+      });
+    }
 
     setEventData({
       title: '',
@@ -85,7 +200,8 @@ const Calendar:React.FC = () => {
       startTime: '',
       endTime: '',
       eventAttendees: [],
-      status: ''
+      status: '',
+      id: ''
     })
     setEventStructure(prev => ({ action: 'Create', type: 'Meeting Event', canEdit: false }));
     toggleEventModal()
@@ -120,6 +236,7 @@ const Calendar:React.FC = () => {
     const title = info.event.title
     const description = info.event.extendedProps.description
     const attendees = info.event.extendedProps.attendees
+    const eventId = info.event.extendedProps.id
 
 
     setEventData(prevData => ({
@@ -129,14 +246,9 @@ const Calendar:React.FC = () => {
       location: location,
       title: title,
       description: description,
-      eventAttendees: attendees
+      eventAttendees: attendees,
+      id: eventId
     }));
-
-    //TODO: fetch event data and prepulate the eventData
-    //Also when event modal is toggled, the data should show the data not an editable visual
-    //meaning we need to add an edit button to allow the modifcation of the data(we can do this with
-    //help of setEventStructure above?)
-
 
     toggleEventModal()
   }
@@ -151,7 +263,8 @@ const Calendar:React.FC = () => {
         startTime: '',
         endTime: '',
         eventAttendees: [],
-        status: ''
+        status: '',
+        id: ''
       }
     )
 
@@ -169,13 +282,16 @@ const Calendar:React.FC = () => {
   }
 
   const handleCreateMeeting = () => {
-    setEventData({title: '',
-    location: '',
-    description: '',
-    startTime: '',
-    endTime: '',
-    eventAttendees: [],
-    status: ''})
+    setEventData({
+      title: '',
+      location: '',
+      description: '',
+      startTime: '',
+      endTime: '',
+      eventAttendees: [],
+      status: '',
+      id: ''
+    })
     setEventStructure(prev => ({ ...prev, action: 'Create', type: 'Meeting Event' }));
     toggleEventModal()
   };
@@ -232,6 +348,11 @@ const Calendar:React.FC = () => {
     setEventStructure(prev => ({ ...prev, action: 'Edit' }));
   }
 
+  const handleDeleteClick = () => {
+    //TODO: create route that deletes event from database, and gets rid of all instances
+
+  }
+
   const formatOptionLabel = ({ label, picture }: Employee) => (
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <Image src={picture} alt={label} style={{ marginRight: '10px', width: '30px', height: '30px', borderRadius: '50%' }} />
@@ -239,10 +360,9 @@ const Calendar:React.FC = () => {
     </div>
   );
 
+  //TODO: fetch event data and prepulate the eventData
   //TODO: fetch employees in company in database
   //When we do this fetch, we can also fetch the events and populate
-  //TODO: check if we can fetch employees only when the Select component appears or is clicked in
-  //instead of 'only' on component mount
   const employees: Employee[] = [
     {
       userId: "1",
@@ -264,6 +384,7 @@ const Calendar:React.FC = () => {
     }
   ]
 
+  //This will be state
   const employeeOptions: Employee[] = employees.map(employee => ({
     userId: employee.userId,
     firstName: employee.firstName,
@@ -292,64 +413,7 @@ const Calendar:React.FC = () => {
           }
         }}
         titleFormat={{ year: 'numeric', month: 'long', day: 'numeric' }}
-        events={[
-          {
-            title: 'event 1',
-            start: '2023-11-01T15:20',
-            end: '2023-11-05T17:20',
-            extendedProps: {
-              userId: "1",
-              location: "Zoom",
-              description: "This is the event description",
-              attendees: [
-                {
-                  userId: "1",
-                  firstName: "Joe",
-                  lastName: "John",
-                  picture: "../assets/images/defaultProfilePicture.jpeg",
-                  label: "Joe John",
-                  status: "Accepted"
-                },
-                {
-                  userId: "2",
-                  firstName: "Jimmy",
-                  lastName: "John",
-                  picture: "../assets/images/defaultProfilePicture.jpeg",
-                  label: "Jimmy John",
-                  status: "Pending"
-                },
-              ]
-            }
-          },
-          {
-            title: 'event 2',
-            start: '2023-11-02T15:20',
-            end: '2023-11-02T17:20',
-            extendedProps: {
-              userId: "2",
-              location: "PLU",
-              description: "Super Epic Description",
-              attendees: [
-                {
-                  userId: "1",
-                  firstName: "Joe",
-                  lastName: "John",
-                  picture: "../assets/images/defaultProfilePicture.jpeg",
-                  label: "Joe John",
-                  status: "Accepted"
-                },
-                {
-                  userId: "2",
-                  firstName: "Jimmy",
-                  lastName: "John",
-                  picture: "../assets/images/defaultProfilePicture.jpeg",
-                  label: "Jimmy John",
-                  status: "Accepted"
-                },
-              ]
-            }
-          }
-        ]}
+        events={events}
         eventClick={handleEventClick}
         eventMouseEnter={handleEventMouseEnter}
         eventMouseLeave={handleEventMouseLeave}
@@ -501,12 +565,19 @@ const Calendar:React.FC = () => {
         <Modal.Footer>
           {
             eventStructure.action == "View" && eventStructure.canEdit &&
-            <Button variant="secondary" onClick={handleEditClick}>
+            <Button variant="primary" onClick={handleEditClick}>
               Edit
             </Button>
           }
           {
-            eventStructure.action == "Edit" &&
+            eventStructure.action == "View" && eventStructure.canEdit &&
+            <Button variant="danger" onClick={handleDeleteClick}>
+              Delete
+            </Button>
+          }
+          {
+            (eventStructure.action == "Edit" || eventStructure.action == "Add" || eventStructure.action == "Create")
+            &&
             <Button variant="primary" onClick={handleFormSubmit}>
               Save Changes
             </Button>

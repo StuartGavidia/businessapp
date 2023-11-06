@@ -28,8 +28,8 @@ class CalendarServiceAPI {
         }
         return response.json();
     })
-    .then((data: {message: string}) => {
-        console.log(data.message);
+    .then((data: { eventId: string}) => {
+        return data.eventId
     })
   }
 }
