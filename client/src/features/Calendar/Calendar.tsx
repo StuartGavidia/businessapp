@@ -12,6 +12,8 @@ import Image from 'react-bootstrap/Image';
 import Container from 'react-bootstrap/Container'
 import Badge from 'react-bootstrap/Badge';
 import ListGroup from 'react-bootstrap/ListGroup'
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 import Select from 'react-select';
 import { useState, useRef, useEffect } from 'react'
 import UserServiceAPI from '../../api/userServiceAPI'
@@ -49,6 +51,9 @@ interface EventData {
 
 const Calendar:React.FC = () => {
 
+
+  const { appConfig } = useAppConfig();
+  const appConfigUserId = "1";
   const [showEventModal, setShowEventModal] = useState(false)
   const [eventStructure, setEventStructure] = useState<EventStructure>({ action: '', type: '', canEdit: false });
   const [eventData, setEventData] = useState<EventData>({
@@ -122,8 +127,6 @@ const Calendar:React.FC = () => {
     }
   ])
 
-  const { appConfig } = useAppConfig();
-
   const handleFormSubmit = async () => {
     let eventId: string | undefined = eventData.id || undefined
     //TODO: handle put requests to update an event, we can just check the eventStructure action
@@ -146,7 +149,7 @@ const Calendar:React.FC = () => {
           start: eventData.startTime,
           end: eventData.endTime,
           extendedProps: {
-            userId: "1", // Replace with appConfig.userId or the actual userId
+            userId: appConfigUserId,
             location: eventData.location,
             description: eventData.description,
             attendees: eventData.eventAttendees.map(attendee => ({
@@ -170,7 +173,7 @@ const Calendar:React.FC = () => {
           start: eventData.startTime,
           end: eventData.endTime,
           extendedProps: {
-            userId: "1", // Replace with appConfig.userId or the actual userId
+            userId: appConfigUserId,
             location: eventData.location,
             description: eventData.description,
             attendees: eventData.eventAttendees.map(attendee => ({
@@ -218,9 +221,8 @@ const Calendar:React.FC = () => {
       window.open(info.event.url);
     }
 
-    const userId = "1" //appConfig.userId
     const eventUserId = info.event.extendedProps.userId
-    const canEdit = userId == eventUserId
+    const canEdit = appConfigUserId == eventUserId
 
 
     //TODO: Add the ability for everyone to update their own status, and display statuses of everyone
@@ -237,6 +239,10 @@ const Calendar:React.FC = () => {
     const description = info.event.extendedProps.description
     const attendees = info.event.extendedProps.attendees
     const eventId = info.event.extendedProps.id
+    const currentAttendee = info.event.extendedProps.attendees.find((attendee: Employee) => {
+      return attendee.userId == appConfigUserId
+    })
+    const status = currentAttendee.status
 
 
     setEventData(prevData => ({
@@ -247,7 +253,8 @@ const Calendar:React.FC = () => {
       title: title,
       description: description,
       eventAttendees: attendees,
-      id: eventId
+      id: eventId,
+      status: status
     }));
 
     toggleEventModal()
@@ -353,6 +360,71 @@ const Calendar:React.FC = () => {
 
   }
 
+  const handleStatusChange = (status: string) => {
+    setEventData(prev => {
+      return {
+        ...prev,
+        attendees: prev.eventAttendees.map(attendee => {
+          if (attendee.userId == appConfigUserId) {
+            return {
+              ...attendee,
+              status: status
+            }
+          }
+          return attendee
+        }),
+        status: status
+      }
+    })
+
+    //TODO: make request to update database
+
+
+    setEvents((prevEvents) => {
+      const eventIndex = prevEvents.findIndex(event => event.extendedProps.id === eventData.id);
+
+      if (eventIndex === -1) return prevEvents;
+
+      const newEventValues = {
+        title: eventData.title,
+        start: eventData.startTime,
+        end: eventData.endTime,
+        extendedProps: {
+          userId: appConfigUserId,
+          location: eventData.location,
+          description: eventData.description,
+          attendees: eventData.eventAttendees.map(attendee => {
+            if (attendee.userId == appConfigUserId) {
+              return {
+                ...attendee,
+                picture: attendee.picture || "../assets/images/defaultProfilePicture.jpeg", // Provide a default picture path if `picture` is undefined
+                label: attendee.label || `${attendee.firstName} ${attendee.lastName}`, // Construct a default label if `label` is undefined
+                status: status || 'Pending', // Provide a default status if `status` is undefined
+                }
+            }
+            return {
+              ...attendee,
+              picture: attendee.picture || "../assets/images/defaultProfilePicture.jpeg", // Provide a default picture path if `picture` is undefined
+              label: attendee.label || `${attendee.firstName} ${attendee.lastName}`, // Construct a default label if `label` is undefined
+              status: attendee.status || 'Pending', // Provide a default status if `status` is undefined
+              }
+          }),
+          id: eventData.id || ""
+        }
+      }
+
+      const updatedEvents = [...prevEvents];
+      updatedEvents[eventIndex] = {
+        ...updatedEvents[eventIndex],
+        ...newEventValues,
+      };
+
+      return updatedEvents;
+    });
+
+    toggleEventModal()
+  }
+
   const formatOptionLabel = ({ label, picture }: Employee) => (
     <div style={{ display: 'flex', alignItems: 'center' }}>
       <Image src={picture} alt={label} style={{ marginRight: '10px', width: '30px', height: '30px', borderRadius: '50%' }} />
@@ -385,13 +457,15 @@ const Calendar:React.FC = () => {
   ]
 
   //This will be state
-  const employeeOptions: Employee[] = employees.map(employee => ({
-    userId: employee.userId,
-    firstName: employee.firstName,
-    lastName: employee.lastName,
-    label: `${employee.firstName} ${employee.lastName}`,
-    picture: employee.picture || "../assets/images/defaultProfilePicture.jpeg"
-  }));
+  const employeeOptions: Employee[] = employees
+    .filter(employee => employee.userId !== appConfigUserId)
+    .map(employee => ({
+      userId: employee.userId,
+      firstName: employee.firstName,
+      lastName: employee.lastName,
+      label: `${employee.firstName} ${employee.lastName}`,
+      picture: employee.picture || "../assets/images/defaultProfilePicture.jpeg"
+    }));
 
   return (
     <>
@@ -584,9 +658,11 @@ const Calendar:React.FC = () => {
           }
           {
             eventStructure.action == "View" &&
-            <Button variant="secondary">
-              Update your Status
-            </Button>
+            <DropdownButton id="update-status" title="Update your Status">
+              <Dropdown.Item as="button" onClick={() => handleStatusChange("Accepted")}>Accepted</Dropdown.Item>
+              <Dropdown.Item as="button" onClick={() => handleStatusChange("Pending")}>Pending</Dropdown.Item>
+              <Dropdown.Item as="button" onClick={() => handleStatusChange("Declined")}>Declined</Dropdown.Item>
+            </DropdownButton>
           }
         </Modal.Footer>
       </Modal>
