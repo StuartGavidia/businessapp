@@ -17,6 +17,6 @@ INSERT INTO event_attendees (event_id, user_id, status)
 VALUES
 ((SELECT event_id FROM events WHERE title = 'Quarterly Business Review'), 1, 'Accepted'),
 ((SELECT event_id FROM events WHERE title = 'Quarterly Business Review'), 2, 'Declined'),
-((SELECT event_id FROM events WHERE title = 'Project Kickoff Meeting'), 3, 'Tentative'),
+((SELECT event_id FROM events WHERE title = 'Project Kickoff Meeting'), 3, 'Pending'),
 ((SELECT event_id FROM events WHERE title = 'Webinar: Industry Trends'), 4, 'Accepted'),
 ((SELECT event_id FROM events WHERE title = 'Webinar: Industry Trends'), 5, 'Accepted');

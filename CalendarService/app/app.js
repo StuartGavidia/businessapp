@@ -78,6 +78,135 @@ app.post('/calendar/event', authenticate, async (req, res) => {
   }
 })
 
+app.get('/calendar/event', authenticate, async (req, res) => {
+  try {
+    const userId = req.user.user_id;
+
+    await pool.query('BEGIN');
+
+    const eventsQuery = `
+      (
+        SELECT e.event_id, e.company_id, e.user_id, e.title, e.start_time, e.end_time, e.all_day, e.description, e.location
+        FROM events e
+        WHERE e.user_id = $1
+      )
+      UNION
+      (
+        SELECT e.event_id, e.company_id, e.user_id, e.title, e.start_time, e.end_time, e.all_day, e.description, e.location
+        FROM events e
+        INNER JOIN event_attendees ea ON e.event_id = ea.event_id
+        WHERE ea.user_id = $1 AND e.user_id != $1
+      )
+      ORDER BY start_time;
+    `;
+
+    const { rows } = await pool.query(eventsQuery, [userId]);
+
+    await pool.query('COMMIT');
+
+    res.status(200).json({ message: 'Fetched all events successfully', events: rows });
+  } catch (error) {
+    await pool.query('ROLLBACK');
+    console.error('Error fetching events for user', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.delete('/calendar/event', authenticate, async (req, res) => {
+  const { event_id } = req.body;
+
+  const userId = req.user.user_id;
+
+  await pool.query('BEGIN');
+
+  try {
+    const ownerCheckQuery = 'SELECT user_id FROM events WHERE event_id = $1';
+    const ownerCheckResult = await pool.query(ownerCheckQuery, [event_id]);
+
+    if (ownerCheckResult.rows.length === 0) {
+      await pool.query('ROLLBACK');
+      return res.status(404).json({ error: 'Event not found' });
+    }
+    if (ownerCheckResult.rows[0].user_id !== userId) {
+      await pool.query('ROLLBACK');
+      return res.status(403).json({ error: 'User is not authorized to delete this event' });
+    }
+
+    const deleteEventQuery = 'DELETE FROM events WHERE event_id = $1';
+    await pool.query(deleteEventQuery, [event_id]);
+
+    await pool.query('COMMIT');
+
+    res.status(200).json({ message: 'Event deleted successfully' });
+  } catch (error) {
+    await pool.query('ROLLBACK');
+    console.error('Error deleting event', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.put('/calendar/event', authenticate, async (req, res) => {
+  const { event_id, title, startTime, endTime, allDay, description, location } = req.body;
+  const userId = req.user.user_id;
+
+  await pool.query('BEGIN');
+
+  try {
+    const ownerCheckQuery = 'SELECT user_id FROM events WHERE event_id = $1 AND user_id = $2';
+    const ownerCheckResult = await pool.query(ownerCheckQuery, [event_id, userId]);
+
+    if (ownerCheckResult.rows.length === 0) {
+      await pool.query('ROLLBACK');
+      return res.status(404).json({ error: 'Event not found or user is not authorized to modify this event' });
+    }
+
+    const updateEventText = `
+      UPDATE events
+      SET title = $1, start_time = $2, end_time = $3, all_day = $4, description = $5, location = $6
+      WHERE event_id = $7;
+    `;
+    const updateValues = [title, startTime, endTime, allDay, description, location, event_id];
+    await pool.query(updateEventText, updateValues);
+
+    await pool.query('COMMIT');
+
+    res.status(200).json({ message: 'Event updated successfully' });
+  } catch (error) {
+    await pool.query('ROLLBACK');
+    console.error('Error updating event', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.put('/calendar/event/attendee/status', authenticate, async (req, res) => {
+  const { event_id, user_id, status } = req.body;
+
+  await pool.query('BEGIN');
+
+  try {
+    const updateStatusQuery = `
+      UPDATE event_attendees
+      SET status = $1
+      WHERE event_id = $2 AND user_id = $3;
+    `;
+
+    const result = await pool.query(updateStatusQuery, [status, event_id, user_id]);
+
+    if (result.rowCount === 0) {
+      await pool.query('ROLLBACK');
+      return res.status(404).json({ error: 'Attendee status not found or user is not authorized to update' });
+    }
+
+    await pool.query('COMMIT');
+
+    res.status(200).json({ message: 'Attendee status updated successfully' });
+  } catch (error) {
+    await pool.query('ROLLBACK');
+    console.error('Error updating attendee status', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.listen(PORT, HOST, () => {
   // eslint-disable-next-line no-console
   console.log(`Running on http://${HOST}:${PORT}`);

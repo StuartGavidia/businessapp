@@ -19,7 +19,7 @@ CREATE TABLE recurring_events (
 
 CREATE TABLE event_attendees (
   event_attendee_id SERIAL PRIMARY KEY,
-  event_id INT REFERENCES events(event_id),
+  event_id INT REFERENCES events(event_id) ON DELETE CASCADE,
   user_id INT NOT NULL,
   status VARCHAR(50)
 );

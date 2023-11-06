@@ -204,7 +204,8 @@ def usersInCompany():
                 'last_name': user.last_name,
                 'company_id': user.company_id,
                 'position_name': user.position_name,
-                'status': user.status
+                'status': user.status,
+                'picture': None
             } for user in users_in_company if int(user.id) != payload['user_id']])
 
             cache.set(redis_key, users_in_company_json, ex=120)
