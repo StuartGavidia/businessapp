@@ -15,12 +15,12 @@ import ListGroup from 'react-bootstrap/ListGroup'
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Select from 'react-select';
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import UserServiceAPI from '../../api/userServiceAPI'
 import { MultiValue } from 'react-select';
 import CalendarServiceAPI from '../../api/calendarServiceAPI'
 import { useAppConfig } from '../../providers/AppConfigProvider'
-import { convertDateToString } from '../../utils/date'
+import { convertDateToString, formatDate } from '../../utils/date'
 
 interface EventStructure {
   action: string,
@@ -504,19 +504,24 @@ const Calendar:React.FC = () => {
               <Container>
                 <Row>
                   <Col md={6}>
-                    <p>Title: {eventData.title}</p>
+                    <p className="fw-bold mb-2">Title</p>
+                    <p>{eventData.title}</p>
                   </Col>
                   <Col md={6}>
-                    <p>Location: {eventData.location}</p>
+                    <p className="fw-bold mb-2">Location</p>
+                    <p>{eventData.location}</p>
                   </Col>
                 </Row>
-                <p>Description: {eventData.description}</p>
+                <p className="fw-bold mb-2">Description</p>
+                <p>{eventData.description}</p>
                 <Row>
                   <Col md={6}>
-                    <p>Start Time: {eventData.startTime}</p>
+                    <p className="fw-bold mb-2">Start Time</p>
+                    <p>{formatDate(eventData.startTime)}</p>
                   </Col>
                   <Col md={6}>
-                    <p>End Time: {eventData.endTime}</p>
+                    <p className="fw-bold mb-2">End Time</p>
+                    <p>{formatDate(eventData.endTime)}</p>
                   </Col>
                 </Row>
                 <p>Attendees:</p>
