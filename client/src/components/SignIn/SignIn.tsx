@@ -30,7 +30,6 @@ const SignIn: React.FC<SignInProps> = ({ setIsLoggingIn }) => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(formData)
         //need to send this data to user service for login confirmation
         try {
             const userId = await UserServiceAPI.getInstance().loginUser(formData);

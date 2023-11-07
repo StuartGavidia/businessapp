@@ -48,12 +48,27 @@ interface EventData {
   id?: string
 }
 
+interface EventDatabase {
+  title: string,
+  description: string,
+  start_time: string,
+  location: string,
+  end_time: string,
+  user_id: string,
+  decsription: string,
+  event_attendees: Employee[],
+  event_id: string
+}
+
+interface EmployeeHashMap {
+  [key: string]: Omit<Employee, 'userId'>;
+}
 
 const Calendar:React.FC = () => {
 
 
   const { appConfig } = useAppConfig();
-  const appConfigUserId = "1";
+  const appConfigUserId = appConfig.userId;
   const [showEventModal, setShowEventModal] = useState(false)
   const [eventStructure, setEventStructure] = useState<EventStructure>({ action: '', type: '', canEdit: false });
   const [eventData, setEventData] = useState<EventData>({
@@ -66,82 +81,114 @@ const Calendar:React.FC = () => {
     status: '',
     id: ''
   })
-  const [events, setEvents] = useState([
-    {
-      title: 'event 1',
-      start: '2023-11-01T15:20',
-      end: '2023-11-05T17:20',
-      extendedProps: {
-        userId: "1",
-        location: "Zoom",
-        description: "This is the event description",
-        attendees: [
-          {
-            userId: "1",
-            firstName: "Joe",
-            lastName: "John",
+
+  interface ExtendedProps {
+    userId: string,
+    location: string,
+    description: string,
+    attendees: Employee[],
+    id: string
+  }
+
+  interface Event {
+    title: string,
+    start: string,
+    end: string,
+    extendedProps: ExtendedProps
+  }
+
+  interface EmployeeDatabase {
+    company_id: string,
+    last_name: string,
+    first_name: string,
+    position_name: string,
+    status: string,
+    user_id: string,
+    username: string
+  }
+
+  const [events, setEvents] = useState<Event[]>([])
+
+  const [employeeOptions, setEmployeeOptions] = useState<Employee[]>([])
+
+  useEffect(() => {
+    const fetchEmployeesAndEvents = async () => {
+      try {
+        // Fetch employees and update state
+        const employees: EmployeeDatabase[] = await UserServiceAPI.getInstance().usersInCompany();
+        const employeeOptions: Employee[] = employees
+          .map(employee => ({
+            userId: employee.user_id,
+            firstName: employee.first_name, // Assuming the actual property is 'first_name'
+            lastName: employee.last_name,   // Assuming the actual property is 'last_name'
+            label: `${employee.first_name} ${employee.last_name}`,
             picture: "../assets/images/defaultProfilePicture.jpeg",
-            label: "Joe John",
-            status: "Accepted"
-          },
-          {
-            userId: "2",
-            firstName: "Jimmy",
-            lastName: "John",
-            picture: "../assets/images/defaultProfilePicture.jpeg",
-            label: "Jimmy John",
-            status: "Pending"
-          },
-        ],
-        id: "1"
+            status: employee.status
+          }));
+
+        // Use the employeeOptions just fetched to build the employeeMap
+        const employeeMap: EmployeeHashMap = employeeOptions.reduce((map, employee) => {
+          const { userId, ...rest } = employee;
+          map[userId] = rest;
+          return map;
+        }, {} as EmployeeHashMap);
+
+        // Fetch events
+        const eventsData = await CalendarServiceAPI.getInstance().fetchEvents();
+        console.log(eventsData)
+
+        // Process and map events data
+        const events = eventsData.map((event: EventDatabase) => {
+          return {
+            title: event.title,
+            start: event.start_time,
+            end: event.end_time,
+            extendedProps: {
+              userId: event.user_id,
+              location: event.location,
+              description: event.description,
+              attendees: event.event_attendees.map((attendee: Employee) => {
+                let eventEmployee = employeeMap[attendee.userId];
+                return {
+                  userId: attendee.userId,
+                  picture: eventEmployee?.picture || "../assets/images/defaultProfilePicture.jpeg",
+                  status: attendee.status,
+                  firstName: eventEmployee?.firstName,
+                  lastName: eventEmployee?.lastName,
+                  label: eventEmployee ? `${eventEmployee.firstName} ${eventEmployee.lastName}` : '',
+                };
+              }),
+              id: event.event_id
+            }
+          };
+        });
+
+        // Finally set the state for both employee options and events
+        setEmployeeOptions(employeeOptions);
+        setEvents(events);
+      } catch (e) {
+        console.error("Fetching employees or events failed", e);
       }
-    },
-    {
-      title: 'event 2',
-      start: '2023-11-02T15:20',
-      end: '2023-11-02T17:20',
-      extendedProps: {
-        userId: "2",
-        location: "PLU",
-        description: "Super Epic Description",
-        attendees: [
-          {
-            userId: "1",
-            firstName: "Joe",
-            lastName: "John",
-            picture: "../assets/images/defaultProfilePicture.jpeg",
-            label: "Joe John",
-            status: "Accepted"
-          },
-          {
-            userId: "2",
-            firstName: "Jimmy",
-            lastName: "John",
-            picture: "../assets/images/defaultProfilePicture.jpeg",
-            label: "Jimmy John",
-            status: "Accepted"
-          },
-        ],
-        id: "2"
-      }
-    }
-  ])
+    };
+
+    fetchEmployeesAndEvents();
+  }, [appConfigUserId]); // Include this if appConfigUserId can change, otherwise it can be omitted or left empty
+
 
   const handleFormSubmit = async () => {
     let eventId: string | undefined = eventData.id || undefined
-    //TODO: handle put requests to update an event, we can just check the eventStructure action
-
-    try {
-      eventId = await CalendarServiceAPI.getInstance().createEvent(eventData);
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-          console.log(err.message)
-      } else {
-          console.log("An error occured, event will not persist")
-      }
-    }
 
     if (eventStructure.action == "Add" || eventStructure.action == "Create") {
+      try {
+        eventId = await CalendarServiceAPI.getInstance().createEvent(eventData);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+            console.log(err.message)
+        } else {
+            console.log("An error occured, event will not persist")
+        }
+      }
+
       setEvents(prev => [
         ...prev,
         {
@@ -149,7 +196,7 @@ const Calendar:React.FC = () => {
           start: eventData.startTime,
           end: eventData.endTime,
           extendedProps: {
-            userId: appConfigUserId,
+            userId: appConfigUserId || "",
             location: eventData.location,
             description: eventData.description,
             attendees: eventData.eventAttendees.map(attendee => ({
@@ -163,6 +210,16 @@ const Calendar:React.FC = () => {
         }
       ]);
     } else {
+      try {
+        await CalendarServiceAPI.getInstance().updateEvent(eventId || "2", eventData);
+      } catch(err: unknown) {
+        if (err instanceof Error) {
+          console.log(err.message)
+        } else {
+          console.log("An error occured, event will not persist")
+        }
+      }
+
       setEvents((prevEvents) => {
         const eventIndex = prevEvents.findIndex(event => event.extendedProps.id === eventId);
 
@@ -173,7 +230,7 @@ const Calendar:React.FC = () => {
           start: eventData.startTime,
           end: eventData.endTime,
           extendedProps: {
-            userId: appConfigUserId,
+            userId: appConfigUserId || "",
             location: eventData.location,
             description: eventData.description,
             attendees: eventData.eventAttendees.map(attendee => ({
@@ -224,10 +281,6 @@ const Calendar:React.FC = () => {
     const eventUserId = info.event.extendedProps.userId
     const canEdit = appConfigUserId == eventUserId
 
-
-    //TODO: Add the ability for everyone to update their own status, and display statuses of everyone
-
-    console.log(info)
     setEventStructure(prev => ({ ...prev, action: "View", type: 'Event', canEdit: canEdit }));
 
     const startDate = info.event.start
@@ -243,7 +296,6 @@ const Calendar:React.FC = () => {
       return attendee.userId == appConfigUserId
     })
     const status = currentAttendee.status
-
 
     setEventData(prevData => ({
       ...prevData,
@@ -311,23 +363,6 @@ const Calendar:React.FC = () => {
     info.el.style.borderColor = '';
   }
 
-  const [data, setData] = useState(undefined)
-
-  useEffect(() => {
-    //test for getting users in company - remove after testing
-    const fetchData = async () => {
-      try {
-        const result = await UserServiceAPI.getInstance().usersInCompany();
-        console.log(result)
-        console.log(data)
-        setData(result);
-      } catch (e) {
-        console.error("Does not work", e);
-      }
-    };
-    fetchData();
-  }, [])
-
   const handleEventChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -355,12 +390,56 @@ const Calendar:React.FC = () => {
     setEventStructure(prev => ({ ...prev, action: 'Edit' }));
   }
 
-  const handleDeleteClick = () => {
-    //TODO: create route that deletes event from database, and gets rid of all instances
+  const handleDeleteClick = async () => {
+    try {
+      await CalendarServiceAPI.getInstance().deleteEvent(eventData.id || "")
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.log(err.message)
+      } else {
+        console.log("An error occured, event will not persist")
+      }
+    }
 
+    setEvents(prevEvents => {
+      const eventToDeleteIndex = prevEvents.findIndex(event => event.extendedProps.id == eventData.id);
+
+      if (eventToDeleteIndex !== -1) {
+        const updatedEvents = [
+          ...prevEvents.slice(0, eventToDeleteIndex),
+          ...prevEvents.slice(eventToDeleteIndex + 1)
+        ];
+        return updatedEvents;
+      }
+
+      //return original if events already not present
+      return prevEvents;
+    });
+
+    setEventData({
+      title: '',
+      location: '',
+      description: '',
+      startTime: '',
+      endTime: '',
+      eventAttendees: [],
+      status: '',
+      id: ''
+    })
+    toggleEventModal()
   }
 
-  const handleStatusChange = (status: string) => {
+  const handleStatusChange = async (status: string) => {
+    try {
+      await CalendarServiceAPI.getInstance().updateAttendeeStatus(eventData.id || "", appConfigUserId || "", status)
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.log(err.message)
+      } else {
+        console.log("An error occured, event will not persist")
+      }
+    }
+
     setEventData(prev => {
       return {
         ...prev,
@@ -377,9 +456,6 @@ const Calendar:React.FC = () => {
       }
     })
 
-    //TODO: make request to update database
-
-
     setEvents((prevEvents) => {
       const eventIndex = prevEvents.findIndex(event => event.extendedProps.id === eventData.id);
 
@@ -390,7 +466,7 @@ const Calendar:React.FC = () => {
         start: eventData.startTime,
         end: eventData.endTime,
         extendedProps: {
-          userId: appConfigUserId,
+          userId: appConfigUserId || "",
           location: eventData.location,
           description: eventData.description,
           attendees: eventData.eventAttendees.map(attendee => {
@@ -431,41 +507,6 @@ const Calendar:React.FC = () => {
       <div>{label}</div>
     </div>
   );
-
-  //TODO: fetch event data and prepulate the eventData
-  //TODO: fetch employees in company in database
-  //When we do this fetch, we can also fetch the events and populate
-  const employees: Employee[] = [
-    {
-      userId: "1",
-      firstName: "Joe",
-      lastName: "John",
-      picture: "../assets/images/defaultProfilePicture.jpeg"
-    },
-    {
-      userId: "2",
-      firstName: "Jimmy",
-      lastName: "John",
-      picture: "../assets/images/defaultProfilePicture.jpeg"
-    },
-    {
-      userId: "3",
-      firstName: "Lebron",
-      lastName: "James",
-      picture: "../assets/images/defaultProfilePicture.jpeg"
-    }
-  ]
-
-  //This will be state
-  const employeeOptions: Employee[] = employees
-    .filter(employee => employee.userId !== appConfigUserId)
-    .map(employee => ({
-      userId: employee.userId,
-      firstName: employee.firstName,
-      lastName: employee.lastName,
-      label: `${employee.firstName} ${employee.lastName}`,
-      picture: employee.picture || "../assets/images/defaultProfilePicture.jpeg"
-    }));
 
   return (
     <>

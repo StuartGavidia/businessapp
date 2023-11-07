@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
+const cookie = require('cookie');
 
 const pool = new Pool({
   user: 'username',
@@ -18,10 +19,10 @@ const PORT = 5104;
 const HOST = '0.0.0.0';
 
 const authenticate = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(' ')[1];
+  const cookies = cookie.parse(req.headers.cookie || '');
+  const token = cookies.user_cookie;
 
-  if (token == null) {
+  if (!token) {
     return res.sendStatus(401);
   }
 
@@ -30,7 +31,6 @@ const authenticate = (req, res, next) => {
       return res.sendStatus(403);
     }
 
-    //ataching token to request for subsequent functions
     req.user = user;
 
     next();
@@ -63,7 +63,7 @@ app.post('/calendar/event', authenticate, async (req, res) => {
       VALUES ($1, $2, $3);
     `;
 
-    eventAttendees.append({userId: userId, status: status})
+    eventAttendees.unshift({userId: userId, status: status})
     for (const attendee of eventAttendees) {
       await pool.query(insertAttendeeText, [eventId, attendee.userId, attendee.status]);
     }
@@ -74,7 +74,7 @@ app.post('/calendar/event', authenticate, async (req, res) => {
   } catch (error) {
     await pool.query('ROLLBACK');
     console.error('Error creating event', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error' + error.message });
   }
 })
 
@@ -85,19 +85,33 @@ app.get('/calendar/event', authenticate, async (req, res) => {
     await pool.query('BEGIN');
 
     const eventsQuery = `
-      (
-        SELECT e.event_id, e.company_id, e.user_id, e.title, e.start_time, e.end_time, e.all_day, e.description, e.location
-        FROM events e
-        WHERE e.user_id = $1
-      )
-      UNION
-      (
-        SELECT e.event_id, e.company_id, e.user_id, e.title, e.start_time, e.end_time, e.all_day, e.description, e.location
-        FROM events e
-        INNER JOIN event_attendees ea ON e.event_id = ea.event_id
-        WHERE ea.user_id = $1 AND e.user_id != $1
-      )
-      ORDER BY start_time;
+      SELECT
+        e.event_id,
+        e.user_id as user_id,
+        e.title,
+        e.start_time,
+        e.end_time,
+        e.description,
+        e.location,
+        COALESCE(json_agg(
+          json_build_object(
+            'userId', ea.user_id,
+            'status', ea.status
+          ) ORDER BY ea.user_id
+        ) FILTER (WHERE ea.user_id IS NOT NULL), '[]') AS event_attendees
+      FROM
+        events e
+      LEFT JOIN
+        event_attendees ea ON e.event_id = ea.event_id
+      WHERE
+        e.user_id = $1 OR
+        EXISTS (
+          SELECT 1 FROM event_attendees ea2 WHERE ea2.event_id = e.event_id AND ea2.user_id = $1
+        )
+      GROUP BY
+        e.event_id
+      ORDER BY
+        e.start_time;
     `;
 
     const { rows } = await pool.query(eventsQuery, [userId]);
@@ -108,7 +122,7 @@ app.get('/calendar/event', authenticate, async (req, res) => {
   } catch (error) {
     await pool.query('ROLLBACK');
     console.error('Error fetching events for user', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error' + error.message});
   }
 });
 
@@ -141,7 +155,7 @@ app.delete('/calendar/event', authenticate, async (req, res) => {
   } catch (error) {
     await pool.query('ROLLBACK');
     console.error('Error deleting event', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error' + error.message });
   }
 });
 
@@ -174,7 +188,7 @@ app.put('/calendar/event', authenticate, async (req, res) => {
   } catch (error) {
     await pool.query('ROLLBACK');
     console.error('Error updating event', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error'});
   }
 });
 

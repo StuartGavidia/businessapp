@@ -47,8 +47,8 @@ function App() {
   return (
     <Routes>
       <Route path="" element={<LandingPage />}/>
-      <Route path="signIn" element={<SignInPage />}/>
       <Route element={<AppConfigLayout />}>
+        <Route path="signIn" element={<SignInPage />}/>
         <Route path="/dashboard" element={
           <ProtectedRoute>
             <DashboardPage />

@@ -27,7 +27,7 @@ class CalendarServiceAPI {
   }
 
   public async fetchEvents(): Promise<any> {
-    return await fetch('/calendar/events', {
+    return await fetch('/calendar/event', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ class CalendarServiceAPI {
   }
 
   public async deleteEvent(eventId: string): Promise<string> {
-    return fetch('/calendar/events', {
+    return fetch('/calendar/event', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

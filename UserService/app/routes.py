@@ -206,7 +206,7 @@ def usersInCompany():
                 'position_name': user.position_name,
                 'status': user.status,
                 'picture': None
-            } for user in users_in_company if int(user.id) != payload['user_id']])
+            } for user in users_in_company])
 
             cache.set(redis_key, users_in_company_json, ex=120)
 
@@ -229,7 +229,7 @@ def usersInCompany():
                 'company_id': user.company_id,
                 'position_name': user.position_name,
                 'status': user.status
-            } for user in users_in_company if int(user.id) != payload['user_id']]
+            } for user in users_in_company]
         except Exception as e:
             return jsonify({'message': 'Could not fetch users from the database.', 'error': str(e)}), 500
 

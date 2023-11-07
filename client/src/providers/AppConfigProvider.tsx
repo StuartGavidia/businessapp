@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, FC } from 'react';
 
 export type AppConfigType = {
-  userId: string | null;
+  userId: string | undefined;
   timezone: string;
 };
 
@@ -14,7 +14,7 @@ const AppConfigContext = createContext<AppConfigContextType>({} as AppConfigCont
 
 export const AppConfigProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [appConfig, setAppConfig] = useState<AppConfigType>({
-    userId: null,
+    userId: undefined,
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   });
 
