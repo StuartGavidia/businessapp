@@ -1,3 +1,5 @@
+import { EventData, EventDatabase } from "../features/Calendar/Calendar";
+
 class CalendarServiceAPI {
   private static instance: CalendarServiceAPI;
 
@@ -12,7 +14,7 @@ class CalendarServiceAPI {
     return CalendarServiceAPI.instance;
   }
 
-  public async createEvent(eventData: any) {
+  public async createEvent(eventData: EventData) {
     return await fetch('/calendar/event', {
         method: 'POST',
         headers: {
@@ -26,7 +28,7 @@ class CalendarServiceAPI {
     })
   }
 
-  public async fetchEvents(): Promise<any> {
+  public async fetchEvents(): Promise<EventDatabase[]> {
     return await fetch('/calendar/event', {
       method: 'GET',
       headers: {
@@ -34,12 +36,12 @@ class CalendarServiceAPI {
       },
     })
     .then(this.handleResponse)
-    .then((data: { message: string; events: any[] }) => {
+    .then((data: { message: string; events: EventDatabase[] }) => {
       return data.events;
     });
   }
 
-  public async updateEvent(eventId: string, updateData: any): Promise<string> {
+  public async updateEvent(eventId: string, updateData: EventData): Promise<string> {
     return fetch(`/calendar/event`, {
       method: 'PUT',
       headers: {
@@ -81,6 +83,7 @@ class CalendarServiceAPI {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private handleResponse(response: Response): Promise<any> {
     if (!response.ok) {
       return response.json().then(data => {

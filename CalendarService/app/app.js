@@ -35,7 +35,7 @@ const authenticate = (req, res, next) => {
 
     next();
   });
-}
+};
 
 app.get('/calendar', (req, res) => {
   res.send('hello');
@@ -45,7 +45,9 @@ app.post('/calendar/event', authenticate, async (req, res) => {
   try {
     const userId = req.user.user_id;
     const companyId = req.user.company_id;
-    const { title, location, description, startTime, endTime, eventAttendees, status } = req.body;
+    const {
+      title, location, description, startTime, endTime, eventAttendees, status,
+    } = req.body;
 
     await pool.query('BEGIN');
 
@@ -63,7 +65,7 @@ app.post('/calendar/event', authenticate, async (req, res) => {
       VALUES ($1, $2, $3);
     `;
 
-    eventAttendees.unshift({userId: userId, status: status})
+    eventAttendees.unshift({ userId: userId, status: status });
     for (const attendee of eventAttendees) {
       await pool.query(insertAttendeeText, [eventId, attendee.userId, attendee.status]);
     }
@@ -74,9 +76,9 @@ app.post('/calendar/event', authenticate, async (req, res) => {
   } catch (error) {
     await pool.query('ROLLBACK');
     console.error('Error creating event', error);
-    res.status(500).json({ error: 'Internal server error' + error.message });
+    res.status(500).json({ error: 'Internal server error' });
   }
-})
+});
 
 app.get('/calendar/event', authenticate, async (req, res) => {
   try {
@@ -122,7 +124,7 @@ app.get('/calendar/event', authenticate, async (req, res) => {
   } catch (error) {
     await pool.query('ROLLBACK');
     console.error('Error fetching events for user', error);
-    res.status(500).json({ error: 'Internal server error' + error.message});
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -155,12 +157,14 @@ app.delete('/calendar/event', authenticate, async (req, res) => {
   } catch (error) {
     await pool.query('ROLLBACK');
     console.error('Error deleting event', error);
-    res.status(500).json({ error: 'Internal server error' + error.message });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 app.put('/calendar/event', authenticate, async (req, res) => {
-  const { event_id, title, startTime, endTime, allDay, description, location } = req.body;
+  const {
+    event_id, title, startTime, endTime, allDay, description, location,
+  } = req.body;
   const userId = req.user.user_id;
 
   await pool.query('BEGIN');
@@ -188,7 +192,7 @@ app.put('/calendar/event', authenticate, async (req, res) => {
   } catch (error) {
     await pool.query('ROLLBACK');
     console.error('Error updating event', error);
-    res.status(500).json({ error: 'Internal server error'});
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

@@ -30,7 +30,9 @@ class TestUtils:
         first_name = 'Person'
         last_name = 'Last'
 
-        token = create_jwt(user_id, company_id, position_name, status, username, first_name, last_name)
+        token = create_jwt(
+            user_id, company_id, position_name, status, username, first_name, last_name
+          )
         assert token is not None
 
         decoded_payload = decode_jwt(token)

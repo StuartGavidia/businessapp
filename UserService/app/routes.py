@@ -3,13 +3,13 @@ This module defines the different routes for the flask app
 """
 
 import os
+import json
+import redis
 from flask_bcrypt import Bcrypt
 from flask import Blueprint, jsonify, request, abort, make_response
 from app.models import User, Company, db
 from app.utils import generate_code, create_jwt, decode_jwt
 from app.decorators import token_required
-import redis
-import json
 
 routes = Blueprint('routes', __name__)
 bcrypt = Bcrypt()
@@ -173,7 +173,7 @@ def is_logged_in():
 
 @routes.route('/users/usersInCompany', methods=['GET'])
 @token_required
-def usersInCompany():
+def users_in_company():
     """
     This route returns the users in the
     same company
@@ -187,7 +187,7 @@ def usersInCompany():
         return jsonify({'message': 'Token is invalid!'}), 401
 
     company_id = payload['company_id']
-    users_in_company = None
+    users_in_company = None # pylint: disable=redefined-outer-name
     redis_key = f"users_in_company_{payload['company_id']}"
 
     try:
@@ -230,8 +230,8 @@ def usersInCompany():
                 'position_name': user.position_name,
                 'status': user.status
             } for user in users_in_company]
-        except Exception as e:
-            return jsonify({'message': 'Could not fetch users from the database.', 'error': str(e)}), 500
+        except Exception as e: # pylint: disable=redefined-outer-name
+            return jsonify({'message': 'Could not fetch users', 'error': str(e)}), 500
 
     if not users_data:
         abort(400, description="Incorrect Login")

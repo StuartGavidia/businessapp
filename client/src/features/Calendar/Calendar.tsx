@@ -37,7 +37,7 @@ interface Employee {
   label?: string;
 }
 
-interface EventData {
+export interface EventData {
   title: string,
   location: string,
   description: string,
@@ -48,7 +48,7 @@ interface EventData {
   id?: string
 }
 
-interface EventDatabase {
+export interface EventDatabase {
   title: string,
   description: string,
   start_time: string,
@@ -148,7 +148,7 @@ const Calendar:React.FC = () => {
               location: event.location,
               description: event.description,
               attendees: event.event_attendees.map((attendee: Employee) => {
-                let eventEmployee = employeeMap[attendee.userId];
+                const eventEmployee = employeeMap[attendee.userId];
                 return {
                   userId: attendee.userId,
                   picture: eventEmployee?.picture || "../assets/images/defaultProfilePicture.jpeg",
@@ -263,7 +263,7 @@ const Calendar:React.FC = () => {
       status: '',
       id: ''
     })
-    setEventStructure(prev => ({ action: 'Create', type: 'Meeting Event', canEdit: false }));
+    setEventStructure(() => ({ action: 'Create', type: 'Meeting Event', canEdit: false }));
     toggleEventModal()
   };
 
@@ -271,6 +271,7 @@ const Calendar:React.FC = () => {
     setShowEventModal((prev: boolean) => !prev)
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleEventClick = (info:any) => {
     //this code prevents url navigations
     info.jsEvent.preventDefault();
@@ -312,6 +313,7 @@ const Calendar:React.FC = () => {
     toggleEventModal()
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSelect = (selectionInfo:any) => {
     //ensure reset of eventData
     setEventData(
@@ -355,10 +357,12 @@ const Calendar:React.FC = () => {
     toggleEventModal()
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleEventMouseEnter = (info: any) => {
     info.el.style.borderColor = 'blue';
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleEventMouseLeave = (info: any) => {
     info.el.style.borderColor = '';
   }

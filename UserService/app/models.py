@@ -64,10 +64,13 @@ class User(db.Model):
     company_as_ceo = db.relationship('Company', foreign_keys=[Company.ceo_id], back_populates='ceo')
 
     def __repr__(self):
-      return f'<User {self.username}>'
+        return f'<User {self.username}>'
 
     def to_dict(self):
-      return {
+        """
+        Used for converting model to a structure to send to client
+        """
+        return {
         'id': self.id,
         'username': self.username,
         'first_name': self.first_name,
