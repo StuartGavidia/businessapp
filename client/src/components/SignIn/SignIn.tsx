@@ -9,8 +9,10 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image';
 import Stack from 'react-bootstrap/Stack';
+import { useAppConfig } from '../../providers/AppConfigProvider'
 
 const SignIn: React.FC<SignInProps> = ({ setIsLoggingIn }) => {
+    const { setAppConfig } = useAppConfig();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: '',
@@ -28,10 +30,14 @@ const SignIn: React.FC<SignInProps> = ({ setIsLoggingIn }) => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(formData)
         //need to send this data to user service for login confirmation
         try {
-            await UserServiceAPI.getInstance().loginUser(formData);
+            const userId = await UserServiceAPI.getInstance().loginUser(formData);
+            setAppConfig(prevConfig => ({
+              ...prevConfig,
+              userId: userId,
+              timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, //TODO: change this to timeaone in user table(need to add timezone field)
+            }));
             alert("Login succesful!")
             setIsLoggingIn(true)
             setError("");

@@ -51,8 +51,8 @@ class UserServiceAPI {
             }
             return response.json();
         })
-        .then((data: {message: string}) => {
-            console.log(data.message);
+        .then((data: { userId: string }) => {
+            return data.userId
         })
     }
 
