@@ -1,10 +1,24 @@
 import { ChatMessage, FluentThemeProvider, MessageStatus, MessageThread, SendBox } from '@azure/communication-react';
-import React, { useState } from 'react';
-import { Stack, Text } from '@fluentui/react';
-import { GetHistoryChatMessages } from './placeholdermessages';
+import { useEffect, useState} from 'react';
+import { Stack } from '@fluentui/react';
+import {GetHistoryChatMessages, GetLivedChatMessages} from './placeholdermessages';
 
 export const DefaultMessageThreadExample: () => JSX.Element = () => {
-  const [messages, setMessages] = useState<ChatMessage[]>(GetHistoryChatMessages());
+  const [messages, setMessages] = useState<ChatMessage[]>(GetHistoryChatMessages);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const chatMessages = await GetLivedChatMessages();
+        console.log("Messages:" + chatMessages);
+        setMessages(chatMessages);
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    };
+
+    fetchData();
+  }, []); // Empty dependency array means this effect runs once after the initial render
 
   return (
     <FluentThemeProvider>
@@ -13,16 +27,15 @@ export const DefaultMessageThreadExample: () => JSX.Element = () => {
   );
 };
 
-const MessageThreadContent = ({ messages, setMessages, selectedMessageThread }) => {
-
-
+// @ts-ignore
+const MessageThreadContent = ({ messages, setMessages }) => {
   return (
     <Stack>
       <MessageThread
         userId={'1'}
         messages={messages}
         onUpdateMessage={async (id: string, _content: any, metadata: any) => {
-          const updated = messages.map((m) =>
+          const updated = messages.map((m: { messageId: string }) =>
             m.messageId === id
               ? { ...m, metadata, failureReason: 'Failed to edit', status: 'failed' as MessageStatus }
               : m
@@ -31,7 +44,7 @@ const MessageThreadContent = ({ messages, setMessages, selectedMessageThread }) 
           return Promise.reject('Failed to update');
         }}
         onCancelEditMessage={(id: any) => {
-          const updated = messages.map((m) =>
+          const updated = messages.map((m: { messageId: any }) =>
             m.messageId === id ? { ...m, failureReason: undefined, status: undefined } : m
           );
           setMessages(updated);
@@ -51,10 +64,10 @@ const MessageThreadContent = ({ messages, setMessages, selectedMessageThread }) 
             createdOn: new Date(),
             mine: true,
             attached: false,
-            contentType: 'html'
+            contentType: 'html',
           };
 
-          setMessages([...messages, newMessage]);
+          setMessages([...(messages || []), newMessage]);
         }}
         onTyping={async () => {
           // Handle typing event if needed
