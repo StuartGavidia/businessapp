@@ -32,10 +32,6 @@ const document = {
   "title": "Project Discussion"
 };
 
-app.get('/communication/create', (req, res) => {
-  res.send("Connected")
-});
-
 // Define the /createThread route here
 app.post('/communication/createThread',  (req, res) => {
   // connect to the server
@@ -54,11 +50,9 @@ app.post('/communication/createThread',  (req, res) => {
 app.get("/communication/messages/:conversationID", async (req, res) => {
   // connect to the server
   const conversationID = req.params.conversationID;
-  console.log(conversationID);
   try{
     const collection = database.collection('Messages');
     const messages = await collection.find().toArray();
-    console.log(messages);
     res.json(messages);
   }catch(error){
     console.error(error);
