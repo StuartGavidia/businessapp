@@ -1,5 +1,8 @@
 import React from 'react';
 import { Stack, Text, DefaultButton } from '@fluentui/react';
+import FluidActions from "./NewThread";
+import { FluentProvider, webLightTheme } from '@fluentui/react-components';
+
 
 const MessageThreadPicker = ({ messageThreads, onSelectMessageThread }) => {
   const handleSelect = (messageThreadId) => {
@@ -8,7 +11,9 @@ const MessageThreadPicker = ({ messageThreads, onSelectMessageThread }) => {
 
   return (
     <Stack verticalAlign="start" tokens={{ childrenGap: 10 }} styles={{ root: { width: '250px' } }}>
-      <Text variant="xLarge">Welcome to Communication!</Text>
+      <Stack horizontal verticalAlign="center">
+        <FluentProvider theme={webLightTheme}><FluidActions/></FluentProvider>
+      </Stack>
       {messageThreads.map((messageThread) => (
         <DefaultButton
           key={messageThread.id}

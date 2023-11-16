@@ -9,14 +9,12 @@ import { Stack, Text } from '@fluentui/react';
 
 function App() {
   const [selectedMessageThread, setSelectedMessageThread] = useState(null);
-
-  const messageThreads = [
+  const [messageThreads] = useState([
     { id: 1, title: 'MessageThread 1' },
-    { id: 2, title: 'MessageThread 2' },
-    // Add more MessageThreads as needed
-  ];
+    { id: 2, title: 'MessageThread 2' }
+  ]);
 
-  const handleSelectMessageThread = (messageThreadId) => {
+  const handleSelectMessageThread = (messageThreadId : number) => {
     setSelectedMessageThread(messageThreadId);
   };
 
