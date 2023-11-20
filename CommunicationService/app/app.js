@@ -16,7 +16,7 @@ app.get('/communication/', (req, res) => {
   res.send('hello');
 });
 
-const cosmosdbUri = "mongodb://bma-database:FDIXUCt0gpWhEoX8bT3tDIHi6e6IVfGLjSr2q1wIMLYwcLBKpPgd834LPzt1PG3SudtVdb5g3KMlACDbJoFU2A==@bma-database.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@bma-database@";
+const cosmosdbUri = "mongodb://bma-database:axUcquuoyjWycnQYhKMSIUTbF7ZzTdASFGfWYVH351TUwrNDRCIpQyfLff9CjKRwFahff2j3aJ91ACDbWq41ZQ==@bma-database.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@bma-database@"
 const client = new MongoClient(cosmosdbUri);
 await client.connect();
 const database = client.db('SampleDB');
@@ -59,6 +59,45 @@ app.get("/communication/messages/:conversationID", async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching messages.' });
   }
 })
+
+//Adding message to conversation
+app.post("/communication/conversations/addMessage", (req,res) =>{
+  const newMessage = req.body;
+  const collection = database.collection('Messages');
+  collection.insertOne(newMessage, (err) => {
+    if (err) {
+      console.error('Error inserting document: ', err);
+      res.status(500).json({error: 'Internal Server Error'});
+      return;
+    }
+    res.json({message: 'Document inserted successfully'});
+  });
+})
+
+//Adding participant to conversation
+app.put("/communication/conversations/addParticipant", async (req, res) => {
+  const conversationID = req.body.conversationId;
+  const userID = req.body.userId;
+  try {
+    const collection = database.collection('Conversations');
+
+    const result = await collection.updateOne(
+      { "conversationId": conversationID },
+      { $addToSet: { "participants": userID } }
+    );
+
+    if (result.modifiedCount === 1) {
+      res.status(200).json({ message: 'Participant added successfully.' });
+    } else {
+      res.status(404).json({ error: 'Conversation not found.' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while adding participant.' });
+  } finally {
+    await client.close();
+  }
+});
 app.listen(PORT, HOST, () => {
   console.log(`Running on http://${HOST}:${PORT}`);
 });
