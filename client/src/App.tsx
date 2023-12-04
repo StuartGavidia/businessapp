@@ -52,7 +52,9 @@ function App() {
         <Route path="signIn" element={<SignInPage />}/>
         <Route path="/dashboard" element={
           <ProtectedRoute>
-            <DashboardPage />
+            <ThemeProvider>
+              <DashboardPage />
+            </ThemeProvider>
           </ProtectedRoute>
         }>
           <Route index element={<Dashboard />} />

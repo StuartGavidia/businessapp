@@ -2,22 +2,31 @@ import { ThemeType } from './theme.types';
 
 export const themes: { [key: string]: ThemeType } = {
   light: {
-    'body-bg': '#f8f9fa',
-    'body-color': '#212529',
-    'btn-primary-bg': '#007bff',
-    'btn-primary-color': '#ffffff',
-    'link-color': '#007bff',
-    'link-hover-color': '#0056b3',
-    // Add other Bootstrap variables you wish to override for the light theme
+    'bs-body-bg': '#ECE3CE',
+    'bs-body-color': '#3A4D39',
+    'bs-btn-primary-bg': '#007bff',
+    'bs-btn-primary-color': '#ffffff',
+    'bs-link-color': '#007bff',
+    'bs-link-hover-color': '#0056b3',
+    'bs-background-color': '#4F6F52',
+    'sidebar-text-color': '#ffffff',
+    'sidebar-text-color-active': '#3A4D39',
+    // Typography
+    'bs-font-sans-serif': 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
   },
   dark: {
-    'body-bg': '#343a40',
-    'body-color': '#f8f9fa',
-    'btn-primary-bg': '#6c757d',
-    'btn-primary-color': '#ffffff',
-    'link-color': '#9ab',
-    'link-hover-color': '#789',
-    // Add other Bootstrap variables you wish to override for the dark theme
+    'bs-body-bg': '#343a40',
+    'bs-body-color': '#f8f9fa',
+    'bs-btn-primary-bg': '#6c757d',
+    'bs-btn-primary-color': '#ffffff',
+    'bs-link-color': '#9ab',
+    'bs-link-hover-color': '#789',
+    'bs-background-color': '#000000',
+    'sidebar-text-color': '#ffffff',
+    'sidebar-text-color-active': 'grey',
+    // Typography
+    'bs-font-sans-serif': 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
   },
-  // You can define additional themes here
+  //additional themes will go here
 };
+

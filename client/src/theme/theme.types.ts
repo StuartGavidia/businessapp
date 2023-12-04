@@ -1,10 +1,9 @@
-// This file will contain the types for your theme
-
+// theme.types.ts
 export type ThemeType = {
-  [key: string]: string; // This can be more specific based on your actual theme structure
+  [key: string]: string; // This represents the styles for a theme
 };
 
 export interface ThemeContextType {
-  theme: ThemeType;
-  toggleTheme: () => void;
+  themeName: string; // This now represents the name of the current theme
+  toggleTheme: () => void; // Function to toggle between themes
 }

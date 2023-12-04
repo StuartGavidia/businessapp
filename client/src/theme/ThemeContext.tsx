@@ -1,6 +1,7 @@
+// ThemeProvider component
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { ThemeType, ThemeContextType } from './theme.types';
 import { themes } from './themes';
+import { ThemeContextType } from './theme.types';
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
@@ -17,32 +18,28 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [theme, setTheme] = useState<ThemeType>(() => {
-    // Get the saved theme from local storage or default to 'light'
-    const savedThemeName = localStorage.getItem('theme') || 'light';
-    return themes[savedThemeName];
-  });
+  const [themeName, setThemeName] = useState<string>(() => localStorage.getItem('theme') || 'light');
 
   const toggleTheme = () => {
-    const newThemeName = theme === themes.light ? 'dark' : 'light';
-    setTheme(themes[newThemeName]);
+    const newThemeName = themeName === 'light' ? 'dark' : 'light';
+    setThemeName(newThemeName);
     localStorage.setItem('theme', newThemeName);
-    applyTheme(themes[newThemeName]);
+    applyTheme(newThemeName);
   };
 
-  const applyTheme = (theme: ThemeType) => {
+  const applyTheme = (themeName: string) => {
+    const theme = themes[themeName];
     Object.keys(theme).forEach(key => {
-      const value = theme[key];
-      document.documentElement.style.setProperty(`--${key}`, value);
+      document.documentElement.style.setProperty(`--${key}`, theme[key]);
     });
   };
 
   useEffect(() => {
-    applyTheme(theme);
-  }, [theme]);
+    applyTheme(themeName);
+  }, [themeName]);
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ themeName, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );
