@@ -11,9 +11,12 @@ const SignInPage:React.FC = () => {
     const [isLoggingIn, setIsLoggingIn] = useState(true)
 
     return (
-      <Container fluid style={{ height: '100vh' }}>
-        <Row style={{ height: '100%' }}>
-            <Col md={6} className="form-container d-flex align-items-center justify-content-center">
+      <Container fluid style={{ height: '100vh' }} className="signinpage-wrapper">
+        <Row style={{ height: '100%', backgroundColor: 'white' }}>
+            <Col
+              md={6}
+              className="form-container d-flex align-items-center justify-content-center"
+              >
                 {
                     isLoggingIn
                     ? <SignIn setIsLoggingIn={setIsLoggingIn}/>

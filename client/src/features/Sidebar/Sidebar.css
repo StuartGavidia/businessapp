@@ -6,6 +6,6 @@
 }
 
 .sidebar-tabs-wrapper {
-  background-color: #87CEEB;
+  background-color: var(--bs-background-color);
   width: 100%;
 }

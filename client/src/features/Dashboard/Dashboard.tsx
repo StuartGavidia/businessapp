@@ -3,7 +3,8 @@ import './Dashboard.css'
 const Dashboard:React.FC = () => {
     return (
         <div className="dashboard-content">
-            <h1>Dashboard Feature</h1>
+            <h1>Hi Stuart, Welcome to your Dashboard!</h1>
+            <p>Below are your up to date information</p>
         </div>
     )
 }

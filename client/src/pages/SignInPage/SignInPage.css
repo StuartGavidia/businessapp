@@ -1,3 +1,14 @@
 .info-container {
     background-color: #D9D9D9
 }
+
+.signinpage-wrapper {
+  --bs-body-bg: #ffffff;
+  --bs-body-color: #ffffff;
+  --bs-background-color: #ffffff;
+  --bs-btn-primary-bg: #ffffff;
+  --bs-btn-primary-color: #ffffff;
+  --bs-link-color: #ffffff;
+  --bs-link-hover-color: #ffffff;
+  --bs-background-color: #ffffff,
+}
