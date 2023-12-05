@@ -74,6 +74,7 @@ const SignIn: React.FC<SignInProps> = ({ setIsLoggingIn }) => {
         <Form onSubmit={handleSubmit}>
           <Form.Group controlId="username" className="mb-3">
               <Form.Control
+                style={{color: "black"}}
                 type="text"
                 placeholder="Username"
                 name="username"
@@ -83,6 +84,7 @@ const SignIn: React.FC<SignInProps> = ({ setIsLoggingIn }) => {
           </Form.Group>
           <Form.Group controlId="password" className="mb-3">
               <Form.Control
+                style={{color: "black"}}
                 type="password"
                 placeholder="Password"
                 name="password"
