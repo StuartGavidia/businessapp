@@ -83,6 +83,7 @@ const Registration: React.FC<RegistrationProps> = ({ setIsLoggingIn }) => {
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="firstName" className="mb-3">
               <Form.Control
+                style={{color: "black"}}
                 type="text"
                 placeholder="First Name"
                 name="firstName"
@@ -92,6 +93,7 @@ const Registration: React.FC<RegistrationProps> = ({ setIsLoggingIn }) => {
             </Form.Group>
             <Form.Group controlId="lastName" className="mb-3">
               <Form.Control
+                style={{color: "black"}}
                 type="text"
                 placeholder="Last Name"
                 name="lastName"
@@ -101,6 +103,7 @@ const Registration: React.FC<RegistrationProps> = ({ setIsLoggingIn }) => {
             </Form.Group>
             <Form.Group controlId="username" className="mb-3">
               <Form.Control
+                style={{color: "black"}}
                 type="text"
                 placeholder="Username"
                 name="username"
@@ -110,6 +113,7 @@ const Registration: React.FC<RegistrationProps> = ({ setIsLoggingIn }) => {
             </Form.Group>
             <Form.Group controlId="email" className="mb-3">
               <Form.Control
+                style={{color: "black"}}
                 type="email"
                 placeholder="Email"
                 name="email"
@@ -119,6 +123,7 @@ const Registration: React.FC<RegistrationProps> = ({ setIsLoggingIn }) => {
             </Form.Group>
             <Form.Group controlId="password" className="mb-3">
               <Form.Control
+                style={{color: "black"}}
                 type="password"
                 placeholder="Password"
                 name="password"
@@ -128,6 +133,7 @@ const Registration: React.FC<RegistrationProps> = ({ setIsLoggingIn }) => {
             </Form.Group>
             <Form.Group controlId="confirmPassword" className="mb-3">
               <Form.Control
+                style={{color: "black"}}
                 type="password"
                 placeholder="Confirm Password"
                 name="confirmPassword"
@@ -159,6 +165,7 @@ const Registration: React.FC<RegistrationProps> = ({ setIsLoggingIn }) => {
             </ButtonGroup>
             <Form.Group controlId="managerCode" className="mb-3">
               <Form.Control
+                style={{color: "black"}}
                 type="text"
                 placeholder="Manager Code"
                 name="managerCode"
@@ -168,6 +175,7 @@ const Registration: React.FC<RegistrationProps> = ({ setIsLoggingIn }) => {
             </Form.Group>
             <Form.Group controlId="positionName" className="mb-3">
               <Form.Control
+                style={{color: "black"}}
                 type="text"
                 placeholder="Position Name (ex: Builder, Chef, Manager ... )"
                 name="positionName"
@@ -177,6 +185,7 @@ const Registration: React.FC<RegistrationProps> = ({ setIsLoggingIn }) => {
             </Form.Group>
             <Form.Group controlId="companyCode" className="mb-3">
               <Form.Control
+                style={{color: "black"}}
                 type="text"
                 placeholder="Company Code"
                 name="companyCode"
