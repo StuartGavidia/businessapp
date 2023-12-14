@@ -4,9 +4,8 @@
 // @ts-ignore
 import {ChatMessage, MessageStatus} from '@azure/communication-react';
 
-export const GetLivedChatMessages = async (): Promise<ChatMessage[]> => {
+export const GetLivedChatMessages = async (conversationID : string): Promise<ChatMessage[]> => {
   try {
-    const conversationID = "54321";
     const response = await fetch(`http://localhost:5103/communication/messages/${conversationID}`);
     const data = await response.json();
 

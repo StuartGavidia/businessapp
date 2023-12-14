@@ -16,7 +16,7 @@ app.get('/communication/', (req, res) => {
   res.send('hello');
 });
 
-const cosmosdbUri = "mongodb://bma-database:axUcquuoyjWycnQYhKMSIUTbF7ZzTdASFGfWYVH351TUwrNDRCIpQyfLff9CjKRwFahff2j3aJ91ACDbWq41ZQ==@bma-database.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@bma-database@"
+const cosmosdbUri = "mongodb://bma-database:QCVFyzTDxUO4dKF0yOWWVZS6bzGFDC6XIO3eTUXRGQJsIDtIJ9Ks8qto5qIBRDxXhbY4AgVxF2irACDbuCxbjw==@bma-database.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@bma-database@";
 const client = new MongoClient(cosmosdbUri);
 await client.connect();
 const database = client.db('SampleDB');
@@ -52,7 +52,7 @@ app.get("/communication/messages/:conversationID", async (req, res) => {
   const conversationID = req.params.conversationID;
   try{
     const collection = database.collection('Messages');
-    const messages = await collection.find().toArray();
+    const messages = await collection.find({ conversationId: conversationID }).toArray();
     res.json(messages);
   }catch(error){
     console.error(error);
@@ -98,6 +98,20 @@ app.put("/communication/conversations/addParticipant", async (req, res) => {
     await client.close();
   }
 });
+
+//Getting Conversations by UserID
+app.get("/communication/conversations/:userID", async (req,res) =>{
+  const userId = req.params.userId;
+  try{
+    const collection = database.collection('Conversations');
+    const threads = await collection.find({"userId": userId}).toArray();
+    res.json(threads);
+  }
+  catch(error){
+    console.error(error);
+    res.status(500).json({error: "An error occurred while fetching conversation threads"})
+  }
+})
 app.listen(PORT, HOST, () => {
   console.log(`Running on http://${HOST}:${PORT}`);
 });
