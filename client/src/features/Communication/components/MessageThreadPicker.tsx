@@ -1,6 +1,6 @@
 // @ts-ignore
 import React from 'react';
-import { Stack, Text, DefaultButton } from '@fluentui/react';
+import { Stack, DefaultButton } from '@fluentui/react';
 import FluidActions from "./NewThread";
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 

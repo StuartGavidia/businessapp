@@ -1,7 +1,7 @@
-import { ChatMessage, FluentThemeProvider, MessageStatus, MessageThread, SendBox } from '@azure/communication-react';
+import { ChatMessage, FluentThemeProvider, MessageThread, SendBox } from '@azure/communication-react';
 import { useEffect, useState} from 'react';
 import { Stack } from '@fluentui/react';
-import {GetHistoryChatMessages, GetLivedChatMessages} from './placeholdermessages';
+import {GetHistoryChatMessages, GetLivedChatMessages} from '../../../api/communicationServiceAPI.ts';
 
 export const DefaultMessageThreadExample: React.FC<{ conversationId: string }> = ({ conversationId }) => {
   const [messages, setMessages] = useState<ChatMessage[]>(GetHistoryChatMessages);

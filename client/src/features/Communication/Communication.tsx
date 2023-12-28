@@ -5,7 +5,7 @@ import { DefaultMessageThreadExample } from './components/MessageThread';
 
 // Import Fluent UI components
 import { Stack, Text } from '@fluentui/react';
-import {GetConversationThreads} from "./components/GetConversations";
+import {GetConversationThreads} from "../../api/communicationServiceAPI.ts";
 
 
 function App() {
