@@ -1,7 +1,7 @@
 import { ChatMessage, FluentThemeProvider, MessageThread, SendBox } from '@azure/communication-react';
 import { useEffect, useState} from 'react';
 import { Stack } from '@fluentui/react';
-import {GetHistoryChatMessages, GetLivedChatMessages} from '../../../api/communicationServiceAPI.ts';
+import {GetHistoryChatMessages, GetLivedChatMessages, SendMessages} from '../../../api/communicationServiceAPI';
 
 export const DefaultMessageThreadExample: React.FC<{ conversationId: string }> = ({ conversationId }) => {
   const [messages, setMessages] = useState<ChatMessage[]>(GetHistoryChatMessages);
@@ -21,13 +21,13 @@ export const DefaultMessageThreadExample: React.FC<{ conversationId: string }> =
 
   return (
     <FluentThemeProvider>
-      <MessageThreadContent messages={messages} setMessages={setMessages} />
+      <MessageThreadContent messages={messages} setMessages={setMessages} conversationId={conversationId}/>
     </FluentThemeProvider>
   );
 };
 
 // @ts-ignore
-const MessageThreadContent = ({ messages, setMessages }) => {
+const MessageThreadContent = ({ messages, setMessages, conversationId }) => {
   return (
     <Stack>
       <MessageThread
@@ -44,14 +44,16 @@ const MessageThreadContent = ({ messages, setMessages }) => {
             senderId: 'user1',
             senderDisplayName: 'Kat Larsson',
             messageId: Math.random().toString(),
+            conversationId: conversationId,
             content: content,
-            createdOn: new Date(),
             mine: true,
             attached: false,
             contentType: 'html',
           };
 
           setMessages([...(messages || []), newMessage]);
+          await SendMessages(newMessage);
+
         }}
         onTyping={async () => {
           // Handle typing event if needed

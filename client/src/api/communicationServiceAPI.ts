@@ -19,8 +19,6 @@ export const GetLivedChatMessages = async (conversationID : string): Promise<Cha
       attached: message.attached,
       contentType: message.contentType,
     }));
-
-    console.log("hello " + chatMessages[0]?.content);
     return chatMessages;
   } catch (error) {
     console.error('Error:', error);
@@ -66,5 +64,23 @@ export const GetConversationThreads = async (): Promise<{ conversationId: string
     console.error('Error:', error);
     // Handle the error as needed, e.g., throw it or return a default value.
     throw error;
+  }
+}
+
+export const SendMessages = async (newMessage: any)=> {
+  try {
+    // Make the API call to add the message to the conversation
+    return await fetch('http://localhost:5103/communication/conversations/addMessage', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newMessage),
+    });
+
+    // Optionally, you can handle the response if needed
+  } catch (error) {
+    console.error('Error adding message to conversation:', error);
+    // Handle error as needed
   }
 }
