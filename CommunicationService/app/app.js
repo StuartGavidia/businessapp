@@ -36,7 +36,8 @@ const document = {
 app.post('/communication/createThread',  (req, res) => {
   // connect to the server
   const collection = database.collection('Conversations');
-  collection.insertOne(document, (err) => {
+  const doc = req.body;
+  collection.insertOne(doc, (err) => {
     if (err) {
       console.error('Error inserting document: ', err);
       res.status(500).json({error: 'Internal Server Error'});

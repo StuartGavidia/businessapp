@@ -1,4 +1,3 @@
-import * as React from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -10,8 +9,35 @@ import {
   Button,
 } from "@fluentui/react-components";
 import {TextField} from "@fluentui/react";
+import {useState} from "react";
 
 export const FluidActions = () => {
+  const [threadName, setThreadName] = useState("");
+  const onChatButton = async () => {
+    try{
+      console.log("Button works");
+      const response = await fetch('http://localhost:5103/communication/createThread', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          conversationId: Math.random().toString(),
+          participants: ["12345", "67890", "11111"],
+          createdAt: new Date().toISOString(),
+          title: threadName,
+        }),
+      });
+      window.location.reload();
+      if (!response.ok) {
+        console.error("Error creating thread:", response.statusText);
+      }
+    }
+    catch (error){
+      console.error('Error:', error);
+      throw error;
+    }
+  }
   return (
     <Dialog>
       <DialogTrigger disableButtonEnhancement>
@@ -21,13 +47,19 @@ export const FluidActions = () => {
         <DialogBody>
           <DialogTitle>Chat Creation</DialogTitle>
           <DialogContent>
-            <TextField id="message-textbox" label="Name your new thread!" variant="outlined" />
+            <TextField id="message-textbox"
+                       label="Name your new thread!"
+                       variant="outlined"
+                       value={threadName}
+                       onChange={(e) => setThreadName(e.target.value)}/>
           </DialogContent>
           <DialogActions fluid>
             <DialogTrigger disableButtonEnhancement>
               <Button appearance="secondary">Close</Button>
             </DialogTrigger>
-            <Button appearance="primary">Chat</Button>
+            <DialogTrigger disableButtonEnhancement>
+              <Button appearance="primary" onClick={onChatButton}>Chat</Button>
+            </DialogTrigger>
           </DialogActions>
         </DialogBody>
       </DialogSurface>
