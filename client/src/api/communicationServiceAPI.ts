@@ -84,3 +84,28 @@ export const SendMessages = async (newMessage: any)=> {
     // Handle error as needed
   }
 }
+
+export const onChatButton = async (threadName: string) => {
+  try{
+    console.log("Button works");
+    const response = await fetch('http://localhost:5103/communication/createThread', {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        conversationId: Math.random().toString(),
+        participants: ["12345", "67890", "11111"],
+        createdAt: new Date().toISOString(),
+        title: threadName,
+      }),
+    });
+    if (!response.ok) {
+      console.error("Error creating thread:", response.statusText);
+    }
+  }
+  catch (error){
+    console.error('Error:', error);
+    throw error;
+  }
+}
