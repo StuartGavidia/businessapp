@@ -7,6 +7,7 @@ import DashboardPage from './pages/DashboardPage/DashboardPage'
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage'
 import Dashboard from './features/Dashboard/Dashboard'
 import Analytics from './features/Analytics/Analytics'
+import Budget from './features/Budget/Budget'
 import Calendar from './features/Calendar/Calendar'
 import Communication from './features/Communication/Communication'
 import Settings from './features/Settings/Settings'
@@ -53,7 +54,8 @@ function App() {
         </ProtectedRoute>
       }>
         <Route index element={<Dashboard />} />
-        <Route path="analytics" element={<Analytics />}/>
+        <Route path="analytics" element={<Analytics />} />
+        <Route path="budget" element={<Budget />} />
         <Route path="calendar" element={<Calendar />}/>
         <Route path="communication" element={<Communication />}/>
         <Route path="settings" element={<Settings />}/>

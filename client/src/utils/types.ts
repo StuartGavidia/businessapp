@@ -18,3 +18,10 @@ export type SignInFormData = {
     password: string,
     rememberMe: boolean
 }
+
+export type BudgetFormData = {
+    account_name: string,
+    occurance: number,
+    allowance: number
+
+}
