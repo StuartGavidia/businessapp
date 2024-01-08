@@ -1,15 +1,15 @@
 import { ChatMessage, FluentThemeProvider, MessageThread, SendBox } from '@azure/communication-react';
 import { useEffect, useState} from 'react';
 import { Stack } from '@fluentui/react';
-import {GetHistoryChatMessages, GetLivedChatMessages, SendMessages} from '../../../api/communicationServiceAPI';
+import CommunicationServiceAPI from '../../../api/communicationServiceAPI'
 
 export const DefaultMessageThreadExample: React.FC<{ conversationId: string }> = ({ conversationId }) => {
-  const [messages, setMessages] = useState<ChatMessage[]>(GetHistoryChatMessages);
+  const [messages, setMessages] = useState<ChatMessage[]>(CommunicationServiceAPI.getInstance().GetHistoryChatMessages);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const chatMessages = await GetLivedChatMessages(conversationId);
+        const chatMessages = await CommunicationServiceAPI.getInstance().GetLivedChatMessages(conversationId);
         setMessages(chatMessages);
       } catch (error) {
         console.error('Error fetching messages:', error);
@@ -52,7 +52,7 @@ const MessageThreadContent = ({ messages, setMessages, conversationId }) => {
           };
 
           setMessages([...(messages || []), newMessage]);
-          await SendMessages(newMessage);
+          await CommunicationServiceAPI.getInstance().SendMessages(newMessage);
 
         }}
         onTyping={async () => {

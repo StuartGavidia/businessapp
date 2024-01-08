@@ -1,11 +1,11 @@
 import './Communication.css';
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import MessageThreadPicker from './components/MessageThreadPicker';
 import { DefaultMessageThreadExample } from './components/MessageThread';
 
 // Import Fluent UI components
 import { Stack, Text } from '@fluentui/react';
-import {GetConversationThreads} from "../../api/communicationServiceAPI.ts";
+import CommunicationServiceAPI from "../../api/communicationServiceAPI";
 
 
 function App() {
@@ -15,7 +15,7 @@ function App() {
   useEffect(() => {
     const fetchMessageThreads = async () => {
       try {
-        const conversationThreads = await GetConversationThreads();
+        const conversationThreads = await CommunicationServiceAPI.getInstance().GetConversationThreads();
         setMessageThreads(conversationThreads);
       } catch (error) {
         console.error('Error fetching conversation threads:', error);

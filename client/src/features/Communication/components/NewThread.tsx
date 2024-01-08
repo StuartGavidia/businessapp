@@ -10,11 +10,11 @@ import {
 } from "@fluentui/react-components";
 import {TextField} from "@fluentui/react";
 import {useState} from "react";
-import {onChatButton} from "../../../api/communicationServiceAPI";
+import CommunicationServiceAPI from "../../../api/communicationServiceAPI"
 
 export const FluidActions = async () => {
   const [threadName, setThreadName] = useState("");
-  const ChatButton = await onChatButton(threadName);
+  const ChatButton = await CommunicationServiceAPI.getInstance().onChatButton(threadName);
   return (
     <Dialog>
       <DialogTrigger disableButtonEnhancement>
