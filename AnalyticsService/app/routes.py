@@ -27,22 +27,21 @@ def create_budget():
     token = request.cookies.get('user_cookie')
     payload = None
 
-    try:
-        payload = decode_jwt(token)
-    except Exception:
-        return jsonify({'message': 'Token is invalid!'}), 401
+    payload = decode_jwt(token)
 
     data = request.json
-    company_id = payload['company_id']
+    #company_id = payload['company_id']
     account_name = data.get('account_name', '')
     allowance = data.get('allowance', '')
     budget_date = data.get('budget_date', '')
+    occurance = data.get('occurance', '')
 
     new_budget = Budget(
-        company_id=company_id,
+        #company_id=company_id,
         account_name=account_name,
         allowance=allowance,
-        budget_date=budget_date
+        budget_date=budget_date,
+        occurance=occurance
     )
     
     db.session.add(new_budget)

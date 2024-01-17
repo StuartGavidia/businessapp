@@ -5,32 +5,44 @@ import Button from 'react-bootstrap/Button'
 import Col from 'react-bootstrap/Col'
 import InputGroup from 'react-bootstrap/InputGroup'
 import BudgetServiceAPI from '../../api/budgetServiceAPI'
+import { Calendar } from 'react-date-range'
+import CalendarComp from './Components/CalendarComp.tsx'
+import { FormControl } from 'react-bootstrap'
+import format from 'date-fns/format'
+import React, { ChangeEvent } from 'react'
+import './Components/CalendarComp.css'
+
 
 const Budget: React.FC = () => {
     const [formData, setFormData] = useState({
-        account_name: '',
+        account_name: "",
         occurance: 0,
         allowance: 0,
-        start_date: '',
-        end_date: ''
+        budget_date: "",
     })
 
     const [budgetCreated, setBudgetCreated] = useState(false)
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, type } = e.target;
-        const value = type === 'radio'
-            ? e.currentTarget.value === "monthly"
-                ? 12
-                : e.currentTarget.value === "quarterly"
-                    ? 4
-                    : 1
-            : type === 'number'
-                ? parseFloat(e.target.value)
-                : e.target.value;
-
-        setFormData(prevState => ({ ...prevState, [name]: value }));
-
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement> | Date) => {
+        if (e instanceof Date) {
+            // Handle Date input
+            const formattedDate = format(e, "yyyy-MM-dd");
+            setFormData(prevState => ({ ...prevState, budget_date: formattedDate }));
+        } else {
+            // Handle non-Date inputs
+            const { name, type } = e.target;
+            const value = type === 'radio'
+                ? e.currentTarget.value === "monthly"
+                    ? 12
+                    : e.currentTarget.value === "quarterly"
+                        ? 4
+                        : 1
+                : type === 'number'
+                    ? parseFloat(e.target.value)
+                    : e.target.value;
+    
+            setFormData(prevState => ({ ...prevState, [name]: value }));
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -63,7 +75,7 @@ const Budget: React.FC = () => {
                         type="text"
                         placeholder="Account Name"
                         name="account_name"
-                        onChange={handleChange}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
                     />
                 </Form.Group>
                 <Form.Group controlId="occurance" className="mb-3">
@@ -91,6 +103,10 @@ const Budget: React.FC = () => {
                         onChange={handleChange}
                         inline />
                 </Form.Group>
+                <Form.Group>
+                    <Form.Label className='mb-3 prompt-label'>Select a Start Date</Form.Label>
+                    <CalendarComp onSelect={handleChange}/>
+                </Form.Group>
                 <Form.Group controlId="number" className="mb-3">
                     <Form.Label className="mb-3 prompt-label">Amount</Form.Label>
                     <InputGroup>
@@ -99,7 +115,7 @@ const Budget: React.FC = () => {
                             type="number"
                             name="allowance"
                             placeholder="0"
-                            onChange={handleChange}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
                             required />
                     </InputGroup>
                 </Form.Group>

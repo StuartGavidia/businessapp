@@ -12,6 +12,6 @@ class Budget(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     account_name = db.Column(db.String(255), nullable=False)
-    company_id = db.Column(db.Integer, unique=False, nullable=True)
     budget_date = db.Column(db.DateTime, nullable=True)
     allowance = db.Column(db.Integer, nullable=False)
+    occurance = db.Column(db.Integer, nullable=False)
