@@ -4,7 +4,7 @@ import { Stack } from '@fluentui/react';
 import CommunicationServiceAPI from '../../../api/communicationServiceAPI'
 
 export const DefaultMessageThreadExample: React.FC<{ conversationId: string }> = ({ conversationId }) => {
-  const [messages, setMessages] = useState<ChatMessage[]>(CommunicationServiceAPI.getInstance().GetHistoryChatMessages);
+  const [messages, setMessages] = useState<ChatMessage[]>(CommunicationServiceAPI.getInstance().GetHistoryChatMessages());
 
   useEffect(() => {
     const fetchData = async () => {

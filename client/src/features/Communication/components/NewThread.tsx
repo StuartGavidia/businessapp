@@ -12,9 +12,16 @@ import {TextField} from "@fluentui/react";
 import {useState} from "react";
 import CommunicationServiceAPI from "../../../api/communicationServiceAPI"
 
-export const FluidActions = async () => {
+const FluidActions = () => {
   const [threadName, setThreadName] = useState("");
-  const ChatButton = await CommunicationServiceAPI.getInstance().onChatButton(threadName);
+  const handleChatButtonClick = async () => {
+    try {
+      console.log("Button works");
+      await CommunicationServiceAPI.getInstance().onChatButton(threadName);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   return (
     <Dialog>
       <DialogTrigger disableButtonEnhancement>
@@ -35,7 +42,7 @@ export const FluidActions = async () => {
               <Button appearance="secondary">Close</Button>
             </DialogTrigger>
             <DialogTrigger disableButtonEnhancement>
-              <Button appearance="primary" onClick={ChatButton}>Chat</Button>
+              <Button appearance="primary" onClick={handleChatButtonClick}>Chat</Button>
             </DialogTrigger>
           </DialogActions>
         </DialogBody>
@@ -44,4 +51,4 @@ export const FluidActions = async () => {
   );
 };
 
-export default FluidActions
+export default FluidActions;
