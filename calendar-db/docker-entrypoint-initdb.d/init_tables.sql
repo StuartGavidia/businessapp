@@ -12,14 +12,15 @@ CREATE TABLE events (
 
 CREATE TABLE recurring_events (
   recurring_event_id SERIAL PRIMARY KEY,
-  event_id INT REFERENCES events(event_id),
+  event_id INT,
   recurrence_pattern TEXT NOT NULL,
-  recurrence_end_date TIMESTAMP WITH TIME ZONE
+  recurrence_end_date TIMESTAMP WITH TIME ZONE,
+  FOREIGN KEY (event_id) REFERENCES events (event_id) ON DELETE CASCADE
 );
 
 CREATE TABLE event_attendees (
   event_attendee_id SERIAL PRIMARY KEY,
-  event_id INT REFERENCES events(event_id),
+  event_id INT REFERENCES events(event_id) ON DELETE CASCADE,
   user_id INT NOT NULL,
   status VARCHAR(50)
 );

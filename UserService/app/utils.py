@@ -14,12 +14,15 @@ def generate_code(length=6):
     characters = string.ascii_uppercase + string.digits
     return ''.join(random.choice(characters) for i in range(length))
 
-def create_jwt(user_id, company_id, position_name, status):
+def create_jwt(user_id, company_id, position_name, status, username, first_name, last_name):
     """
     Generate a jwt
     """
     payload = {
         'user_id': user_id,
+        'username': username,
+        'first_name': first_name,
+        'last_name': last_name,
         'company_id': company_id,
         'position_name': position_name,
         'status': status,

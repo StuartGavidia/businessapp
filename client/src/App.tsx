@@ -13,6 +13,8 @@ import Communication from './features/Communication/Communication'
 import Settings from './features/Settings/Settings'
 import UserServiceAPI from './api/userServiceAPI'
 import ProtectedRouteProps from './interfaces/ProtectedRouteProps'
+import AppConfigLayout from './layouts/AppConfigLayout'
+import { ThemeProvider } from './theme/ThemeContext';
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> =  ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -59,6 +61,21 @@ function App() {
         <Route path="calendar" element={<Calendar />}/>
         <Route path="communication" element={<Communication />}/>
         <Route path="settings" element={<Settings />}/>
+      <Route element={<AppConfigLayout />}>
+        <Route path="signIn" element={<SignInPage />}/>
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <ThemeProvider>
+              <DashboardPage />
+            </ThemeProvider>
+          </ProtectedRoute>
+        }>
+          <Route index element={<Dashboard />} />
+          <Route path="analytics" element={<Analytics />}/>
+          <Route path="calendar" element={<Calendar />}/>
+          <Route path="communication" element={<Communication />}/>
+          <Route path="settings" element={<Settings />}/>
+        </Route>
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

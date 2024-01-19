@@ -11,7 +11,11 @@ interface NavRoute {
   icon: string
 }
 
-const Sidebar:React.FC = () => {
+interface SidebarProps {
+  toggleShow: Function
+}
+
+const Sidebar:React.FC<SidebarProps> = ({toggleShow}) => {
     const location = useLocation();
 
     const routes: NavRoute[] = [
@@ -49,19 +53,30 @@ const Sidebar:React.FC = () => {
     return (
       <>
         <Tab.Container id="list-group-tabs-example" defaultActiveKey="/dashboard">
-          <Row className="sidebar-tabs-wrapper">
+          <Row className="sidebar-tabs-wrapper" >
             <Col>
               <ListGroup className="p-2">
-                <h1 className="mb-4">ABC</h1>
+                <div style={{display: "flex", justifyContent: "space-between", color: 'var(--sidebar-text-color)'}}>
+                  <h1 className="mb-4">TS</h1>
+                  <p style={{cursor: "pointer"}} onClick={() => toggleShow()}>X</p>
+                </div>
                 {
-                  routes.map((route: NavRoute) => {
+                  routes.map((route: NavRoute, index: number) => {
                     return (
                       <ListGroup.Item
                         action
                         as={Link}
                         to={route.route}
                         active={location.pathname === route.route}
+                        style={
+                          {
+                            backgroundColor: location.pathname === route.route ? 'var(--sidebar-text-color-active)' : 'var(--bs-background-color)',
+                            border: 'none',
+                            color: 'var(--sidebar-text-color)'
+                          }
+                        }
                         className="mb-2"
+                        key={index}
                       >
                         <div className="feature-wrapper">
                           <i className={route.icon}></i>

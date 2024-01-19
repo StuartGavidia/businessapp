@@ -1,0 +1,12 @@
+version: '3'
+services:
+  caching-layer:
+    build:
+      context: ./caching-layer
+      dockerfile: Dockerfile
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+volumes:
+  redis_data:

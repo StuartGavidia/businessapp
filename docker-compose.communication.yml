@@ -9,7 +9,7 @@ services:
       - "5103:5103"
     volumes:
       - ./CommunicationService/app:/app/app
-  database:
+  communication-db:
     image: mongo:latest  # Use the official MongoDB Docker image
     ports:
       - "27017:27017"

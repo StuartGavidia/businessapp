@@ -1,41 +1,38 @@
-import { ChatMessage, FluentThemeProvider, MessageStatus, MessageThread, SendBox } from '@azure/communication-react';
-import React, { useState } from 'react';
-import { Stack, Text } from '@fluentui/react';
-import { GetHistoryChatMessages } from './placeholdermessages';
+import { ChatMessage, FluentThemeProvider, MessageThread, SendBox } from '@azure/communication-react';
+import { useEffect, useState} from 'react';
+import { Stack } from '@fluentui/react';
+import {GetHistoryChatMessages, GetLivedChatMessages, SendMessages} from '../../../api/communicationServiceAPI';
 
-export const DefaultMessageThreadExample: () => JSX.Element = () => {
-  const [messages, setMessages] = useState<ChatMessage[]>(GetHistoryChatMessages());
+export const DefaultMessageThreadExample: React.FC<{ conversationId: string }> = ({ conversationId }) => {
+  const [messages, setMessages] = useState<ChatMessage[]>(GetHistoryChatMessages);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const chatMessages = await GetLivedChatMessages(conversationId);
+        setMessages(chatMessages);
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    };
+
+    fetchData();
+  }, [conversationId]); // Empty dependency array means this effect runs once after the initial render
 
   return (
     <FluentThemeProvider>
-      <MessageThreadContent messages={messages} setMessages={setMessages} />
+      <MessageThreadContent messages={messages} setMessages={setMessages} conversationId={conversationId}/>
     </FluentThemeProvider>
   );
 };
 
-const MessageThreadContent = ({ messages, setMessages, selectedMessageThread }) => {
-
-
+// @ts-ignore
+const MessageThreadContent = ({ messages, setMessages, conversationId }) => {
   return (
     <Stack>
       <MessageThread
         userId={'1'}
         messages={messages}
-        onUpdateMessage={async (id: string, _content: any, metadata: any) => {
-          const updated = messages.map((m) =>
-            m.messageId === id
-              ? { ...m, metadata, failureReason: 'Failed to edit', status: 'failed' as MessageStatus }
-              : m
-          );
-          setMessages(updated);
-          return Promise.reject('Failed to update');
-        }}
-        onCancelEditMessage={(id: any) => {
-          const updated = messages.map((m) =>
-            m.messageId === id ? { ...m, failureReason: undefined, status: undefined } : m
-          );
-          setMessages(updated);
-        }}
       />
       <SendBox
         onSendMessage={async (content: any) => {
@@ -47,14 +44,16 @@ const MessageThreadContent = ({ messages, setMessages, selectedMessageThread }) 
             senderId: 'user1',
             senderDisplayName: 'Kat Larsson',
             messageId: Math.random().toString(),
+            conversationId: conversationId,
             content: content,
-            createdOn: new Date(),
             mine: true,
             attached: false,
-            contentType: 'html'
+            contentType: 'html',
           };
 
-          setMessages([...messages, newMessage]);
+          setMessages([...(messages || []), newMessage]);
+          await SendMessages(newMessage);
+
         }}
         onTyping={async () => {
           // Handle typing event if needed

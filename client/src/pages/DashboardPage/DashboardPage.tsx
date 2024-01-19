@@ -6,10 +6,15 @@ import Navbar from 'react-bootstrap/Navbar';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import Sidebar from '../../features/Sidebar/Sidebar';
 import Container from 'react-bootstrap/Container';
+import { useTheme } from '../../theme/ThemeContext';
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
 
 
 const DashboardPage:React.FC = () => {
     const [show, setShow] = useState(false);
+    const { themeName, toggleTheme } = useTheme();
 
     const toggleShow = () => {
       setShow(prev => !prev)
@@ -57,11 +62,8 @@ const DashboardPage:React.FC = () => {
         <div className="wrapper">
           <div className={show ? "sidebar d-none d-lg-block" : "sidebar d-none"}>
             <Offcanvas className="custom-offcanvas" show={show} onHide={toggleShow} responsive="lg" style={{height: "100%", backgroundColor: "#87CEEB"}}>
-              <Offcanvas.Header closeButton className="justify-content-end">
-
-              </Offcanvas.Header>
-              <Offcanvas.Body className="justify-content-center pt-0 mt-0" style={{height: "100%"}}>
-                <Sidebar />
+              <Offcanvas.Body className="justify-content-center pt-0 mt-0" style={{height: "100%", backgroundColor: 'var(--bs-background-color)'}}>
+                <Sidebar toggleShow={toggleShow}/>
               </Offcanvas.Body>
             </Offcanvas>
           </div>
@@ -70,13 +72,33 @@ const DashboardPage:React.FC = () => {
               <Navbar style={{ width: "100%" }}>
                 <i className="bi bi-list ps-3" onClick={toggleShow} style={{fontSize: '3rem', cursor: "pointer"}}></i>
                 <Container fluid>
-                  <Navbar.Brand>Title is ABC?</Navbar.Brand>
+                  <Navbar.Brand style={{color: `var(--bs-body-color)`}}>Tactic Service</Navbar.Brand>
                   <Navbar.Toggle />
                   <Navbar.Collapse className="justify-content-end pe-4">
-                    <Navbar.Text onClick={handleLogout} style={{cursor: "pointer"}}>
+                    <InputGroup className="w-50 me-3">
+                      <Button style={{backgroundColor: 'var(--bs-body-color)', borderColor: 'var(--bs-body-color)'}}>
+                        <i className="bi bi-search" style={{color: themeName == "light" ? "white" : "black"}}></i>
+                      </Button>
+                      <Form.Control
+                        aria-label="Search bar"
+                        aria-describedby="search bar"
+                        placeholder='Search'
+                        className="custom-placeholder"
+                        style={{borderColor: `var(--bs-body-color)`}}
+                      />
+                    </InputGroup>
+                    <i
+                      className={themeName == "light" ? "bi bi-brightness-high-fill me-3" : "bi bi-moon-fill me-3"}
+                      onClick={toggleTheme}
+                      style={{fontSize: '1.5rem', cursor: "pointer"}}
+                    ></i>
+                    <i
+                      className="bi bi-bell-fill me-3"
+                      onClick={() => console.log("Checking notifications")}
+                      style={{fontSize: '1.5rem', cursor: "pointer"}}></i>
+                    <Navbar.Text onClick={handleLogout} style={{cursor: "pointer", color: `var(--bs-body-color)`}}>
                       Logout
                     </Navbar.Text>
-
                   </Navbar.Collapse>
                 </Container>
               </Navbar>
