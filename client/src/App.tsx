@@ -7,6 +7,7 @@ import DashboardPage from './pages/DashboardPage/DashboardPage'
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage'
 import Dashboard from './features/Dashboard/Dashboard'
 import Analytics from './features/Analytics/Analytics'
+import Budget from './features/Budget/Budget'
 import Calendar from './features/Calendar/Calendar'
 import Communication from './features/Communication/Communication'
 import Settings from './features/Settings/Settings'
@@ -48,6 +49,18 @@ function App() {
   return (
     <Routes>
       <Route path="" element={<LandingPage />}/>
+      <Route path="signIn" element={<SignInPage />}/>
+      <Route path="/dashboard" element={
+        <ProtectedRoute>
+          <DashboardPage />
+        </ProtectedRoute>
+      }>
+        <Route index element={<Dashboard />} />
+        <Route path="analytics" element={<Analytics />} />
+        <Route path="budget" element={<Budget />} />
+        <Route path="calendar" element={<Calendar />}/>
+        <Route path="communication" element={<Communication />}/>
+        <Route path="settings" element={<Settings />}/>
       <Route element={<AppConfigLayout />}>
         <Route path="signIn" element={<SignInPage />}/>
         <Route path="/dashboard" element={

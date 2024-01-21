@@ -1,5 +1,9 @@
 -- sample init
-CREATE TABLE test (
+CREATE TABLE budget (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    description VARCHAR(50) UNIQUE NOT NULL
-);
+    account_name VARCHAR(255) UNIQUE NOT NULL,
+    allowance INT NOT NULL,
+    occurance INT NOT NULL,
+    budget_date DATETIME NOT NULL
+
+);  

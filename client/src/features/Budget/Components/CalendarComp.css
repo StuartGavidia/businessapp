@@ -1,0 +1,22 @@
+.CalendarComp {
+    text-align: center;
+    font-size: 22px;
+}
+
+.input.inputBox {
+    font-size: 22px;
+    padding: 5px 8px 4px 8px;
+    border-radius: 3px;
+    border: 1px solid #666;
+}
+
+.calendarElement {
+    top: 40px;
+    border: 1px solid #ccc;
+    z-index: 999
+}
+
+.calendar-group {
+    display: block;
+    margin-bottom: 20px; 
+  }
