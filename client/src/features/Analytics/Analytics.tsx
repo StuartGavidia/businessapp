@@ -4,14 +4,33 @@ import { Outlet } from 'react-router-dom';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
+import BudgetServiceAPI from '../../api/budgetServiceAPI'
+import { useEffect, useState } from 'react';
+import { BudgetFormData } from '../../utils/types';
+
 
 const Analytics:React.FC = () => {
 
     const navigate = useNavigate();
 
+    const [budgetData, setBudgetData] = useState<BudgetFormData[]>([]);
+
     const handleButtonClick = () => {
         navigate('/dashboard/budget');
     }
+
+    useEffect(() => {
+        const fetchBudgetData = async () => {
+            try {
+                const data = await BudgetServiceAPI.getInstance().getBudget();
+                setBudgetData(data);
+            } catch (error) {
+                console.log('Error fetching Budget Data:', error);
+            }
+        };
+
+        fetchBudgetData();
+    }, []);
 
     return (
         <div className="analytics-content">
@@ -37,6 +56,15 @@ const Analytics:React.FC = () => {
                             <div className="create-budget">
                             <Outlet />
                                 <button type="button" className="btn btn-outline-primary" onClick={handleButtonClick}>Create Budget</button>
+                            </div>
+                            <div>
+                                <ul>
+                                    {budgetData.map((budget, index) => (
+                                        <li key={index}>
+                                            {`Account Name: ${budget.account_name}, Allowance: ${budget.allowance}`}
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
                         </div>
                 </div>

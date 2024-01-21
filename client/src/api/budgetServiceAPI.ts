@@ -38,6 +38,33 @@ class BudgetServiceAPI {
         })
     }
 
+    public async getBudget(): Promise<BudgetFormData[]> {
+        
+        try {
+            const response = await fetch('/analytics/budget', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+    
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+    
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const data = await response.json();
+                return data;
+            } else {
+                throw new Error('Response is not in JSON format');
+            }
+        } catch (error) {
+            console.error('Error fetching budget data:', error);
+            throw error; // Propagate the error to the caller
+        }
+    }
+
 }
 
 export default BudgetServiceAPI;

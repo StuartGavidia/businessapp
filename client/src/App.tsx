@@ -49,18 +49,6 @@ function App() {
   return (
     <Routes>
       <Route path="" element={<LandingPage />}/>
-      <Route path="signIn" element={<SignInPage />}/>
-      <Route path="/dashboard" element={
-        <ProtectedRoute>
-          <DashboardPage />
-        </ProtectedRoute>
-      }>
-        <Route index element={<Dashboard />} />
-        <Route path="analytics" element={<Analytics />} />
-        <Route path="budget" element={<Budget />} />
-        <Route path="calendar" element={<Calendar />}/>
-        <Route path="communication" element={<Communication />}/>
-        <Route path="settings" element={<Settings />}/>
       <Route element={<AppConfigLayout />}>
         <Route path="signIn" element={<SignInPage />}/>
         <Route path="/dashboard" element={
@@ -72,6 +60,7 @@ function App() {
         }>
           <Route index element={<Dashboard />} />
           <Route path="analytics" element={<Analytics />}/>
+          <Route path="budget" element={<Budget />} />
           <Route path="calendar" element={<Calendar />}/>
           <Route path="communication" element={<Communication />}/>
           <Route path="settings" element={<Settings />}/>
