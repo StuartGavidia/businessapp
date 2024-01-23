@@ -1,86 +1,123 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-// @ts-ignore
+
 import {ChatMessage, MessageStatus} from '@azure/communication-react';
 
-export const GetLivedChatMessages = async (conversationID : string): Promise<ChatMessage[]> => {
-  try {
-    const response = await fetch(`http://localhost:5103/communication/messages/${conversationID}`);
-    const data = await response.json();
+class CommunicationServiceAPI {
+  private static instance: CommunicationServiceAPI;
 
-    const chatMessages: ChatMessage[] = data.map((message: ChatMessage) => ({
-      messageType: message.messageType,
-      senderId: message.senderId,
-      senderDisplayName: message.senderDisplayName,
-      messageId: message.messageId,
-      content: message.content,
-      mine: message.mine,
-      attached: message.attached,
-      contentType: message.contentType,
-    }));
-    return chatMessages;
-  } catch (error) {
-    console.error('Error:', error);
-    // Handle the error as needed, e.g., throw it or return a default value.
-    throw error;
+  private constructor() {
+    // private constructor so no outsider can create an instance
   }
-};
 
-// This is some mock messages for example purposes.
-// For actual projects, you can get chat messages from declarative/selectors for ACS.
-export const GetHistoryChatMessages = (): ChatMessage[] => {
-  return [
-    {
-      messageType: 'chat',
-      senderId: 'user1',
-      senderDisplayName: 'Kat Larsson',
-      messageId: Math.random().toString(),
-      content: 'Hi everyone, I created this awesome group chat for us!',
-      createdOn: new Date('2019-04-13T00:00:00.000+08:10'),
-      mine: true,
-      attached: false,
-      status: 'seen' as MessageStatus,
-      contentType: 'html'
+  public static getInstance(): CommunicationServiceAPI {
+    if (!CommunicationServiceAPI.instance) {
+      CommunicationServiceAPI.instance = new CommunicationServiceAPI();
     }
-  ];
-};
-
-
-
-
-export const GetConversationThreads = async (): Promise<{ conversationId: string, title: string }[]> => {
-  try{
-    const userId = "12345";
-    const response = await fetch(`http://localhost:5103/communication/conversations/${userId}`);
-    const data = await response.json();
-    const conversationThreads = data.map((conversation: { conversationId: any; title: any; }) => ({
-      conversationId: conversation.conversationId,
-      title: conversation.title,
-    }));
-    return conversationThreads;
+    return CommunicationServiceAPI.instance;
   }
-  catch (error){
-    console.error('Error:', error);
-    // Handle the error as needed, e.g., throw it or return a default value.
-    throw error;
+
+  public async GetLivedChatMessages(conversationID : string): Promise<ChatMessage[]> {
+    try {
+      const response = await fetch(`http://localhost:5103/communication/messages/${conversationID}`);
+      const data = await response.json();
+
+      const chatMessages: ChatMessage[] = data.map((message: ChatMessage) => ({
+        messageType: message.messageType,
+        senderId: message.senderId,
+        senderDisplayName: message.senderDisplayName,
+        messageId: message.messageId,
+        content: message.content,
+        mine: message.mine,
+        attached: message.attached,
+        contentType: message.contentType,
+      }));
+      return chatMessages;
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle the error as needed, e.g., throw it or return a default value.
+      throw error;
+    }
+  };
+
+  public GetHistoryChatMessages() : ChatMessage[] {
+    return [
+      {
+        messageType: 'chat',
+        senderId: 'user1',
+        senderDisplayName: 'Kat Larsson',
+        messageId: Math.random().toString(),
+        content: 'Hi everyone, I created this awesome group chat for us!',
+        createdOn: new Date('2019-04-13T00:00:00.000+08:10'),
+        mine: true,
+        attached: false,
+        status: 'seen' as MessageStatus,
+        contentType: 'html'
+      }
+    ];
+  };
+
+  public async GetConversationThreads(): Promise<{ conversationId: string, title: string }[]> {
+    try{
+      const userId = "12345";
+      const response = await fetch(`http://localhost:5103/communication/conversations/${userId}`);
+      const data = await response.json();
+      return data.map((conversation: { conversationId: any; title: any; }) => ({
+        conversationId: conversation.conversationId,
+        title: conversation.title,
+      }));
+    }
+    catch (error){
+      console.error('Error:', error);
+      // Handle the error as needed, e.g., throw it or return a default value.
+      throw error;
+    }
+  };
+
+  public async SendMessages(newMessage : any){
+    try {
+      // Make the API call to add the message to the conversation
+      return await fetch('http://localhost:5103/communication/conversations/addMessage', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newMessage),
+      });
+
+      // Optionally, you can handle the response if needed
+    } catch (error) {
+      console.error('Error adding message to conversation:', error);
+      // Handle error as needed
+    }
+  };
+
+  public async onChatButton(threadName: string){
+    try{
+      console.log("Button works");
+      const response = await fetch('http://localhost:5103/communication/createThread', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          conversationId: Math.random().toString(),
+          participants: ["12345", "67890", "11111"],
+          createdAt: new Date().toISOString(),
+          title: threadName,
+        }),
+      });
+      if (!response.ok) {
+        console.error("Error creating thread:", response.statusText);
+      }
+    }
+    catch (error){
+      console.error('Error:', error);
+      throw error;
+    }
   }
 }
 
-export const SendMessages = async (newMessage: any)=> {
-  try {
-    // Make the API call to add the message to the conversation
-    return await fetch('http://localhost:5103/communication/conversations/addMessage', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newMessage),
-    });
+export default CommunicationServiceAPI;
 
-    // Optionally, you can handle the response if needed
-  } catch (error) {
-    console.error('Error adding message to conversation:', error);
-    // Handle error as needed
-  }
-}

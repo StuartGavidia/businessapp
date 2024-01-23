@@ -1,4 +1,3 @@
-import * as React from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -10,8 +9,19 @@ import {
   Button,
 } from "@fluentui/react-components";
 import {TextField} from "@fluentui/react";
+import {useState} from "react";
+import CommunicationServiceAPI from "../../../api/communicationServiceAPI"
 
-export const FluidActions = () => {
+const FluidActions = () => {
+  const [threadName, setThreadName] = useState("");
+  const handleChatButtonClick = async () => {
+    try {
+      console.log("Button works");
+      await CommunicationServiceAPI.getInstance().onChatButton(threadName);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   return (
     <Dialog>
       <DialogTrigger disableButtonEnhancement>
@@ -21,13 +31,19 @@ export const FluidActions = () => {
         <DialogBody>
           <DialogTitle>Chat Creation</DialogTitle>
           <DialogContent>
-            <TextField id="message-textbox" label="Name your new thread!" variant="outlined" />
+            <TextField id="message-textbox"
+                       label="Name your new thread!"
+                       variant="outlined"
+                       value={threadName}
+                       onChange={(e) => setThreadName(e.target.value)}/>
           </DialogContent>
           <DialogActions fluid>
             <DialogTrigger disableButtonEnhancement>
               <Button appearance="secondary">Close</Button>
             </DialogTrigger>
-            <Button appearance="primary">Chat</Button>
+            <DialogTrigger disableButtonEnhancement>
+              <Button appearance="primary" onClick={handleChatButtonClick}>Chat</Button>
+            </DialogTrigger>
           </DialogActions>
         </DialogBody>
       </DialogSurface>
@@ -35,4 +51,4 @@ export const FluidActions = () => {
   );
 };
 
-export default FluidActions
+export default FluidActions;

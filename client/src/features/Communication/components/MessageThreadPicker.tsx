@@ -6,7 +6,7 @@ import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 
 
 const MessageThreadPicker = ({ messageThreads, onSelectMessageThread }) => {
-  const handleSelect = (messageThreadId) => {
+  const handleSelect = (messageThreadId: any) => {
     onSelectMessageThread(messageThreadId);
   };
 
