@@ -2,3 +2,12 @@
     border: 1px solid black;
     height: 100%;
 }
+
+.accordion-button {
+    background-color: b#272d31 !important;
+  }
+  
+  .accordion-button:focus {
+    box-shadow: none;
+  }
+  

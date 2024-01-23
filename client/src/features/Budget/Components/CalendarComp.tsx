@@ -8,6 +8,7 @@ import 'react-date-range/dist/theme/default.css';
 
 interface CalendarCompProps {
   onSelect: (date: Date) => void;
+  
 }
 
 const CalendarComp: React.FC<CalendarCompProps> = ({ onSelect }) => {
@@ -49,12 +50,16 @@ const CalendarComp: React.FC<CalendarCompProps> = ({ onSelect }) => {
   }
 
   return (
-    <div className="calendarWrap">
+    <div className="calendarWrap" style={{marginBottom: '16px'}}>
 
       <input
         value={ calendar }
         readOnly
         className="inputBox"
+        style={{textAlign: 'center', 
+        border: 'none',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        borderRadius: '15px'}}
         onClick={() => setOpen(open => !open)}
 
       />
