@@ -48,3 +48,13 @@ def create_budget():
     db.session.commit()
 
     return jsonify({"message": "Budget successfully created"}), 201
+
+@routes.route("/analytics/budget", methods=['GET'])
+def get_budget_data():
+    try:
+        budgets = Budget.query.all()
+        budget_data = [{'id': budget.id, 'account_name': budget.account_name, 'allowance': budget.allowance} for budget in budgets]
+        return jsonify(budget_data)
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
