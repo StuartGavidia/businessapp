@@ -1,29 +1,37 @@
-// @ts-ignore
 import React from 'react';
 import { Stack, DefaultButton } from '@fluentui/react';
-import FluidActions from "./NewThread";
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
+import StartConversationModal from "./NewThread";
+import AddParticipantModal from "./AddParticipants.tsx";
 
+interface messageThreadType {
+  id: number,
+  title: string
+}
 
-const MessageThreadPicker = ({ messageThreads, onSelectMessageThread }) => {
-  const handleSelect = (messageThreadId: any) => {
-    onSelectMessageThread(messageThreadId);
-  };
+class MessageThreadPicker extends React.Component<{ messageThreads: any, onSelectMessageThread: any }> {
+  render() {
+    const {messageThreads, onSelectMessageThread} = this.props;
+    const handleSelect = (messageThreadId: any) => {
+      onSelectMessageThread(messageThreadId);
+    };
 
-  return (
-    <Stack verticalAlign="start" tokens={{ childrenGap: 10 }} styles={{ root: { width: '250px' } }}>
-      <Stack horizontal verticalAlign="center">
-        <FluentProvider theme={webLightTheme}><FluidActions/></FluentProvider>
+    return (
+      <Stack verticalAlign="start" tokens={{childrenGap: 10}} styles={{root: {width: '250px'}}}>
+        <Stack horizontal verticalAlign="center">
+          <FluentProvider theme={webLightTheme}><StartConversationModal/></FluentProvider>
+          <FluentProvider theme={webLightTheme}><AddParticipantModal/></FluentProvider>
+        </Stack>
+        {messageThreads.map((messageThread: messageThreadType) => (
+          <DefaultButton
+            key={messageThread.id}
+            text={messageThread.title}
+            onClick={() => handleSelect(messageThread.id)}
+          />
+        ))}
       </Stack>
-      {messageThreads.map((messageThread) => (
-        <DefaultButton
-          key={messageThread.id}
-          text={messageThread.title}
-          onClick={() => handleSelect(messageThread.id)}
-        />
-      ))}
-    </Stack>
-  );
-};
+    );
+  }
+}
 
 export default MessageThreadPicker
