@@ -12,7 +12,7 @@ import {TextField} from "@fluentui/react";
 import {useState} from "react";
 import CommunicationServiceAPI from "../../../api/communicationServiceAPI"
 
-const FluidActions = () => {
+const StartConversationModal = () => {
   const [threadName, setThreadName] = useState("");
   const handleChatButtonClick = async () => {
     try {
@@ -33,7 +33,6 @@ const FluidActions = () => {
           <DialogContent>
             <TextField id="message-textbox"
                        label="Name your new thread!"
-                       variant="outlined"
                        value={threadName}
                        onChange={(e) => setThreadName(e.target.value)}/>
           </DialogContent>
@@ -48,7 +47,8 @@ const FluidActions = () => {
         </DialogBody>
       </DialogSurface>
     </Dialog>
+
   );
 };
 
-export default FluidActions;
+export default StartConversationModal;

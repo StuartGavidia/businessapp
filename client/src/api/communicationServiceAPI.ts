@@ -23,7 +23,7 @@ class CommunicationServiceAPI {
       const response = await fetch(`http://localhost:5103/communication/messages/${conversationID}`);
       const data = await response.json();
 
-      const chatMessages: ChatMessage[] = data.map((message: ChatMessage) => ({
+      return data.map((message: ChatMessage) => ({
         messageType: message.messageType,
         senderId: message.senderId,
         senderDisplayName: message.senderDisplayName,
@@ -33,7 +33,6 @@ class CommunicationServiceAPI {
         attached: message.attached,
         contentType: message.contentType,
       }));
-      return chatMessages;
     } catch (error) {
       console.error('Error:', error);
       // Handle the error as needed, e.g., throw it or return a default value.
@@ -95,7 +94,6 @@ class CommunicationServiceAPI {
 
   public async onChatButton(threadName: string){
     try{
-      console.log("Button works");
       const response = await fetch('http://localhost:5103/communication/createThread', {
         method: "POST",
         headers: {
@@ -113,6 +111,29 @@ class CommunicationServiceAPI {
       }
     }
     catch (error){
+      console.error('Error:', error);
+      throw error;
+    }
+  }
+
+  public async addParticipantsButton(conversationId: string, userId: string){
+    try{
+      console.log(userId);
+      const response = await fetch('http://localhost:5103/communication/conversations/addParticipant', {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          conversationId: conversationId,
+          userId: userId
+        }),
+      });
+      if (!response.ok) {
+        console.error("Error creating thread:", response.statusText);
+      }
+    }
+    catch(error){
       console.error('Error:', error);
       throw error;
     }

@@ -1,7 +1,7 @@
 import { ChatMessage, FluentThemeProvider, MessageThread, SendBox } from '@azure/communication-react';
 import { useEffect, useState} from 'react';
-import { Stack } from '@fluentui/react';
-import CommunicationServiceAPI from '../../../api/communicationServiceAPI'
+import {Stack} from '@fluentui/react';
+import CommunicationServiceAPI from '../../../api/communicationServiceAPI';
 
 export const DefaultMessageThreadExample: React.FC<{ conversationId: string }> = ({ conversationId }) => {
   const [messages, setMessages] = useState<ChatMessage[]>(CommunicationServiceAPI.getInstance().GetHistoryChatMessages());
@@ -21,7 +21,9 @@ export const DefaultMessageThreadExample: React.FC<{ conversationId: string }> =
 
   return (
     <FluentThemeProvider>
-      <MessageThreadContent messages={messages} setMessages={setMessages} conversationId={conversationId}/>
+      <div>
+       <MessageThreadContent messages={messages} setMessages={setMessages} conversationId={conversationId}/>
+      </div>
     </FluentThemeProvider>
   );
 };
