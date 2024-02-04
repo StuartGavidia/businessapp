@@ -15,3 +15,10 @@ class Budget(db.Model):
     budget_date = db.Column(db.DateTime, nullable=True)
     allowance = db.Column(db.Integer, nullable=False)
     occurance = db.Column(db.Integer, nullable=False)
+
+class StripeAccount(db.Model):
+    __tablename__ = 'stripe_account'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    company_id = db.Column(db.String(255), nullable=False)
+    customer_id = db.Column(db.String(255), nullable=False)

@@ -22,6 +22,26 @@ const Analytics: React.FC = () => {
     }
 
     useEffect(() => {
+        const createStripeCustomer = async () => {
+
+            try {
+                await BudgetServiceAPI.getInstance().createStripeCustomer();
+                console.log("Stripe Customer created successfully")
+
+            } catch (error: any) {
+                if (error.response && error.response.data && error.response.data.success === true) {
+
+                    console.log('Stripe Customer already exists')
+
+                } else {
+                    console.log('Error creating Stripe Customer', error)
+                }
+            }
+
+        };
+
+        createStripeCustomer();
+
         const fetchBudgetData = async () => {
             try {
                 const data = await BudgetServiceAPI.getInstance().getBudget();
@@ -32,7 +52,17 @@ const Analytics: React.FC = () => {
         };
 
         fetchBudgetData();
+
     }, []);
+
+    const createFinancialConnectionSession = async () => {
+        try {
+            const financialConnectionsData = await BudgetServiceAPI.getInstance().createFinancialConnectionSession()
+
+        } catch (error) {
+            console.error('Error initiating Financial Connections session:', error);
+        }
+    }
 
     return (
         <>
@@ -124,8 +154,8 @@ const Analytics: React.FC = () => {
                                         <Button variant="dark" size="sm" className='w-100' style={{marginBottom: '16px'}} onClick={handleButtonClick}>
                                             Create New Budget
                                         </Button>
-                                        <Button variant="dark" size="sm" className='w-100' style={{marginBottom: '16px'}}>
-                                            Create Transaction
+                                        <Button variant="dark" size="sm" className='w-100' style={{marginBottom: '16px'}} onClick={createFinancialConnectionSession}>
+                                            Connect your Bank Account
                                         </Button>
 
                                          {budgetData.map((budgetItem, index) => (
