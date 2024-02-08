@@ -104,10 +104,10 @@ def create_stripe_customer():
                 print('Error creating Stripe customer:', str(e))
                 return jsonify({"success": False, "error": str(e)}), 500
     
-@routes.route("/analytics/createStripeCustomer", methods=["GET"])
+@routes.route("/analytics/createFinancialConnectionsSession", methods=["POST"])
 
-def get_stripe_customer():
-    
+def createFinancialConnectionsSession():
+
     try:
         token = request.cookies.get('user_cookie')
         payload = None
@@ -115,10 +115,23 @@ def get_stripe_customer():
         payload = decode_jwt(token)
         company_id = payload['company_id']
 
-        customer_id = StripeAccount.query.filter_by(company_id=company_id).customer_id()
+        customer_id = StripeAccount.query.filter_by(company_id=company_id).first().customer_id
+
+        print("customer id:", customer_id)
+
+        session = stripe.financial_connections.Session.create(
+            account_holder={"type": "customer", "customer": customer_id},
+            permissions=["balances", "ownership", "payment_method", "transactions"],
+            prefetch=["balance"]
+        )  
+
+        print(session)
+
+        client_secret = session.client_secret
+        
+        return jsonify(client_secret), 200
 
     except Exception as e:
-        jsonify({"error": str(e)}), 500
-
-    
+        print(e)
+        return jsonify({"error": str(e)}), 500
     

@@ -90,7 +90,7 @@ class BudgetServiceAPI {
 
     public async createFinancialConnectionSession() {
         try {
-            const response = await fetch('/v1/financial_connections/sessions', {
+            const response = await fetch('/analytics/createFinancialConnectionsSession', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

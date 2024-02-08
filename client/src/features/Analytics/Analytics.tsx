@@ -1,5 +1,5 @@
 import './Analytics.css'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -10,12 +10,15 @@ import { BudgetFormData } from '../../utils/types';
 import { FontWeights } from '@fluentui/react';
 import { Accordion, Button, Stack } from 'react-bootstrap';
 import BudgetCard from './BudgetCard'
+import { loadStripe } from '@stripe/stripe-js'
 
 const Analytics: React.FC = () => {
 
     const navigate = useNavigate();
 
     const [budgetData, setBudgetData] = useState<BudgetFormData[]>([]);
+
+    const stripePromise = loadStripe('pk_test_51O4uCWFy63ZKr0XeJWxVbfQrS2XQNezYEVSMQGJ1dtBm1EUwnTHdt36jLKOZV4XssTSeiBpLgl9epXFZRSw1EKr500dvZwj033')
 
     const handleButtonClick = () => {
         navigate('/dashboard/budget');
@@ -26,7 +29,7 @@ const Analytics: React.FC = () => {
 
             try {
                 await BudgetServiceAPI.getInstance().createStripeCustomer();
-                console.log("Stripe Customer created successfully")
+                console.log('Stripe Customer created successfully')
 
             } catch (error: any) {
                 if (error.response && error.response.data && error.response.data.success === true) {
@@ -57,9 +60,20 @@ const Analytics: React.FC = () => {
 
     const createFinancialConnectionSession = async () => {
         try {
-            const financialConnectionsData = await BudgetServiceAPI.getInstance().createFinancialConnectionSession()
+            const client_secret = await BudgetServiceAPI.getInstance().createFinancialConnectionSession()
 
+            const stripe = await stripePromise;
+
+            const financialConnectionsSessionResult = await stripe?.collectFinancialConnectionsAccounts({
+                clientSecret: client_secret,
+              });
+
+            console.log("Accounts Collected:", financialConnectionsSessionResult)
+
+              // Perform Different Actions w/ financialConnectionsSessionResult
+            
         } catch (error) {
+
             console.error('Error initiating Financial Connections session:', error);
         }
     }
