@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import LandingPage from './pages/LandingPage/LandingPage'
 import SignInPage from './pages/SignInPage/SignInPage'
+import SettingsPage from './pages/SettingsPage/SettingsPage'
 import DashboardPage from './pages/DashboardPage/DashboardPage'
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage'
 import Dashboard from './features/Dashboard/Dashboard'
@@ -10,7 +11,6 @@ import Analytics from './features/Analytics/Analytics'
 import Budget from './features/Budget/Budget'
 import Calendar from './features/Calendar/Calendar'
 import Communication from './features/Communication/Communication'
-import Settings from './features/Settings/Settings'
 import UserServiceAPI from './api/userServiceAPI'
 import ProtectedRouteProps from './interfaces/ProtectedRouteProps'
 import AppConfigLayout from './layouts/AppConfigLayout'
@@ -46,7 +46,27 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> =  ({ children }) => {
 };
 
 function App() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulating an async operation (e.g., fetching data)
+    const fetchData = async () => {
+      // Assume the loading time is 2 seconds
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
+    };
+
+    fetchData();
+  }, []);
+
   return (
+    <div>
+    {loading ? (
+      <div className="spinner-container">
+      <div className="spinner"></div>
+      </div>
+    ) : (
     <Routes>
       <Route path="" element={<LandingPage />}/>
       <Route element={<AppConfigLayout />}>
@@ -63,12 +83,13 @@ function App() {
           <Route path="budget" element={<Budget />} />
           <Route path="calendar" element={<Calendar />}/>
           <Route path="communication" element={<Communication />}/>
-          <Route path="settings" element={<Settings />}/>
+          <Route path="settings" element={<SettingsPage />}/>
         </Route>
       </Route>
       <Route path="*" element={<NotFoundPage />} />
-    </Routes>
-  )
+    </Routes>)}
+    </div>
+  );
 }
 
 export default App
