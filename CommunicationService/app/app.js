@@ -1,7 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { MongoClient } from 'mongodb';
+import {MongoClient} from 'mongodb';
+import cookie from 'cookie';
+import jwt from 'jsonwebtoken';
 
 const app = express();
 app.use(cors());
@@ -10,11 +12,30 @@ app.use(bodyParser.json());
 const PORT = 5103;
 const HOST = '0.0.0.0';
 
+const authenticate = (req, res, next) => {
+  const cookies = cookie.parse(req.headers.cookie || '');
+  const token = cookies.user_cookie;
+
+  if (!token) {
+    return res.sendStatus(401);
+  }
+
+  jwt.verify(token, 'we_need_to_change_this', (err, user) => {
+    if (err) {
+      return res.sendStatus(403);
+    }
+
+    req.user = user;
+
+    next();
+  });
+};
+
 app.get('/communication/', (req, res) => {
   res.send('hello');
 });
 
-const cosmosdbUri = 'mongodb://bma-database:QCVFyzTDxUO4dKF0yOWWVZS6bzGFDC6XIO3eTUXRGQJsIDtIJ9Ks8qto5qIBRDxXhbY4AgVxF2irACDbuCxbjw==@bma-database.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@bma-database@';
+const cosmosdbUri = 'mongodb://bma-database:YdpClEgzYQYSPzfxBEp3ESCmJV8C1ceynuSFtceydU5IBdVumXeOsHblPZZdfKVEYogUESNbGB5TACDbFjNxvg==@bma-database.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@bma-database@';
 const client = new MongoClient(cosmosdbUri);
 await client.connect();
 const database = client.db('SampleDB');
@@ -49,8 +70,10 @@ app.get('/communication/messages/:conversationID', async (req, res) => {
 });
 
 // Adding message to conversation
-app.post('/communication/conversations/addMessage', (req, res) => {
+app.post('/communication/conversations/addMessage', authenticate, (req, res) => {
   const newMessage = req.body;
+  newMessage.senderId = req.user.user_id;
+  newMessage.senderDisplayName = req.user.first_name + " " + req.user.last_name;
   const collection = database.collection('Messages');
   collection.insertOne(newMessage, (err) => {
     if (err) {
@@ -88,11 +111,10 @@ app.put('/communication/conversations/addParticipant', async (req, res) => {
 });
 
 // Getting Conversations by UserID
-app.get('/communication/conversations/:userID', async (req, res) => {
-  const { userId } = req.params;
+app.get('/communication/conversations/', authenticate, async (req, res) => {
   try {
     const collection = database.collection('Conversations');
-    const threads = await collection.find({ userId }).toArray();
+    const threads = await collection.find({ participants: String(req.user.user_id) }).toArray();
     res.json(threads);
   } catch (error) {
     console.error(error);
