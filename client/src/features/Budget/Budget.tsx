@@ -12,7 +12,6 @@ import format from 'date-fns/format'
 import React, { ChangeEvent } from 'react'
 import './Components/CalendarComp.css'
 
-
 const Budget: React.FC = () => {
     const [formData, setFormData] = useState({
         account_name: "",

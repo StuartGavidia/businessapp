@@ -1,4 +1,4 @@
-import { BudgetFormData } from "../utils/types";
+import { BudgetFormData, StripeAccountData } from "../utils/types";
 
 
 class BudgetServiceAPI {
@@ -105,6 +105,70 @@ class BudgetServiceAPI {
             return data;
         } catch (error) {
             console.error('Error initiating Financial Connections session:', error);
+            throw error;
+        }
+    }
+
+    public async storeStripeAccountID(stripeAccountID: StripeAccountData) {
+        return await fetch('/analytics/stripeAccountID', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+
+            },
+            body: JSON.stringify(stripeAccountID)
+        })
+            .then((response: Response) => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.error);
+                    });
+                }
+                return response.json();
+            })
+            .then((data: { message: string }) => {
+                console.log(data.message);
+            })
+    }
+
+    public async checkStripeAccountID() {
+        try {
+            const response = await fetch('/analytics/checkStripeAccountID', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to retrieve Stripe Account ID')
+            }
+
+            const data = await response.json()
+            return data;
+        } catch (error) {
+            console.error('Error fetching Stripe Account ID:', error)
+            throw error;
+        }
+    }
+
+    public async getStripeBalance() {
+        try {
+            const response = await fetch('/analytics/getStripeBalance', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to retrieve user\'s account balance')
+            }
+
+            const data = await response.json()
+            return data;
+        } catch(error) {
+            console.error("Error fetching user'\s account balance", error)
             throw error;
         }
     }

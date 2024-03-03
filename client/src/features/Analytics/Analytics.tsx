@@ -5,12 +5,18 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import BudgetServiceAPI from '../../api/budgetServiceAPI'
+import Pagination from 'react-bootstrap/Pagination';
 import { useEffect, useState } from 'react';
-import { BudgetFormData } from '../../utils/types';
+import { BudgetFormData, StripeAccountData } from '../../utils/types';
 import { FontWeights } from '@fluentui/react';
-import { Accordion, Button, Stack } from 'react-bootstrap';
-import BudgetCard from './BudgetCard'
-import { loadStripe } from '@stripe/stripe-js'
+import { Button, Navbar, Stack } from 'react-bootstrap';
+import BudgetCard from './BudgetCard';
+import { loadStripe } from '@stripe/stripe-js';
+import AreaChart from './Components/AreaChart';
+import BarChart from './Components/BarChart'
+import LineChart from './Components/LineChart'
+import { render } from '@fullcalendar/core/preact.js';
+import { stringify } from 'querystring';
 
 const Analytics: React.FC = () => {
 
@@ -22,9 +28,62 @@ const Analytics: React.FC = () => {
 
     const handleButtonClick = () => {
         navigate('/dashboard/budget');
+    };
+
+    const [hasStripeAccount, setHasStripeAccount] = useState<boolean | null>(null);
+
+    const [stripeAccountBalance, setStripeAccountBalance] = useState(0)
+
+    const [chartStyle, setChartStyle] = useState('line')
+
+
+    /* pagination methods for recharts visualizations */
+    const handleNextClick = () => {
+        if (chartStyle === 'line') setChartStyle('bar')
+        else if (chartStyle === 'bar') setChartStyle('area')
+        else if (chartStyle === 'area') setChartStyle('line')
+
+    }
+
+    const handlePrevClick = () => {
+        if (chartStyle === 'line') setChartStyle('area')
+        else if (chartStyle === 'area') setChartStyle('bar')
+        else if (chartStyle === 'bar') setChartStyle('line')
+
+    }
+
+    const renderChart = () => {
+        switch (chartStyle) {
+            case 'line':
+                return <LineChart />
+            case 'bar':
+                return <BarChart />
+            case 'area':
+                return <AreaChart />
+
+        }
     }
 
     useEffect(() => {
+
+        /* checks to see if account exists with stripe; used for conditional rendering of connect button */
+        BudgetServiceAPI.getInstance().checkStripeAccountID()
+            .then(result => {
+                setHasStripeAccount(result);
+            })
+            .catch(error => {
+                console.error('Error checking Stripe Account ID', error);
+            });
+
+        /* request account balance through stripe api. Is currently null */
+        BudgetServiceAPI.getInstance().getStripeBalance()
+            .then(result => {
+                setStripeAccountBalance(result.balance)
+            })
+            .catch(error => {
+                console.error('Error retrieving account balance', error)
+            })
+
         const createStripeCustomer = async () => {
 
             try {
@@ -66,12 +125,28 @@ const Analytics: React.FC = () => {
 
             const financialConnectionsSessionResult = await stripe?.collectFinancialConnectionsAccounts({
                 clientSecret: client_secret,
-              });
+            });
 
-            console.log("Accounts Collected:", financialConnectionsSessionResult)
+            try {
 
-              // Perform Different Actions w/ financialConnectionsSessionResult
-            
+                let accountId = financialConnectionsSessionResult?.financialConnectionsSession?.accounts[0].id
+                if (accountId) {
+                    let accountData: StripeAccountData = {
+                        accountId: accountId
+                    };
+
+                    await BudgetServiceAPI.getInstance().storeStripeAccountID(accountData);
+                    setHasStripeAccount(true);
+                }
+
+            } catch (err: unknown) {
+                if (err instanceof Error) {
+                    console.log(err.message);
+                } else {
+                    console.log("An error occurred")
+                }
+            }
+
         } catch (error) {
 
             console.error('Error initiating Financial Connections session:', error);
@@ -90,7 +165,7 @@ const Analytics: React.FC = () => {
                             </Row>
                             <Row>
                                 <Col md={12}>
-                                    $999,999.00 {/* Placeholder */}
+                                    ${stripeAccountBalance} {/* Placeholder */}
                                     <Row>
                                         <Col className="mt-4"
                                             style={{
@@ -139,7 +214,7 @@ const Analytics: React.FC = () => {
                                         <Col className='mt-4' style={{ fontSize: '20px', fontWeight: 'bold' }}>Your Analytics</Col>
                                     </Row>
                                     <Row>
-                                        <Col md={4}
+                                        <Col
                                             style={{
                                                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
                                                 padding: '10px',
@@ -147,7 +222,13 @@ const Analytics: React.FC = () => {
                                                 borderRadius: '15px',
                                                 justifyContent: 'center',
                                             }}>
-                                            Income & Expenses
+                                            <Row>
+                                                <Pagination>
+                                                    <Pagination.Prev onClick={handlePrevClick} />
+                                                    <Pagination.Next onClick={handleNextClick} />
+                                                </Pagination>
+                                                {renderChart()}
+                                            </Row>
                                         </Col>
                                     </Row>
                                 </Col>
@@ -165,21 +246,23 @@ const Analytics: React.FC = () => {
                                 <Row>
                                     <Col className='mt-4'>
                                         <Outlet />
-                                        <Button variant="dark" size="sm" className='w-100' style={{marginBottom: '16px'}} onClick={handleButtonClick}>
+                                        <Button variant="dark" size="sm" className='w-100' style={{ marginBottom: '16px' }} onClick={handleButtonClick}>
                                             Create New Budget
                                         </Button>
-                                        <Button variant="dark" size="sm" className='w-100' style={{marginBottom: '16px'}} onClick={createFinancialConnectionSession}>
-                                            Connect your Bank Account
-                                        </Button>
+                                        {!hasStripeAccount && (
+                                            <Button variant="dark" size="sm" className='w-100' style={{ marginBottom: '16px' }} onClick={createFinancialConnectionSession}>
+                                                Connect your Bank Account
+                                            </Button>
+                                        )}
 
-                                         {budgetData.map((budgetItem, index) => (
+                                        {budgetData.map((budgetItem, index) => (
                                             <BudgetCard
-                                            key={index}
-                                            total_spend={700}
-                                            account_name={budgetItem.account_name}
-                                            allowance={budgetItem.allowance}
+                                                key={index}
+                                                total_spend={700}
+                                                account_name={budgetItem.account_name}
+                                                allowance={budgetItem.allowance}
                                             />
-                                         ))}
+                                        ))}
                                     </Col>
                                 </Row>
                             </Stack>
