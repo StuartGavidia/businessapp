@@ -9,9 +9,9 @@ interface messageThreadType {
   title: string
 }
 
-class MessageThreadPicker extends React.Component<{ messageThreads: any, onSelectMessageThread: any }> {
+class MessageThreadPicker extends React.Component<{ messageThreads: any, onSelectMessageThread: any, conversationId: any }> {
   render() {
-    const {messageThreads, onSelectMessageThread} = this.props;
+    const {messageThreads, onSelectMessageThread, conversationId} = this.props;
     const handleSelect = (messageThreadId: any) => {
       onSelectMessageThread(messageThreadId);
     };
@@ -20,7 +20,7 @@ class MessageThreadPicker extends React.Component<{ messageThreads: any, onSelec
       <Stack verticalAlign="start" tokens={{childrenGap: 10}} styles={{root: {width: '250px'}}}>
         <Stack horizontal verticalAlign="center">
           <FluentProvider theme={webLightTheme}><StartConversationModal/></FluentProvider>
-          <FluentProvider theme={webLightTheme}><AddParticipantModal/></FluentProvider>
+          <FluentProvider theme={webLightTheme}><AddParticipantModal conversationId={conversationId}/></FluentProvider>
         </Stack>
         {messageThreads.map((messageThread: messageThreadType) => (
           <DefaultButton

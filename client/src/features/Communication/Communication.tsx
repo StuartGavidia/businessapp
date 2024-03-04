@@ -7,10 +7,14 @@ import { DefaultMessageThreadExample } from './components/MessageThread';
 import { Stack, Text } from '@fluentui/react';
 import CommunicationServiceAPI from "../../api/communicationServiceAPI";
 
+interface MessageThread {
+  conversationId: string;
+  title: string;
+}
 
 function App() {
-  const [selectedMessageThread, setSelectedMessageThread] = useState(null);
-  const [messageThreads, setMessageThreads] = useState([]);
+  const [selectedMessageThread, setSelectedMessageThread] = useState<string | null>(null);
+  const [messageThreads, setMessageThreads] = useState<MessageThread[]>([]);
 
   useEffect(() => {
     const fetchMessageThreads = async () => {
@@ -25,7 +29,7 @@ function App() {
     fetchMessageThreads();
   }, []);
 
-  const handleSelectMessageThread = (conversationId) => {
+  const handleSelectMessageThread = (conversationId: string) => {
     setSelectedMessageThread(conversationId);
   };
 
@@ -37,6 +41,7 @@ function App() {
           title: title,
         }))}
         onSelectMessageThread={handleSelectMessageThread}
+        conversationId={selectedMessageThread}
       />
       <Stack grow>
         {selectedMessageThread ? (
