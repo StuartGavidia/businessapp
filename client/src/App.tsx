@@ -15,7 +15,7 @@ import UserServiceAPI from './api/userServiceAPI'
 import ProtectedRouteProps from './interfaces/ProtectedRouteProps'
 import AppConfigLayout from './layouts/AppConfigLayout'
 import { ThemeProvider } from './theme/ThemeContext';
-
+import Spinner from './components/Spinner/Spinner'
 const ProtectedRoute: React.FC<ProtectedRouteProps> =  ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
@@ -62,10 +62,7 @@ function App() {
 
   return (
     <div>
-    {loading ? (
-      <div className="spinner-container">
-      <div className="spinner"></div>
-      </div>
+    {loading ? <Spinner/>
     ) : (
     <Routes>
       <Route path="" element={<LandingPage />}/>
