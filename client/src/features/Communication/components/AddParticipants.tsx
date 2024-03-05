@@ -1,15 +1,13 @@
-import { useState, useEffect } from "react";
-import CommunicationServiceAPI from "../../../api/communicationServiceAPI";
+import { useState, useEffect } from 'react';
+import { Dropdown } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import CommunicationServiceAPI from '../../../api/communicationServiceAPI';
 import UserServiceAPI from "../../../api/userServiceAPI.ts";
-import { Dropdown } from "react-bootstrap"; // Import Bootstrap Dropdown
-import Button from "react-bootstrap/Button"; // Import Bootstrap Button
-import Modal from "react-bootstrap/Modal"; // Import Bootstrap Modal
 
-const AddParticipantModal = () => {
-  const [userId, setUserId] = useState("");
-  const [employeeOptions, setEmployeeOptions] = useState([
-    { key: "", text: "" },
-  ]);
+const AddParticipantModal = ({ conversationId }) => {
+  const [userId, setUserId] = useState('');
+  const [employeeOptions, setEmployeeOptions] = useState([{ key: '', text: '' }]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
@@ -17,14 +15,14 @@ const AddParticipantModal = () => {
     const fetchEmployeeOptions = async () => {
       try {
         const employees = await UserServiceAPI.getInstance().usersInCompany();
-        const userIds = employees.map((user) => ({
+        const userIds = employees.map(user => ({
           key: user.user_id.toString(),
           text: `${user.first_name} ${user.last_name}`,
         }));
         setEmployeeOptions(userIds);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching employee options:", error);
+        console.error('Error fetching employee options:', error);
       }
     };
 
@@ -32,21 +30,16 @@ const AddParticipantModal = () => {
   }, []);
 
   const handleChatButtonClick = async () => {
-    let conversationId;
     try {
-      conversationId = "54321";
-      await CommunicationServiceAPI.getInstance().addParticipantsButton(
-        conversationId,
-        userId
-      );
+      await CommunicationServiceAPI.getInstance().addParticipantsButton(conversationId, userId);
     } catch (error) {
-      console.error("Error:", error);
+      console.error('Error:', error);
     }
   };
 
   return (
     <>
-      <Button onClick={() => setShowModal(true)}>Add Participants</Button>
+      <Button onClick={() => setShowModal(true)} disabled={!conversationId}>Add Participants</Button>
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Add Participants</Modal.Title>
@@ -56,11 +49,9 @@ const AddParticipantModal = () => {
             <div>Loading...</div>
           ) : (
             <Dropdown>
-              <Dropdown.Toggle variant="primary">
-                Add Participants
-              </Dropdown.Toggle>
+              <Dropdown.Toggle variant="primary">Add Participants</Dropdown.Toggle>
               <Dropdown.Menu>
-                {employeeOptions.map((option) => (
+                {employeeOptions.map(option => (
                   <Dropdown.Item
                     key={option.key}
                     onClick={() => {
@@ -78,7 +69,7 @@ const AddParticipantModal = () => {
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleChatButtonClick}>
+          <Button variant="primary" onClick={handleChatButtonClick} disabled={!conversationId}>
             Chat
           </Button>
         </Modal.Footer>

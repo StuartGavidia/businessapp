@@ -43,8 +43,8 @@ const MessageThreadContent = ({ messages, setMessages, conversationId }) => {
           // and perform the necessary logic for sending messages.
           const newMessage = {
             messageType: 'chat',
-            senderId: 'user1',
-            senderDisplayName: 'Kat Larsson',
+            senderId: '',
+            senderDisplayName: '',
             messageId: Math.random().toString(),
             conversationId: conversationId,
             content: content,
