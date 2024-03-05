@@ -24,7 +24,7 @@ const Analytics: React.FC = () => {
 
     const [budgetData, setBudgetData] = useState<BudgetFormData[]>([]);
 
-    const stripePromise = loadStripe('pk_test_51O4uCWFy63ZKr0XeJWxVbfQrS2XQNezYEVSMQGJ1dtBm1EUwnTHdt36jLKOZV4XssTSeiBpLgl9epXFZRSw1EKr500dvZwj033')
+    const stripePromise = loadStripe('')
 
     const handleButtonClick = () => {
         navigate('/dashboard/budget');

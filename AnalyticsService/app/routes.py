@@ -14,7 +14,7 @@ from stripe.error import StripeError
 routes = Blueprint('routes', __name__)
 
 #Set Stripe API Key
-stripe.api_key = "sk_test_51O4uCWFy63ZKr0XemD3A1rCloE3Su65QRVkFPIWiQ5wgemqAUJOSOJtoSeKVxkKpSXRdMjWp0nRn31rvtWrQ26sY00ffEdglnR"
+stripe.api_key = ""
 
 @routes.route("/analytics")
 def analytics():
