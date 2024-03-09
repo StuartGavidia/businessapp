@@ -20,7 +20,7 @@ class CommunicationServiceAPI {
 
   public async GetLivedChatMessages(conversationID : string): Promise<ChatMessage[]> {
     try {
-      const response = await fetch(`http://localhost:5103/communication/messages/${conversationID}`);
+      const response = await fetch(`/communication/messages/${conversationID}`);
       const data = await response.json();
 
       return data.map((message: ChatMessage) => ({
@@ -59,10 +59,9 @@ class CommunicationServiceAPI {
 
   public async GetConversationThreads(): Promise<{ conversationId: string, title: string }[]> {
     try{
-      const userId = "12345";
-      const response = await fetch(`http://localhost:5103/communication/conversations/${userId}`);
+      const response = await fetch(`/communication/conversations/`);
       const data = await response.json();
-      return data.map((conversation: { conversationId: any; title: any; }) => ({
+      return data.map((conversation: { conversationId: never; title: never; }) => ({
         conversationId: conversation.conversationId,
         title: conversation.title,
       }));
@@ -77,7 +76,7 @@ class CommunicationServiceAPI {
   public async SendMessages(newMessage : any){
     try {
       // Make the API call to add the message to the conversation
-      return await fetch('http://localhost:5103/communication/conversations/addMessage', {
+      return await fetch('/communication/conversations/addMessage', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -94,7 +93,7 @@ class CommunicationServiceAPI {
 
   public async onChatButton(threadName: string){
     try{
-      const response = await fetch('http://localhost:5103/communication/createThread', {
+      const response = await fetch('/communication/createThread', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -119,7 +118,7 @@ class CommunicationServiceAPI {
   public async addParticipantsButton(conversationId: string, userId: string){
     try{
       console.log(userId);
-      const response = await fetch('http://localhost:5103/communication/conversations/addParticipant', {
+      const response = await fetch('/communication/conversations/addParticipant', {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
