@@ -26,3 +26,7 @@ export type BudgetFormData = {
     budget_date: string
 
 }
+
+export type StripeAccountData = {
+    accountId: string,
+}
