@@ -37,3 +37,13 @@ class StripeAccount(db.Model):
                 return False, "Stripe account not found for customer_id: {}".format(customer_id)
         except Exception as e:
             return False, str(e)
+
+class Transaction(db.Model):
+    __tablename__ = 'transaction'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    company_id = db.Column(db.String(255), nullable=False)
+    account_name = db.Column(db.String(255), nullable=False)
+    amount = db.Column(db.Integer, nullable=False)
+    descriptions = db.Column(db.String(255), nullable=False)
+

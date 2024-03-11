@@ -4,7 +4,7 @@ This module defines the different routes for the flask app
 
 import os
 from flask import Blueprint
-from app.models import Budget, StripeAccount, db
+from app.models import Budget, StripeAccount, Transaction, db
 from flask import Blueprint, jsonify, request, abort, make_response
 from app.decorators import token_required
 from app.utils import decode_jwt
@@ -14,7 +14,7 @@ from stripe.error import StripeError
 routes = Blueprint('routes', __name__)
 
 #Set Stripe API Key
-stripe.api_key = ""
+stripe.api_key = "sk_test_51O4uCWFy63ZKr0XemD3A1rCloE3Su65QRVkFPIWiQ5wgemqAUJOSOJtoSeKVxkKpSXRdMjWp0nRn31rvtWrQ26sY00ffEdglnR"
 
 @routes.route("/analytics")
 def analytics():
@@ -200,6 +200,39 @@ def get_stripe_balance():
      
      except Exception as e:
          return jsonify({"error": str(e)}), 500
+     
+@routes.route("/analytics/createTransaction", methods=['POST'])
+     
+def create_transaction():
+    """
+    This route creates a transaction
+    """
+    try:
+        token = request.cookies.get('user_cookie')
+        payload = None
+
+        payload = decode_jwt(token)
+        company_id = payload['company_id']
+
+        data = request.json
+        account_name = data.get('account_name', '')
+        amount = data.get('amount', '')
+        descriptions = data.get('descriptions', '')
+
+        new_transaction = Transaction(
+            company_id=company_id,
+            account_name=account_name,
+            amount=amount,
+            descriptions=descriptions
+        )
+        
+        db.session.add(new_transaction)
+        db.session.commit()
+
+        return jsonify({"message": "Transaction successfully created"}), 201
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
     

@@ -11,8 +11,14 @@ import { FormControl } from 'react-bootstrap'
 import format from 'date-fns/format'
 import React, { ChangeEvent } from 'react'
 import './Components/CalendarComp.css'
+import Modal from 'react-bootstrap/Modal'
 
-const Budget: React.FC = () => {
+interface ModalProps {
+    showModal: boolean
+    onClose: () => void
+}
+
+const Budget: React.FC<ModalProps> = ({ showModal, onClose }) => {
     const [formData, setFormData] = useState({
         account_name: "",
         occurance: 0,
@@ -65,77 +71,78 @@ const Budget: React.FC = () => {
     };
 
     return (
-        <div className="budget-content" style={{ width: "100%", maxWidth: "450px", border: 'none' }}>
-            <Form onSubmit={handleSubmit}>
-                <Form.Group controlId="account_name" className="mb-3">
-                    <Form.Label className="mb-3 prompt-label">Choose an Account Name</Form.Label>
-                    <Form.Control
-                        type="text"
-                        placeholder="Account Name"
-                        name="account_name"
-                        style={{
-                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                            width: 'auto',
-                            borderRadius: '15px',
-                            justifyContent: 'center',
-                        }}
-                        onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
-                    />
-                </Form.Group>
-                <Form.Group controlId="occurance" className="mb-3">
-                    <Form.Label className="mb-3 prompt-label" >How often will this happen?</Form.Label><br />
-                    <Form.Check
-                        type="radio"
-                        label="Monthly"
-                        name="occurance"
-                        value="monthly"
-                        onChange={handleChange}
-                        inline
-                    />
-                    <Form.Check
-                        type="radio"
-                        label="Quarterly"
-                        name="occurance"
-                        value="quarterly"
-                        onChange={handleChange}
-                        inline />
-                    <Form.Check
-                        type="radio"
-                        label="Once"
-                        name="occurance"
-                        value="once"
-                        onChange={handleChange}
-                        inline />
-                </Form.Group>
-                <Form.Group>
-                    <Form.Label className='mb-3 prompt-label'>Select a Start Date</Form.Label>
-                    <CalendarComp onSelect={handleChange} />
-                </Form.Group>
-                <Form.Group controlId="number" className="mb-3">
-                    <Form.Label className="mb-3 prompt-label">What's your allowance?</Form.Label>
-                    <InputGroup>
-                        <InputGroup.Text>$</InputGroup.Text>
-                        <Form.Control
-                            type="number"
-                            name="allowance"
-                            placeholder="0"
-                            style={{
-                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-
-                                width: 'auto',
-                                borderRadius: '15px',
-
-                            }}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
-                            required />
-                    </InputGroup>
-                </Form.Group>
-                <Button variant="dark" type="submit" className="w-100">
-                    Save
-                </Button>
-            </Form>
-            {budgetCreated && <p>{formData.account_name} budget created!</p>}
-        </div>
+        <Modal show={showModal} onHide={onClose} aria-labelledby="contained-modal-title-vcenter" centered>
+            <Modal.Header closeButton>
+                <Modal.Title id="contained-modal-title-vcenter">Create New Budget</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <div className="budget-content" style={{ width: "100%", maxWidth: "450px", border: 'none' }}>
+                    <Form onSubmit={handleSubmit}>
+                        <Form.Group controlId="account_name" className="mb-3">
+                            <Form.Label className="mb-3 prompt-label">Choose an Account Name</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Account Name"
+                                name="account_name"
+                                style={{
+                                    width: 'auto',
+                                    justifyContent: 'center',
+                                }}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="occurance" className="mb-3">
+                            <Form.Label className="mb-3 prompt-label" >How often will this happen?</Form.Label><br />
+                            <Form.Check
+                                type="radio"
+                                label="Monthly"
+                                name="occurance"
+                                value="monthly"
+                                onChange={handleChange}
+                                inline
+                            />
+                            <Form.Check
+                                type="radio"
+                                label="Quarterly"
+                                name="occurance"
+                                value="quarterly"
+                                onChange={handleChange}
+                                inline />
+                            <Form.Check
+                                type="radio"
+                                label="Once"
+                                name="occurance"
+                                value="once"
+                                onChange={handleChange}
+                                inline />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label className='mb-3 prompt-label'>Select a Start Date</Form.Label>
+                            <CalendarComp onSelect={handleChange} />
+                        </Form.Group>
+                        <Form.Group controlId="number" className="mb-3">
+                            <Form.Label className="mb-3 prompt-label">What's your allowance?</Form.Label>
+                            <InputGroup>
+                                <InputGroup.Text>$</InputGroup.Text>
+                                <Form.Control
+                                    type="number"
+                                    name="allowance"
+                                    placeholder="0"
+                                    style={{
+                                        width: 'auto'
+                                    }}
+                                    onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
+                                    required />
+                            </InputGroup>
+                        </Form.Group>
+                        <Button variant="dark" type="submit" className="w-100">
+                            Save
+                        </Button>
+                    </Form>
+                    {budgetCreated && <p>{formData.account_name} budget created!</p>}
+                </div>
+            </Modal.Body>
+        </Modal>
     )
 }
 

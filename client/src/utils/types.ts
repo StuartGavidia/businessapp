@@ -30,3 +30,9 @@ export type BudgetFormData = {
 export type StripeAccountData = {
     accountId: string,
 }
+
+export type TransactionFormData = {
+    account_name: string,
+    amount: number,
+    descriptions: string
+}

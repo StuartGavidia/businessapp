@@ -17,6 +17,11 @@ import BarChart from './Components/BarChart'
 import LineChart from './Components/LineChart'
 import { render } from '@fullcalendar/core/preact.js';
 import { stringify } from 'querystring';
+import Table from 'react-bootstrap/Table';
+import Modal from 'react-bootstrap/Modal'
+import TransactionModal from './Components/TransactionsModal';
+import Budget from '../Budget/Budget';
+
 
 const Analytics: React.FC = () => {
 
@@ -24,7 +29,7 @@ const Analytics: React.FC = () => {
 
     const [budgetData, setBudgetData] = useState<BudgetFormData[]>([]);
 
-    const stripePromise = loadStripe('')
+    const stripePromise = loadStripe('pk_test_51O4uCWFy63ZKr0XeJWxVbfQrS2XQNezYEVSMQGJ1dtBm1EUwnTHdt36jLKOZV4XssTSeiBpLgl9epXFZRSw1EKr500dvZwj033')
 
     const handleButtonClick = () => {
         navigate('/dashboard/budget');
@@ -35,6 +40,10 @@ const Analytics: React.FC = () => {
     const [stripeAccountBalance, setStripeAccountBalance] = useState(0)
 
     const [chartStyle, setChartStyle] = useState('line')
+
+    const [showTransactionModal, setShowTransactionModal] = useState(false)
+
+    const [showBudgetModal, setShowBudgetModal] = useState(false)
 
 
     /* pagination methods for recharts visualizations */
@@ -245,12 +254,16 @@ const Analytics: React.FC = () => {
                                 </Row>
                                 <Row>
                                     <Col className='mt-4'>
-                                        <Outlet />
-                                        <Button variant="dark" size="sm" className='w-100' style={{ marginBottom: '16px' }} onClick={handleButtonClick}>
+                                        <Button variant='dark' size='sm' className='w-100' style={{ marginBottom: '16px' }} onClick={() => setShowBudgetModal(true)}>
                                             Create New Budget
                                         </Button>
+                                        <Budget showModal={showBudgetModal} onClose={() => setShowBudgetModal(false)}/>
+                                        <Button variant='dark' size='sm' className='w-100' style={{ marginBottom: '16px' }} onClick={() => setShowTransactionModal(true)}>
+                                            Create New Transaction
+                                        </Button>
+                                        <TransactionModal showModal={showTransactionModal} onClose={() => setShowTransactionModal(false)}/>
                                         {!hasStripeAccount && (
-                                            <Button variant="dark" size="sm" className='w-100' style={{ marginBottom: '16px' }} onClick={createFinancialConnectionSession}>
+                                            <Button variant='dark' size='sm' className='w-100' style={{ marginBottom: '16px' }} onClick={createFinancialConnectionSession}>
                                                 Connect your Bank Account
                                             </Button>
                                         )}
@@ -265,6 +278,32 @@ const Analytics: React.FC = () => {
                                         ))}
                                     </Col>
                                 </Row>
+                                {/* Recent Transactions */}
+                                <Row>
+                                        <Col className='mt-4' style={{ fontSize: '20px', fontWeight: 'bold' }}>Recent Transactions</Col>
+                                    </Row>
+                                    <Row>
+                                        <Col
+                                            style={{
+                                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                                                padding: '10px',
+                                                width: 'auto',
+                                                borderRadius: '15px',
+                                                justifyContent: 'center',
+                                            }}>
+                                            <Row>
+                                                <Table>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Date</th>
+                                                            <th>Amount</th>
+                                                            <th>Description</th>
+                                                        </tr>
+                                                    </thead>
+                                                </Table>
+                                            </Row>
+                                        </Col>
+                                    </Row>
                             </Stack>
                         </Container>
                     </Col>

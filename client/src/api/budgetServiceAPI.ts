@@ -1,4 +1,4 @@
-import { BudgetFormData, StripeAccountData } from "../utils/types";
+import { BudgetFormData, StripeAccountData, TransactionFormData } from "../utils/types";
 
 
 class BudgetServiceAPI {
@@ -171,6 +171,28 @@ class BudgetServiceAPI {
             console.error("Error fetching user'\s account balance", error)
             throw error;
         }
+    }
+
+    public async createTransaction(transactionData: TransactionFormData) {
+        return await fetch('/analytics/createTransaction', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+
+            },
+            body: JSON.stringify(transactionData)
+        })
+            .then((response: Response) => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.error);
+                    });
+                }
+                return response.json();
+            })
+            .then((data: { message: string }) => {
+                console.log(data.message);
+            })
     }
 
 }

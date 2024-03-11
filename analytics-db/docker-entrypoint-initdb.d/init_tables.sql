@@ -13,4 +13,12 @@ CREATE TABLE stripe_account (
     company_id VARCHAR(255) UNIQUE NOT NULL,
     customer_id VARCHAR(255) UNIQUE NOT NULL,
     account_id VARCHAR(225) UNIQUE
-)
+);
+
+CREATE TABLE transaction (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    company_id VARCHAR(255) NOT NULL,
+    account_name VARCHAR(255) NOT NULL,
+    amount INT NOT NULL,
+    descriptions VARCHAR (255) NOT NULL
+);
