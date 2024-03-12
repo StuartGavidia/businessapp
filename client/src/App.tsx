@@ -60,10 +60,10 @@ function App() {
     fetchData();
   }, []);
 
-  return (
-    <div>
-    {loading ? <Spinner/>
-    ) : (
+   if (loading) {
+    return <Spinner/> 
+   } else {
+    return (
     <Routes>
       <Route path="" element={<LandingPage />}/>
       <Route element={<AppConfigLayout />}>
@@ -84,9 +84,8 @@ function App() {
         </Route>
       </Route>
       <Route path="*" element={<NotFoundPage />} />
-    </Routes>)}
-    </div>
-  );
+    </Routes>);
+   }
 }
 
 export default App
