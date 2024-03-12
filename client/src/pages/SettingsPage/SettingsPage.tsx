@@ -2,7 +2,7 @@ import { useState } from 'react'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import Settings from '../../components/Settings/Settings'
+import Settings from '../../components/Settings/Settings.tsx/Settings'
 
 const SettingsPage:React.FC = () => {
 
