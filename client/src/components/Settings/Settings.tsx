@@ -226,10 +226,11 @@ const Settings: React.FC<SettingsProps> = () => {
               {selectedSidebarColor && <p>Sidebar Color Will Be: {selectedSidebarColor}</p>}
             </div>
 
-
-            <Button variant="primary" type="submit" className="w-100">
-                Save
-            </Button>
+            <div style={{marginTop: '50px'}}>
+                <Button variant="primary" type="submit" className="w-100">
+                    Save
+                </Button>
+            </div>
           </Form>
         </div>
     )
