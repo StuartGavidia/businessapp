@@ -21,6 +21,10 @@ const Settings: React.FC<SettingsProps> = () => {
       positionName: ''
     })
     const [error, setError] = useState("");
+    const [selectedColor, setSelectedColor] = useState('green');
+
+
+
 
     const toggleDirectReports = (hasDirectReports: boolean) => {
       setFormData(prevState => ({ ...prevState, ['hasDirectReports']: hasDirectReports }))
@@ -178,6 +182,19 @@ const Settings: React.FC<SettingsProps> = () => {
               error &&
               <p className="error-message">{error}</p>
             }
+
+            <div>
+             <select id="cars" value={selectedColor} onChange={setSelectedColor}>
+                <option value="green">Green</option>
+                <option value="blue">Blue</option>
+                <option value="purple">Purple</option>
+                <option value="cyan">Cyan</option>
+              </select>
+              {/* Display the selected option */}
+              {selectedColor && <p>You selected: {selectedColor}</p>}
+            </div>
+
+
             <Button variant="primary" type="submit" className="w-100">
                 Save
             </Button>
