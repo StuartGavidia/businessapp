@@ -14,11 +14,16 @@ import InputGroup from 'react-bootstrap/InputGroup';
 
 const DashboardPage:React.FC = () => {
     const [show, setShow] = useState(false);
-    const themeName = localStorage.getItem('theme')
+    const [forceRender, setForceRender] = useState(false);
     const { toggleTheme } = useTheme();
 
     const toggleShow = () => {
       setShow(prev => !prev)
+    }
+
+    const toggleHandler = () => {
+      toggleTheme()
+      setForceRender(!forceRender)
     }
 
     const navigate = useNavigate();
@@ -78,7 +83,7 @@ const DashboardPage:React.FC = () => {
                   <Navbar.Collapse className="justify-content-end pe-4">
                     <InputGroup className="w-50 me-3">
                       <Button style={{backgroundColor: 'var(--bs-body-color)', borderColor: 'var(--bs-body-color)'}}>
-                        <i className="bi bi-search" style={{color: themeName == "light" ? "white" : "black"}}></i>
+                        <i className="bi bi-search" style={{color:  localStorage.getItem('theme') == "light" ? "white" : "black"}}></i>
                       </Button>
                       <Form.Control
                         aria-label="Search bar"
@@ -89,8 +94,8 @@ const DashboardPage:React.FC = () => {
                       />
                     </InputGroup>
                     <i
-                      className={themeName == "light" ? "bi bi-brightness-high-fill me-3" : "bi bi-moon-fill me-3"}
-                      onClick={toggleTheme}
+                      className={localStorage.getItem('theme') == "light" ? "bi bi-brightness-high-fill me-3" : "bi bi-moon-fill me-3"}
+                      onClick={toggleHandler}
                       style={{fontSize: '1.5rem', cursor: "pointer"}}
                     ></i>
                     <i

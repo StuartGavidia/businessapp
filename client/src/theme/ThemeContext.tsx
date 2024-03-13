@@ -20,6 +20,9 @@ interface ThemeProviderProps {
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   const toggleTheme = () => {
+    if (localStorage.getItem('theme') == null) {
+      localStorage.setItem('theme', 'light');
+    }
     const newThemeName = localStorage.getItem('theme') === 'light' ? 'dark' : 'light';
     localStorage.setItem('theme', newThemeName);
     applyTheme();
@@ -28,7 +31,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const toggleLightBackgroundColor = (color) => {
     themes['light'] = {...themes['light'], 'bs-body-bg': color}
     localStorage.setItem('themeLightBackgroundColor', color)
-    console.log('Background', localStorage.getItem('theme'))
     if (localStorage.getItem('theme') == 'light') {
       Object.keys(themes['light']).forEach(key => {
           document.documentElement.style.setProperty(`--${key}`, themes['light'][key]);
@@ -39,7 +41,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const toggleLightSidebarColor = (color) => {
     themes['light'] = {...themes['light'], 'bs-background-color': color}
     localStorage.setItem('themeLightSidebarColor', color)
-    console.log('SideBar', localStorage.getItem('theme'))
     if (localStorage.getItem('theme') == 'light') {
       Object.keys(themes['light']).forEach(key => {
         document.documentElement.style.setProperty(`--${key}`, themes['light'][key]);

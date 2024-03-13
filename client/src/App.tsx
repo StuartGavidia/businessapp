@@ -50,7 +50,6 @@ function App() {
   useEffect(() => {
     // Simulating an async operation (e.g., fetching data)
     const fetchData = async () => {
-      // Assume the loading time is 2 seconds
       setTimeout(() => {
         setLoading(false);
       }, 2000);
@@ -59,6 +58,7 @@ function App() {
     fetchData();
   }, []);
 
+   localStorage.setItem('theme', 'light')
    if (loading) {
     return <Spinner/> 
    } else {
