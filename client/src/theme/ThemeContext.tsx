@@ -18,28 +18,58 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [themeName, setThemeName] = useState<string>(() => localStorage.getItem('theme') || 'light');
 
   const toggleTheme = () => {
-    const newThemeName = themeName === 'light' ? 'dark' : 'light';
-    setThemeName(newThemeName);
+    if (localStorage.getItem('theme') == null) {
+      localStorage.setItem('theme', 'light');
+    }
+    const newThemeName = localStorage.getItem('theme') === 'light' ? 'dark' : 'light';
     localStorage.setItem('theme', newThemeName);
-    applyTheme(newThemeName);
+    applyTheme();
   };
 
-  const applyTheme = (themeName: string) => {
+  const toggleLightBackgroundColor = (color) => {
+    themes['light'] = {...themes['light'], 'bs-body-bg': color}
+    localStorage.setItem('themeLightBackgroundColor', color)
+    if (localStorage.getItem('theme') == 'light') {
+      Object.keys(themes['light']).forEach(key => {
+          document.documentElement.style.setProperty(`--${key}`, themes['light'][key]);
+      });
+    }
+  }
+
+  const toggleLightSidebarColor = (color) => {
+    themes['light'] = {...themes['light'], 'bs-background-color': color}
+    localStorage.setItem('themeLightSidebarColor', color)
+    if (localStorage.getItem('theme') == 'light') {
+      Object.keys(themes['light']).forEach(key => {
+        document.documentElement.style.setProperty(`--${key}`, themes['light'][key]);
+      });
+    }
+  }
+
+
+
+  const applyTheme = () => {
+    var themeName = localStorage.getItem('theme') == null ? 'light' : localStorage.getItem('theme') 
     const theme = themes[themeName];
+    if (localStorage.getItem('themeLightBackgroundColor') == "" && themeName == 'light') {
+      localStorage.setItem('themeLightBackgroundColor', theme['bs-body-bg'])
+    }
+    if(localStorage.getItem('themeLightSidebarColor') == "" && themeName == 'light') {
+      localStorage.setItem('themeLightSidebarColor', theme['bs-background-color'])
+    }
     Object.keys(theme).forEach(key => {
-      document.documentElement.style.setProperty(`--${key}`, theme[key]);
+        document.documentElement.style.setProperty(`--${key}`, theme[key]);
     });
   };
 
   useEffect(() => {
-    applyTheme(themeName);
-  }, [themeName]);
+    applyTheme();
+  }, []);
 
   return (
-    <ThemeContext.Provider value={{ themeName, toggleTheme }}>
+    <ThemeContext.Provider value={{ toggleTheme, toggleLightBackgroundColor, toggleLightSidebarColor }}>
       {children}
     </ThemeContext.Provider>
   );

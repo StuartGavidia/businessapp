@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect} from 'react'
 import UserServiceAPI from '../../api/userServiceAPI'
 import SettingsProps from '../../interfaces/SettingsProps'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-
+import { useTheme } from '../../theme/ThemeContext';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 
@@ -21,11 +21,29 @@ const Settings: React.FC<SettingsProps> = () => {
       positionName: ''
     })
     const [error, setError] = useState("");
-    const [selectedColor, setSelectedColor] = useState('green');
+    const [selectedBackgroundColor, setSelectedBackgroundColor] = useState(localStorage.getItem('themeLightBackgroundColor'));
+    const [selectedSidebarColor, setSelectedSidebarColor] = useState(localStorage.getItem('themeLightSidebarColor'));
+
+    const { toggleLightBackgroundColor, toggleLightSidebarColor} = useTheme();
+
+    const handleBackgroundColorChange = (event) => {
+      setSelectedBackgroundColor(event.target.value);
+      toggleLightBackgroundColor(event.target.value)
+    };
+
+    const handleSidebarColorChange = (event) => {
+      setSelectedSidebarColor(event.target.value);
+      toggleLightSidebarColor(event.target.value)
+    };
 
 
-
-
+    useEffect(() => {
+      toggleLightBackgroundColor(selectedBackgroundColor);
+      toggleLightSidebarColor(selectedSidebarColor)
+      // Replace with your function
+      // You can place any code here that you want to run when the component loads
+    }, []);
+  
     const toggleDirectReports = (hasDirectReports: boolean) => {
       setFormData(prevState => ({ ...prevState, ['hasDirectReports']: hasDirectReports }))
     }
@@ -184,20 +202,35 @@ const Settings: React.FC<SettingsProps> = () => {
             }
 
             <div>
-             <select id="cars" value={selectedColor} onChange={setSelectedColor}>
+             <select value={selectedBackgroundColor} onChange={handleBackgroundColorChange}>
+              <option value="tan">Tan</option>
                 <option value="green">Green</option>
                 <option value="blue">Blue</option>
                 <option value="purple">Purple</option>
                 <option value="cyan">Cyan</option>
               </select>
               {/* Display the selected option */}
-              {selectedColor && <p>You selected: {selectedColor}</p>}
+              {selectedBackgroundColor && <p>Background Color Will Be: {selectedBackgroundColor}</p>}
             </div>
 
 
-            <Button variant="primary" type="submit" className="w-100">
-                Save
-            </Button>
+            <div>
+             <select value={selectedSidebarColor} onChange={handleSidebarColorChange}>
+              <option value="tan">Tan</option>
+                <option value="green">Green</option>
+                <option value="blue">Blue</option>
+                <option value="purple">Purple</option>
+                <option value="cyan">Cyan</option>
+              </select>
+              {/* Display the selected option */}
+              {selectedSidebarColor && <p>Sidebar Color Will Be: {selectedSidebarColor}</p>}
+            </div>
+
+            <div style={{marginTop: '50px'}}>
+                <Button variant="primary" type="submit" className="w-100">
+                    Save
+                </Button>
+            </div>
           </Form>
         </div>
     )

@@ -47,11 +47,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> =  ({ children }) => {
 
 function App() {
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     // Simulating an async operation (e.g., fetching data)
     const fetchData = async () => {
-      // Assume the loading time is 2 seconds
       setTimeout(() => {
         setLoading(false);
       }, 2000);
@@ -60,6 +58,7 @@ function App() {
     fetchData();
   }, []);
 
+   localStorage.setItem('theme', 'light')
    if (loading) {
     return <Spinner/> 
    } else {
@@ -80,7 +79,13 @@ function App() {
           <Route path="budget" element={<Budget />} />
           <Route path="calendar" element={<Calendar />}/>
           <Route path="communication" element={<Communication />}/>
-          <Route path="settings" element={<SettingsPage />}/>
+          <Route path="settings" element={
+          <ProtectedRoute>
+            <ThemeProvider>
+              <SettingsPage />
+            </ThemeProvider>
+          </ProtectedRoute>
+        }/>
         </Route>
       </Route>
       <Route path="*" element={<NotFoundPage />} />
