@@ -14,7 +14,8 @@ import InputGroup from 'react-bootstrap/InputGroup';
 
 const DashboardPage:React.FC = () => {
     const [show, setShow] = useState(false);
-    const { themeName, toggleTheme } = useTheme();
+    const themeName = localStorage.getItem('theme')
+    const { toggleTheme } = useTheme();
 
     const toggleShow = () => {
       setShow(prev => !prev)

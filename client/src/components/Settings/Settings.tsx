@@ -22,7 +22,7 @@ const Settings: React.FC<SettingsProps> = () => {
     })
     const [error, setError] = useState("");
     const [selectedBackgroundColor, setSelectedBackgroundColor] = useState(localStorage.getItem('themeLightBackgroundColor'));
-    const [selectedSidebarColor, setSelectedSidebarColor] = useState(localStorage.getItem('themeLightBackgroundColor'));
+    const [selectedSidebarColor, setSelectedSidebarColor] = useState(localStorage.getItem('themeLightSidebarColor'));
 
     const { toggleLightBackgroundColor, toggleLightSidebarColor} = useTheme();
 

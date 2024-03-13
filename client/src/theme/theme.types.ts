@@ -4,7 +4,6 @@ export type ThemeType = {
 };
 
 export interface ThemeContextType {
-  themeName: string; // This now represents the name of the current theme
   toggleTheme: () => void; // Function to toggle between themes
   toggleLightBackgroundColor: (color) => void;
   toggleLightSidebarColor: (color) => void;

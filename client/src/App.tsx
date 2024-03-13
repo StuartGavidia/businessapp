@@ -47,7 +47,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> =  ({ children }) => {
 
 function App() {
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     // Simulating an async operation (e.g., fetching data)
     const fetchData = async () => {
