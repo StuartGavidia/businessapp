@@ -28,18 +28,28 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   };
 
   const applyTheme = (themeName: string) => {
-    const theme = themes[themeName];
+    const lightTheme = localStorage.getItem('lightTheme') || 'casual';
+    const theme = (themeName == 'light') ? themes[lightTheme.toLowerCase()] : themes['dark']
+    
+    console.log(theme, lightTheme)
     Object.keys(theme).forEach(key => {
       document.documentElement.style.setProperty(`--${key}`, theme[key]);
     });
   };
 
+  const toggleLightThemeChange = () => {
+    if (themeName == 'light') {
+      applyTheme('light')
+    }
+  } 
+
   useEffect(() => {
+    console.log(themeName)
     applyTheme(themeName);
   }, [themeName]);
 
   return (
-    <ThemeContext.Provider value={{ themeName, toggleTheme }}>
+    <ThemeContext.Provider value={{ themeName, toggleTheme, toggleLightThemeChange}}>
       {children}
     </ThemeContext.Provider>
   );

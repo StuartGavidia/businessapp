@@ -3,6 +3,8 @@ import UserServiceAPI from '../../api/userServiceAPI'
 import SettingsProps from '../../interfaces/SettingsProps'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import { useTheme } from '../../theme/ThemeContext';
+import { themes } from '../../theme/themes';
 
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
@@ -21,9 +23,16 @@ const Settings: React.FC<SettingsProps> = () => {
       positionName: ''
     })
     const [error, setError] = useState("");
-    const [selectedColor, setSelectedColor] = useState('green');
+    const [selectedLightTheme, setSelectedLightTheme] = useState(localStorage.getItem('lightTheme'));
+    const { toggleLightThemeChange} = useTheme();
 
-
+    const handleThemeChange = (event) => {
+      setSelectedLightTheme(event.target.value);
+      localStorage.setItem('lightTheme', event.target.value);
+      if (localStorage.getItem('theme') == 'light') {
+        toggleLightThemeChange();
+      }
+    };
 
 
     const toggleDirectReports = (hasDirectReports: boolean) => {
@@ -35,7 +44,13 @@ const Settings: React.FC<SettingsProps> = () => {
 
       setFormData(prevState => ({ ...prevState, [name]: value }));
     };
+    
+    
+    const capitalizeKey = (key) => {
+      return key.charAt(0).toUpperCase() + key.slice(1);
+    }
 
+    
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         console.log(formData)
         e.preventDefault();
@@ -184,15 +199,15 @@ const Settings: React.FC<SettingsProps> = () => {
             }
 
             <div>
-             <select id="cars" value={selectedColor} onChange={setSelectedColor}>
-                <option value="green">Green</option>
-                <option value="blue">Blue</option>
-                <option value="purple">Purple</option>
-                <option value="cyan">Cyan</option>
+              <select value={selectedLightTheme} onChange={handleThemeChange}>
+                  {Object.keys(themes).map((key, index) => {
+                      if (key != 'dark') {
+                        return <option value={key}>{capitalizeKey(key)}</option>
+                      }
+                    })}
               </select>
-              {/* Display the selected option */}
-              {selectedColor && <p>You selected: {selectedColor}</p>}
-            </div>
+              {selectedLightTheme && <p>Theme Will Be: {selectedLightTheme}</p>}
+           </div>
 
 
             <Button variant="primary" type="submit" className="w-100">
