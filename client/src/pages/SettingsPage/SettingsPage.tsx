@@ -10,7 +10,7 @@ const SettingsPage:React.FC = () => {
       <Container fluid style={{ height: '100vh' }} className="signinpage-wrapper">
         <Row style={{ height: '100%', width: '100%', backgroundColor: 'white' }}>
             <Col
-              className="form-container d-flex align-items-center justify-content-center"
+              className="justify-content-center"
               >
                 {
                   <Settings></Settings>
