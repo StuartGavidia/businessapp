@@ -81,11 +81,7 @@ function App() {
           <Route path="calendar" element={<Calendar />}/>
           <Route path="communication" element={<Communication />}/>
           <Route path="settings" element={
-          <ProtectedRoute>
-            <ThemeProvider>
               <SettingsPage />
-            </ThemeProvider>
-          </ProtectedRoute>
         }/>       
         </Route>
       </Route>

@@ -31,7 +31,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     const lightTheme = localStorage.getItem('lightTheme') || 'casual';
     const theme = (themeName == 'light') ? themes[lightTheme.toLowerCase()] : themes['dark']
     
-    console.log(theme, lightTheme)
     Object.keys(theme).forEach(key => {
       document.documentElement.style.setProperty(`--${key}`, theme[key]);
     });
@@ -44,7 +43,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   } 
 
   useEffect(() => {
-    console.log(themeName)
     applyTheme(themeName);
   }, [themeName]);
 

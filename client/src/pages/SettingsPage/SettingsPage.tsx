@@ -16,9 +16,6 @@ const SettingsPage:React.FC = () => {
                   <Settings></Settings>
                 }
             </Col>
-            <Col md={6} className="info-container">
-                {/* Empty for now */}
-            </Col>
         </Row>
       </Container>
     )
