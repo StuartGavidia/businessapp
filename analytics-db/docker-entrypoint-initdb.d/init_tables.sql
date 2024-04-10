@@ -1,11 +1,12 @@
 -- sample init
 CREATE TABLE budget (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    budget_id INT PRIMARY KEY AUTO_INCREMENT,
+    company_id VARCHAR(255) NOT NULL,
     account_name VARCHAR(255) UNIQUE NOT NULL,
     allowance INT NOT NULL,
     occurance INT NOT NULL,
-    budget_date DATETIME NOT NULL
-
+    budget_date DATETIME NOT NULL,
+    budget_active BOOLEAN NOT NULL
 );  
 
 CREATE TABLE stripe_account (
@@ -16,7 +17,8 @@ CREATE TABLE stripe_account (
 );
 
 CREATE TABLE transaction (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    transaction_id INT PRIMARY KEY AUTO_INCREMENT,
+    budget_id INT NOT NULL,
     company_id VARCHAR(255) NOT NULL,
     account_name VARCHAR(255) NOT NULL,
     amount INT NOT NULL,

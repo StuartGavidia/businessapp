@@ -50,24 +50,26 @@ const CalendarComp: React.FC<CalendarCompProps> = ({ onSelect }) => {
   }
 
   return (
-    <div className="calendarWrap" style={{marginBottom: '14px'}}>
+    <div className="calendarWrap" style={{ marginBottom: '14px', position: 'relative' }}>
 
       <input
         value={ calendar }
         readOnly
         className="inputBox"
-        style={{textAlign: 'center'}}
+        style={{ marginLeft: '10px', textAlign: 'justify', backgroundColor: '#ECE3CE', border: 'none', fontWeight: 'lighter'}}
         onClick={() => setOpen(open => !open)}
 
       />
 
-      <div ref={refOne}>
-        {open &&
+      <div ref={refOne} style={{ position: 'absolute', top: '100%', left: 0, zIndex: 1000 }}>
+        {open && (
+          <div style={{ position: 'relative', top: '0', left: '0' }}>
           <Calendar
             date={new Date(calendar)}
             onChange={handleSelect}
           />
-        }
+          </div>
+        )}
       </div>
 
     </div>

@@ -13,13 +13,16 @@ interface ModalProps {
 }
 
 const TransactionModal: React.FC<ModalProps> = ({ showModal, onClose }) => {
+
+    const [budgetData, setBudgetData] = useState<BudgetFormData[]>([]);
+
     const [transactionFormData, setTransactionFormData] = useState({
         account_name: "",
         amount: 0,
         descriptions: ""
-    })
+    });
 
-    const [budgetData, setBudgetData] = useState<BudgetFormData[]>([]);
+    const [transactionCreated, setTransactionCreated] = useState(false)
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -34,6 +37,11 @@ const TransactionModal: React.FC<ModalProps> = ({ showModal, onClose }) => {
                 console.log("An error occurred")
             }
         }
+
+        setTimeout(() => {
+            setTransactionCreated(true);
+        }, 150);
+
     };
 
     const handleChange = (e: ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
@@ -44,18 +52,24 @@ const TransactionModal: React.FC<ModalProps> = ({ showModal, onClose }) => {
 
     useEffect(() => {
 
-    const fetchBudgetData = async () => {
-        try {
-            const data = await BudgetServiceAPI.getInstance().getBudget();
-            setBudgetData(data);
-        } catch (error) {
-            console.log('Error fetching Budget Data:', error);
-        }
-    };
-
-    fetchBudgetData();
-
-}, []);
+        const fetchBudgetData = async () => {
+            try {
+                const data = await BudgetServiceAPI.getInstance().getBudget();
+                setBudgetData(data);
+        
+                if (data.length > 0) {
+                    setTransactionFormData(prevState => ({
+                        ...prevState,
+                        account_name: data[0].account_name
+                    }));
+                }
+            } catch (error) {
+                console.log('Error fetching Budget Data:', error);
+            }
+        };
+    
+        fetchBudgetData();
+    }, []);
 
 
     return (
@@ -70,8 +84,14 @@ const TransactionModal: React.FC<ModalProps> = ({ showModal, onClose }) => {
                         <Form.Group controlId="account_name" className="mb-3">
                             <Form.Label className="mb-3 prompt-label">Select an Account</Form.Label>
                             <Form.Select onChange={handleChange} value={transactionFormData.account_name} name="account_name">
-                                {budgetData.map((budgetItem, index) =>
-                                    <option key={index}>{budgetItem.account_name}</option>
+                                {budgetData.length === 0 ? (
+                                    <option>No Existing Budgets</option>
+                                ) : (
+                                    <>
+                                        {budgetData.map((budgetItem, index) =>
+                                            <option key={index} value={budgetItem.account_name}>{budgetItem.account_name}</option>
+                                        )}
+                                    </>
                                 )}
                             </Form.Select>
                         </Form.Group>
@@ -96,7 +116,7 @@ const TransactionModal: React.FC<ModalProps> = ({ showModal, onClose }) => {
                             <Form.Control
                                 type="text"
                                 name="descriptions"
-                                placeholder="Software"
+                                placeholder="Software Renewal"
                                 onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
                                 required />
                         </Form.Group>
@@ -105,7 +125,7 @@ const TransactionModal: React.FC<ModalProps> = ({ showModal, onClose }) => {
                         </Button>
                     </Form>
                 </div>
-
+                {transactionCreated && <p>Transaction created!</p>}
             </Modal.Body>
         </Modal>
     )

@@ -3,6 +3,7 @@ This module contains flask_sqlalchemy models that are mapped to the analytics da
 """
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import ForeignKey
 
 #Initialize SQLAlchemy
 db = SQLAlchemy()
@@ -10,11 +11,13 @@ db = SQLAlchemy()
 class Budget(db.Model):
     __tablename__ = 'budget'
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    budget_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    company_id = db.Column(db.String(255), nullable=False)
     account_name = db.Column(db.String(255), nullable=False)
     budget_date = db.Column(db.DateTime, nullable=True)
     allowance = db.Column(db.Integer, nullable=False)
     occurance = db.Column(db.Integer, nullable=False)
+    budget_active = db.Column(db.Boolean, nullable=False)
 
 class StripeAccount(db.Model):
     __tablename__ = 'stripe_account'
@@ -41,9 +44,12 @@ class StripeAccount(db.Model):
 class Transaction(db.Model):
     __tablename__ = 'transaction'
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    transaction_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     company_id = db.Column(db.String(255), nullable=False)
     account_name = db.Column(db.String(255), nullable=False)
     amount = db.Column(db.Integer, nullable=False)
     descriptions = db.Column(db.String(255), nullable=False)
+    budget_id = db.Column(db.Integer, nullable=False)
+
+
 

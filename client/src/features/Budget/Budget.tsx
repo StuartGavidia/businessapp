@@ -73,13 +73,14 @@ const Budget: React.FC<ModalProps> = ({ showModal, onClose }) => {
     return (
         <Modal show={showModal} onHide={onClose} aria-labelledby="contained-modal-title-vcenter" centered>
             <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter">Create New Budget</Modal.Title>
+                <Modal.Title id="contained-modal-title-vcenter" style={{ display: 'block' }}>Create New Budget</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <div className="budget-content" style={{ width: "100%", maxWidth: "450px", border: 'none' }}>
                     <Form onSubmit={handleSubmit}>
-                        <Form.Group controlId="account_name" className="mb-3">
-                            <Form.Label className="mb-3 prompt-label">Choose an Account Name</Form.Label>
+                    <div className="d-flex flex-wrap">
+                        <Form.Group controlId="account_name" className="mb-3 flex-grow-1 me-3">
+                            <Form.Label className="mb-3 prompt-label">Account Name</Form.Label>
                             <Form.Control
                                 type="text"
                                 placeholder="Account Name"
@@ -91,37 +92,23 @@ const Budget: React.FC<ModalProps> = ({ showModal, onClose }) => {
                                 onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
                             />
                         </Form.Group>
-                        <Form.Group controlId="occurance" className="mb-3">
-                            <Form.Label className="mb-3 prompt-label" >How often will this happen?</Form.Label><br />
-                            <Form.Check
-                                type="radio"
-                                label="Monthly"
-                                name="occurance"
-                                value="monthly"
-                                onChange={handleChange}
-                                inline
-                            />
-                            <Form.Check
-                                type="radio"
-                                label="Quarterly"
-                                name="occurance"
-                                value="quarterly"
-                                onChange={handleChange}
-                                inline />
-                            <Form.Check
-                                type="radio"
-                                label="Once"
-                                name="occurance"
-                                value="once"
-                                onChange={handleChange}
-                                inline />
-                        </Form.Group>
                         <Form.Group>
-                            <Form.Label className='mb-3 prompt-label'>Select a Start Date</Form.Label>
+                            <Form.Label className='mb-3 prompt-label'>Start Date</Form.Label>
                             <CalendarComp onSelect={handleChange} />
                         </Form.Group>
+                        </div>
+                        <Form.Group controlId="occurance" className="mb-3">
+                            <Form.Label className="mb-3 prompt-label">Frequency</Form.Label>
+                            <Form.Select style={{ fontWeight: 'lighter' }}>
+                                <option value="0">One time</option>
+                                <option value="1">Repeats every week</option>
+                                <option value="2">Repeats every 2 weeks</option>
+                                <option value="3">Repeats every 3 weeks</option>
+                                <option value="4">Repeats every month</option>
+                            </Form.Select>
+                        </Form.Group>
                         <Form.Group controlId="number" className="mb-3">
-                            <Form.Label className="mb-3 prompt-label">What's your allowance?</Form.Label>
+                            <Form.Label className="mb-3 prompt-label">Allowance</Form.Label>
                             <InputGroup>
                                 <InputGroup.Text>$</InputGroup.Text>
                                 <Form.Control
@@ -134,12 +121,13 @@ const Budget: React.FC<ModalProps> = ({ showModal, onClose }) => {
                                     onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
                                     required />
                             </InputGroup>
+                            
                         </Form.Group>
                         <Button variant="dark" type="submit" className="w-100">
                             Save
                         </Button>
                     </Form>
-                    {budgetCreated && <p>{formData.account_name} budget created!</p>}
+                    <div style={{ marginTop: '10px' }}>{budgetCreated && <p><span style={{ fontWeight: 'bold' }}>{formData.account_name}</span> budget created!</p>}</div>
                 </div>
             </Modal.Body>
         </Modal>

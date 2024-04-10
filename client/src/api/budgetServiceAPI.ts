@@ -195,6 +195,62 @@ class BudgetServiceAPI {
             })
     }
 
+    public async getTransactions(): Promise<TransactionFormData[]> {
+
+        try {
+            const response = await fetch('/analytics/fetchTransactionData', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const contentType = response.headers.get('content-type');
+
+            if (contentType && contentType.includes('application/json')) {
+                const data = await response.json();
+                return data;
+            } else {
+                throw new Error('Response is not in JSON format');
+            }
+
+        } catch (error) {
+            console.error('Error fetching transactions data:', error);
+            throw error; 
+        }
+    }
+
+    public async deleteBudget(account_name: string) {
+        try {
+            const response = await fetch('/analytics/deleteBudget', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ account_name: account_name })
+            });
+    
+            if (!response.ok) {
+                const errorData: { error?: string } = await response.json();
+                const errorMessage = typeof errorData.error === 'string' ? errorData.error : 'Unknown error';
+                throw new Error(errorMessage);
+            }
+    
+            const data = await response.json();
+            console.log(data.message);
+        } catch (error) {
+            if (error instanceof Error) {
+                console.log('Error deleting budget:', error.message);
+            } else {
+                console.log('Unexpected error occurred while deleting the budget');
+            }
+        }
+    }
+
 }
 
 export default BudgetServiceAPI;

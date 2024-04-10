@@ -28,24 +28,27 @@ def create_budget():
     """
     This route creates a budget 
     """
+
     token = request.cookies.get('user_cookie')
     payload = None
 
     payload = decode_jwt(token)
+    company_id = payload['company_id']
 
     data = request.json
-    #company_id = payload['company_id']
+    company_id = payload['company_id']
     account_name = data.get('account_name', '')
     allowance = data.get('allowance', '')
     budget_date = data.get('budget_date', '')
     occurance = data.get('occurance', '')
 
     new_budget = Budget(
-        #company_id=company_id,
+        company_id=company_id,
         account_name=account_name,
         allowance=allowance,
         budget_date=budget_date,
-        occurance=occurance
+        occurance=occurance,
+        budget_active=True
     )
     
     db.session.add(new_budget)
@@ -54,10 +57,18 @@ def create_budget():
     return jsonify({"message": "Budget successfully created"}), 201
 
 @routes.route("/analytics/budget", methods=['GET'])
+
 def get_budget_data():
     try:
-        budgets = Budget.query.all()
-        budget_data = [{'id': budget.id, 'account_name': budget.account_name, 'allowance': budget.allowance} for budget in budgets]
+
+        token = request.cookies.get('user_cookie')
+        payload = None
+
+        payload = decode_jwt(token)
+        company_id = payload['company_id']
+
+        budgets = Budget.query.filter_by(company_id=company_id, budget_active=True)
+        budget_data = [{'budget_id': budget.budget_id, 'account_name': budget.account_name, 'allowance': budget.allowance} for budget in budgets]
         return jsonify(budget_data)
     
     except Exception as e:
@@ -201,7 +212,7 @@ def get_stripe_balance():
      except Exception as e:
          return jsonify({"error": str(e)}), 500
      
-@routes.route("/analytics/createTransaction", methods=['POST'])
+@routes.route("/analytics/createTransaction", methods=["POST"])
      
 def create_transaction():
     """
@@ -219,11 +230,18 @@ def create_transaction():
         amount = data.get('amount', '')
         descriptions = data.get('descriptions', '')
 
+        budgets = Budget.query.filter_by(company_id=company_id, account_name=account_name, budget_active=True)
+        budget_data = [{'budget_id': budget.budget_id} for budget in budgets]
+
+        budget_id=budget_data[0]['budget_id']
+        print("budget_id:", budget_data[0]['budget_id'])
+
         new_transaction = Transaction(
             company_id=company_id,
             account_name=account_name,
             amount=amount,
-            descriptions=descriptions
+            descriptions=descriptions,
+            budget_id=budget_id
         )
         
         db.session.add(new_transaction)
@@ -233,6 +251,54 @@ def create_transaction():
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@routes.route("/analytics/fetchTransactionData", methods=["GET"])
+
+def fetch_transaction_data():
+    try:
+        transactions = Transaction.query.all()
+        transaction_data = [{'account_name': transaction.account_name, 'amount': transaction.amount, 'descriptions': transaction.descriptions} for transaction in transactions]
+        return jsonify(transaction_data)
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+@routes.route("/analytics/deleteBudget", methods=["POST"])
+
+def delete_budget():
+
+    try:
+        token = request.cookies.get('user_cookie')
+        payload = None
+        
+        payload = decode_jwt(token)
+        company_id = payload['company_id']
+
+        data = request.json
+        account_name = data.get('account_name', '')
+
+        budget_to_delete = Budget.query.filter_by(company_id=company_id, account_name=account_name, budget_active=True).first()
+
+        if budget_to_delete:
+            transactions_to_delete = Transaction.query.filter_by(budget_id=budget_to_delete.budget_id).all()
+            print(transactions_to_delete)
+
+            for transaction in transactions_to_delete:
+                print(transaction)
+                db.session.delete(transaction)
+
+            db.session.delete(budget_to_delete)
+            db.session.commit()
+
+            return jsonify({"message": "Transaction successfully created"}), 201
+        else:
+            return jsonify(None), 200
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+    
 
 
     

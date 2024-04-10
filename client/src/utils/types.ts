@@ -32,7 +32,7 @@ export type StripeAccountData = {
 }
 
 export type TransactionFormData = {
-    account_name: string,
+    account_name: string | undefined;
     amount: number,
     descriptions: string
 }

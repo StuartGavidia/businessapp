@@ -1,13 +1,11 @@
 import './Analytics.css'
-import { useNavigate } from 'react-router-dom';
-import { Outlet } from 'react-router-dom';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Container';
 import BudgetServiceAPI from '../../api/budgetServiceAPI'
 import Pagination from 'react-bootstrap/Pagination';
 import { useEffect, useState } from 'react';
-import { BudgetFormData, StripeAccountData } from '../../utils/types';
+import { BudgetFormData, StripeAccountData, TransactionFormData } from '../../utils/types';
 import { FontWeights } from '@fluentui/react';
 import { Button, Navbar, Stack } from 'react-bootstrap';
 import BudgetCard from './BudgetCard';
@@ -18,22 +16,15 @@ import LineChart from './Components/LineChart'
 import { render } from '@fullcalendar/core/preact.js';
 import { stringify } from 'querystring';
 import Table from 'react-bootstrap/Table';
-import Modal from 'react-bootstrap/Modal'
 import TransactionModal from './Components/TransactionsModal';
 import Budget from '../Budget/Budget';
 
 
 const Analytics: React.FC = () => {
 
-    const navigate = useNavigate();
-
     const [budgetData, setBudgetData] = useState<BudgetFormData[]>([]);
 
     const stripePromise = loadStripe('pk_test_51O4uCWFy63ZKr0XeJWxVbfQrS2XQNezYEVSMQGJ1dtBm1EUwnTHdt36jLKOZV4XssTSeiBpLgl9epXFZRSw1EKr500dvZwj033')
-
-    const handleButtonClick = () => {
-        navigate('/dashboard/budget');
-    };
 
     const [hasStripeAccount, setHasStripeAccount] = useState<boolean | null>(null);
 
@@ -45,6 +36,7 @@ const Analytics: React.FC = () => {
 
     const [showBudgetModal, setShowBudgetModal] = useState(false)
 
+    const [transactionData, setTransactionData] = useState<TransactionFormData[]>([]);
 
     /* pagination methods for recharts visualizations */
     const handleNextClick = () => {
@@ -123,6 +115,19 @@ const Analytics: React.FC = () => {
         };
 
         fetchBudgetData();
+
+        const fetchTransactionData = async () => {
+            try {
+                const data = await BudgetServiceAPI.getInstance().getTransactions();
+                setTransactionData(data);
+
+                console.log(transactionData)
+            } catch (error) {
+                console.log('Error fetching Budget Data:', error);
+            }
+        };
+
+        fetchTransactionData();
 
     }, []);
 
@@ -250,60 +255,76 @@ const Analytics: React.FC = () => {
                         <Container>
                             <Stack gap={4}>
                                 <Row>
-                                    <Col md={12} style={{ fontSize: '20px', fontWeight: 'bold', textAlign: 'center' }}>Budget</Col>
+                                    <Col md={12} style={{ fontSize: '20px', fontWeight: 'bold' }}>Budget</Col>
                                 </Row>
                                 <Row>
                                     <Col className='mt-4'>
                                         <Button variant='dark' size='sm' className='w-100' style={{ marginBottom: '16px' }} onClick={() => setShowBudgetModal(true)}>
                                             Create New Budget
                                         </Button>
-                                        <Budget showModal={showBudgetModal} onClose={() => setShowBudgetModal(false)}/>
+                                        <Budget showModal={showBudgetModal} onClose={() => setShowBudgetModal(false)} />
                                         <Button variant='dark' size='sm' className='w-100' style={{ marginBottom: '16px' }} onClick={() => setShowTransactionModal(true)}>
                                             Create New Transaction
                                         </Button>
-                                        <TransactionModal showModal={showTransactionModal} onClose={() => setShowTransactionModal(false)}/>
+                                        <TransactionModal showModal={showTransactionModal} onClose={() => setShowTransactionModal(false)} />
                                         {!hasStripeAccount && (
                                             <Button variant='dark' size='sm' className='w-100' style={{ marginBottom: '16px' }} onClick={createFinancialConnectionSession}>
                                                 Connect your Bank Account
                                             </Button>
                                         )}
+                                        {budgetData.map((budgetItem, index) => {
 
-                                        {budgetData.map((budgetItem, index) => (
-                                            <BudgetCard
-                                                key={index}
-                                                total_spend={700}
-                                                account_name={budgetItem.account_name}
-                                                allowance={budgetItem.allowance}
-                                            />
-                                        ))}
+                                            const transactionsForAccount = transactionData.filter(transaction => transaction.account_name === budgetItem.account_name);
+
+                                            const totalSpend = transactionsForAccount.reduce((total, transaction) => total + transaction.amount, 0);
+
+                                            return (
+                                                <BudgetCard
+                                                    key={index}
+                                                    total_spend={totalSpend}
+                                                    account_name={budgetItem.account_name}
+                                                    allowance={budgetItem.allowance}
+                                                />
+                                            );
+                                        })}
                                     </Col>
                                 </Row>
                                 {/* Recent Transactions */}
                                 <Row>
-                                        <Col className='mt-4' style={{ fontSize: '20px', fontWeight: 'bold' }}>Recent Transactions</Col>
-                                    </Row>
+                                    <Col className='mt-4' style={{ fontSize: '20px', fontWeight: 'bold' }}>Recent Transactions</Col>
+                                </Row>
+
+                                {transactionData.length > 0 ? (
                                     <Row>
-                                        <Col
-                                            style={{
-                                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                                                padding: '10px',
-                                                width: 'auto',
-                                                borderRadius: '15px',
-                                                justifyContent: 'center',
-                                            }}>
-                                            <Row>
-                                                <Table>
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Date</th>
-                                                            <th>Amount</th>
-                                                            <th>Description</th>
-                                                        </tr>
-                                                    </thead>
-                                                </Table>
-                                            </Row>
-                                        </Col>
+                                        <Table style={{
+                                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                                            padding: '10px',
+                                            borderRadius: '15px',
+                                            justifyContent: 'center',
+                                        }}>
+                                            <thead>
+                                                <tr>
+                                                    <th style={{ fontWeight: 'bold', border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>Account Name</th>
+                                                    <th style={{ fontWeight: 'bold', border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>Amount</th>
+                                                    <th style={{ fontWeight: 'bold', border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>Description</th>
+                                                </tr>
+
+                                                {transactionData.slice(-5).map((transactionItem, index) => (
+                                                    <tr key={index}>
+                                                        <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>{transactionItem.account_name}</td>
+                                                        <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>${transactionItem.amount}</td>
+                                                        <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>{transactionItem.descriptions}</td>
+                                                    </tr>
+                                                ))}
+                                            </thead>
+                                        </Table>
                                     </Row>
+                                ) : (
+                                    <Row>
+                                        <div>No exisiting transactions</div>
+                                    </Row>
+
+                                )}
                             </Stack>
                         </Container>
                     </Col>
