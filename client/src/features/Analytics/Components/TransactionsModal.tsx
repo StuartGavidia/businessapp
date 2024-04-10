@@ -6,6 +6,7 @@ import InputGroup from 'react-bootstrap/InputGroup'
 import BudgetServiceAPI from '../../../api/budgetServiceAPI'
 import React, { ChangeEvent } from 'react'
 import { BudgetFormData } from '../../../utils/types'
+import Nav from 'react-bootstrap/Nav'
 
 interface ModalProps {
     showModal: boolean
@@ -16,20 +17,21 @@ const TransactionModal: React.FC<ModalProps> = ({ showModal, onClose }) => {
 
     const [budgetData, setBudgetData] = useState<BudgetFormData[]>([]);
 
-    const [transactionFormData, setTransactionFormData] = useState({
+    const [regularTransactionFormData, setRegularTransactionFormData] = useState({
         account_name: "",
         amount: 0,
         descriptions: ""
     });
 
-    const [transactionCreated, setTransactionCreated] = useState(false)
+    const [regularTransactionCreated, setRegularTransactionCreated] = useState(false)
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const [selectedTransactionType, setSelectedTransactionType] = useState('Regular')
+
+    const handleRegularSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(transactionFormData);
 
         try {
-            await BudgetServiceAPI.getInstance().createTransaction(transactionFormData);
+            await BudgetServiceAPI.getInstance().createRegularTransaction(regularTransactionFormData);
         } catch (err: unknown) {
             if (err instanceof Error) {
                 console.log(err.message);
@@ -39,7 +41,7 @@ const TransactionModal: React.FC<ModalProps> = ({ showModal, onClose }) => {
         }
 
         setTimeout(() => {
-            setTransactionCreated(true);
+            setRegularTransactionCreated(true);
         }, 150);
 
     };
@@ -47,7 +49,7 @@ const TransactionModal: React.FC<ModalProps> = ({ showModal, onClose }) => {
     const handleChange = (e: ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
         const { name, value } = e.target;
 
-        setTransactionFormData(prevState => ({ ...prevState, [name]: value }));
+        setRegularTransactionFormData(prevState => ({ ...prevState, [name]: value }));
     };
 
     useEffect(() => {
@@ -56,9 +58,9 @@ const TransactionModal: React.FC<ModalProps> = ({ showModal, onClose }) => {
             try {
                 const data = await BudgetServiceAPI.getInstance().getBudget();
                 setBudgetData(data);
-        
+
                 if (data.length > 0) {
-                    setTransactionFormData(prevState => ({
+                    setRegularTransactionFormData(prevState => ({
                         ...prevState,
                         account_name: data[0].account_name
                     }));
@@ -67,7 +69,7 @@ const TransactionModal: React.FC<ModalProps> = ({ showModal, onClose }) => {
                 console.log('Error fetching Budget Data:', error);
             }
         };
-    
+
         fetchBudgetData();
     }, []);
 
@@ -75,57 +77,102 @@ const TransactionModal: React.FC<ModalProps> = ({ showModal, onClose }) => {
     return (
         <Modal show={showModal} onHide={onClose} aria-labelledby="contained-modal-title-vcenter"
             centered>
-            <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter">Create New Transaction</Modal.Title>
-            </Modal.Header>
             <Modal.Body>
                 <div className="transaction-content" style={{ width: "100%", maxWidth: "450px", border: 'none' }}>
-                    <Form onSubmit={handleSubmit}>
-                        <Form.Group controlId="account_name" className="mb-3">
-                            <Form.Label className="mb-3 prompt-label">Select an Account</Form.Label>
-                            <Form.Select onChange={handleChange} value={transactionFormData.account_name} name="account_name">
-                                {budgetData.length === 0 ? (
-                                    <option>No Existing Budgets</option>
-                                ) : (
-                                    <>
-                                        {budgetData.map((budgetItem, index) =>
-                                            <option key={index} value={budgetItem.account_name}>{budgetItem.account_name}</option>
+                    <Nav fill variant='underline' >
+                        <Nav.Item>
+                            <Nav.Link onClick={() => setSelectedTransactionType('Regular')} eventKey='link-1'>Regular</Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link onClick={() => setSelectedTransactionType('Income')} eventKey='link-2'>Income</Nav.Link>
+                        </Nav.Item>
+                    </Nav>
+
+                    {selectedTransactionType === 'Regular' ? (
+
+                        <Form onSubmit={handleRegularSubmit}>
+                            <div style={{ marginBottom: '25px' }}>
+                                <Form.Group controlId="account_name" className="mb-3" style={{ border: '1px solid black', borderRadius: '5px' }} >
+                                    <Form.Select onChange={handleChange} value={regularTransactionFormData.account_name} name="account_name">
+                                        {budgetData.length === 0 ? (
+                                            <option>No existing budgets..</option>
+                                        ) : (
+                                            <>
+                                                {budgetData.map((budgetItem, index) =>
+                                                    <option key={index} value={budgetItem.account_name}>{budgetItem.account_name}</option>
+                                                )}
+                                            </>
                                         )}
-                                    </>
-                                )}
-                            </Form.Select>
-                        </Form.Group>
+                                    </Form.Select>
+                                </Form.Group>
+                            </div>
 
-                        {/* Select Amount Spent */}
-                        <Form.Group controlId="number" className="mb-3">
-                            <Form.Label className="mb-3 prompt-label">How much did you spend?</Form.Label>
-                            <InputGroup>
-                                <InputGroup.Text>$</InputGroup.Text>
+                            {/* Select Amount Spent */}
+                            <Form.Group controlId="number" className="mb-3" style={{ marginTop: '15px' }}> 
+                                <InputGroup>
+                                    <InputGroup.Text>$</InputGroup.Text>
+                                    <Form.Control
+                                        type="number"
+                                        name="amount"
+                                        placeholder="0"
+                                        onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
+                                        required
+                                        style={{ border: '1px solid black' }} />
+                                </InputGroup>
+                            </Form.Group>
+
+                            {/* Expense Description */}
+                            <Form.Group controlId="description" className="mb-3">
+                                <Form.Label className="mb-3 prompt-label"></Form.Label>
                                 <Form.Control
-                                    type="number"
-                                    name="amount"
-                                    placeholder="0"
+                                    type="text"
+                                    name="descriptions"
+                                    placeholder=" e.g. Google Cloud Expenses"
                                     onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
-                                    required />
-                            </InputGroup>
-                        </Form.Group>
+                                    required
+                                    style={{ border: '1px solid black', marginTop: '-14px' }} />
+                            </Form.Group>
+                            <Button variant="dark" type="submit" className="w-100">
+                                Save
+                            </Button>
+                        </Form>
 
-                        {/* Expense Description */}
-                        <Form.Group controlId="description" className="mb-3">
-                            <Form.Label className="mb-3 prompt-label">Enter transaction description</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="descriptions"
-                                placeholder="Software Renewal"
-                                onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
-                                required />
-                        </Form.Group>
-                        <Button variant="dark" type="submit" className="w-100">
-                            Save
-                        </Button>
-                    </Form>
+                    ) :
+
+                        <Form onSubmit={handleRegularSubmit}>
+                            {/* Select Amount Spent */}
+                            <Form.Group controlId="number" className="mb-3">
+                                <InputGroup>
+                                    <InputGroup.Text>$</InputGroup.Text>
+                                    <Form.Control
+                                        type="number"
+                                        name="amount"
+                                        placeholder="0"
+                                        onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
+                                        required
+                                        style={{ border: '1px solid black' }} />
+                                </InputGroup>
+                            </Form.Group>
+
+                            {/* Expense Description */}
+                            <Form.Group controlId="description" className="mb-3">
+                                <Form.Label className="mb-3 prompt-label"></Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="descriptions"
+                                    placeholder="e.g. Paid for Services"
+                                    onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
+                                    required
+                                    style={{ border: '1px solid black', marginTop: '-14px' }} />
+                            </Form.Group>
+                            <Button variant="dark" type="submit" className="w-100">
+                                Save
+                            </Button>
+                        </Form>
+                    }
+
                 </div>
-                {transactionCreated && <p>Transaction created!</p>}
+                {regularTransactionCreated && <p>Transaction created!</p>}
             </Modal.Body>
         </Modal>
     )

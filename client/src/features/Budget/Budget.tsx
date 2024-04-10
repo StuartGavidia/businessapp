@@ -72,9 +72,6 @@ const Budget: React.FC<ModalProps> = ({ showModal, onClose }) => {
 
     return (
         <Modal show={showModal} onHide={onClose} aria-labelledby="contained-modal-title-vcenter" centered>
-            <Modal.Header closeButton>
-                <Modal.Title id="contained-modal-title-vcenter" style={{ display: 'block' }}>Create New Budget</Modal.Title>
-            </Modal.Header>
             <Modal.Body>
                 <div className="budget-content" style={{ width: "100%", maxWidth: "450px", border: 'none' }}>
                     <Form onSubmit={handleSubmit}>
@@ -83,11 +80,12 @@ const Budget: React.FC<ModalProps> = ({ showModal, onClose }) => {
                             <Form.Label className="mb-3 prompt-label">Account Name</Form.Label>
                             <Form.Control
                                 type="text"
-                                placeholder="Account Name"
+                                placeholder="e.g. Software"
                                 name="account_name"
                                 style={{
                                     width: 'auto',
                                     justifyContent: 'center',
+                                    border: '1px solid black'
                                 }}
                                 onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
                             />
@@ -99,7 +97,7 @@ const Budget: React.FC<ModalProps> = ({ showModal, onClose }) => {
                         </div>
                         <Form.Group controlId="occurance" className="mb-3">
                             <Form.Label className="mb-3 prompt-label">Frequency</Form.Label>
-                            <Form.Select style={{ fontWeight: 'lighter' }}>
+                            <Form.Select style={{ fontWeight: 'lighter', border: '1px solid black' }}>
                                 <option value="0">One time</option>
                                 <option value="1">Repeats every week</option>
                                 <option value="2">Repeats every 2 weeks</option>
@@ -116,7 +114,8 @@ const Budget: React.FC<ModalProps> = ({ showModal, onClose }) => {
                                     name="allowance"
                                     placeholder="0"
                                     style={{
-                                        width: 'auto'
+                                        width: 'auto',
+                                        border: '1px solid black'
                                     }}
                                     onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
                                     required />

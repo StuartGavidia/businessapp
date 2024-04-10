@@ -4,7 +4,7 @@ This module defines the different routes for the flask app
 
 import os
 from flask import Blueprint
-from app.models import Budget, StripeAccount, Transaction, db
+from app.models import Budget, StripeAccount, RegularTransaction, db
 from flask import Blueprint, jsonify, request, abort, make_response
 from app.decorators import token_required
 from app.utils import decode_jwt
@@ -212,11 +212,11 @@ def get_stripe_balance():
      except Exception as e:
          return jsonify({"error": str(e)}), 500
      
-@routes.route("/analytics/createTransaction", methods=["POST"])
+@routes.route("/analytics/createRegularTransaction", methods=["POST"])
      
-def create_transaction():
+def create_regular_transaction():
     """
-    This route creates a transaction
+    This route creates a regular transaction
     """
     try:
         token = request.cookies.get('user_cookie')
@@ -236,7 +236,7 @@ def create_transaction():
         budget_id=budget_data[0]['budget_id']
         print("budget_id:", budget_data[0]['budget_id'])
 
-        new_transaction = Transaction(
+        new_transaction = RegularTransaction(
             company_id=company_id,
             account_name=account_name,
             amount=amount,
@@ -252,11 +252,11 @@ def create_transaction():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@routes.route("/analytics/fetchTransactionData", methods=["GET"])
+@routes.route("/analytics/fetchRegularTransactionData", methods=["GET"])
 
-def fetch_transaction_data():
+def fetch_regular_transaction_data():
     try:
-        transactions = Transaction.query.all()
+        transactions = RegularTransaction.query.all()
         transaction_data = [{'account_name': transaction.account_name, 'amount': transaction.amount, 'descriptions': transaction.descriptions} for transaction in transactions]
         return jsonify(transaction_data)
     
@@ -280,17 +280,15 @@ def delete_budget():
         budget_to_delete = Budget.query.filter_by(company_id=company_id, account_name=account_name, budget_active=True).first()
 
         if budget_to_delete:
-            transactions_to_delete = Transaction.query.filter_by(budget_id=budget_to_delete.budget_id).all()
-            print(transactions_to_delete)
+            transactions_to_delete = RegularTransaction.query.filter_by(budget_id=budget_to_delete.budget_id).all()
 
             for transaction in transactions_to_delete:
-                print(transaction)
                 db.session.delete(transaction)
 
             db.session.delete(budget_to_delete)
             db.session.commit()
 
-            return jsonify({"message": "Transaction successfully created"}), 201
+            return jsonify({"message": "Budget successfully deleted!"}), 201
         else:
             return jsonify(None), 200
         

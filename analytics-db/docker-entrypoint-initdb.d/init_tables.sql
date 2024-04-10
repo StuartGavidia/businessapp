@@ -16,7 +16,7 @@ CREATE TABLE stripe_account (
     account_id VARCHAR(225) UNIQUE
 );
 
-CREATE TABLE transaction (
+CREATE TABLE regular_transaction (
     transaction_id INT PRIMARY KEY AUTO_INCREMENT,
     budget_id INT NOT NULL,
     company_id VARCHAR(255) NOT NULL,

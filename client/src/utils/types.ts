@@ -31,8 +31,14 @@ export type StripeAccountData = {
     accountId: string,
 }
 
-export type TransactionFormData = {
-    account_name: string | undefined;
+export type RegularTransactionFormData = {
+    account_name: string,
     amount: number,
     descriptions: string
+}
+
+export type IncomeTransactionFormData = {
+    amount: number,
+    description: string,
+    date: string
 }

@@ -41,8 +41,8 @@ class StripeAccount(db.Model):
         except Exception as e:
             return False, str(e)
 
-class Transaction(db.Model):
-    __tablename__ = 'transaction'
+class RegularTransaction(db.Model):
+    __tablename__ = 'regular_transaction'
 
     transaction_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     company_id = db.Column(db.String(255), nullable=False)

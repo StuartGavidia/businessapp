@@ -5,7 +5,7 @@ import Container from 'react-bootstrap/Container';
 import BudgetServiceAPI from '../../api/budgetServiceAPI'
 import Pagination from 'react-bootstrap/Pagination';
 import { useEffect, useState } from 'react';
-import { BudgetFormData, StripeAccountData, TransactionFormData } from '../../utils/types';
+import { BudgetFormData, StripeAccountData, RegularTransactionFormData } from '../../utils/types';
 import { FontWeights } from '@fluentui/react';
 import { Button, Navbar, Stack } from 'react-bootstrap';
 import BudgetCard from './BudgetCard';
@@ -36,7 +36,7 @@ const Analytics: React.FC = () => {
 
     const [showBudgetModal, setShowBudgetModal] = useState(false)
 
-    const [transactionData, setTransactionData] = useState<TransactionFormData[]>([]);
+    const [regularTransactionData, setRegularTransactionData] = useState<RegularTransactionFormData[]>([]);
 
     /* pagination methods for recharts visualizations */
     const handleNextClick = () => {
@@ -116,18 +116,17 @@ const Analytics: React.FC = () => {
 
         fetchBudgetData();
 
-        const fetchTransactionData = async () => {
+        const fetchRegularTransactionData = async () => {
             try {
-                const data = await BudgetServiceAPI.getInstance().getTransactions();
-                setTransactionData(data);
+                const data = await BudgetServiceAPI.getInstance().getRegularTransactions();
+                setRegularTransactionData(data);
 
-                console.log(transactionData)
             } catch (error) {
                 console.log('Error fetching Budget Data:', error);
             }
         };
 
-        fetchTransactionData();
+        fetchRegularTransactionData();
 
     }, []);
 
@@ -274,9 +273,9 @@ const Analytics: React.FC = () => {
                                         )}
                                         {budgetData.map((budgetItem, index) => {
 
-                                            const transactionsForAccount = transactionData.filter(transaction => transaction.account_name === budgetItem.account_name);
+                                            const regularTransactionsForAccount = regularTransactionData.filter(transaction => transaction.account_name === budgetItem.account_name);
 
-                                            const totalSpend = transactionsForAccount.reduce((total, transaction) => total + transaction.amount, 0);
+                                            const totalSpend = regularTransactionsForAccount.reduce((total, transaction) => total + transaction.amount, 0);
 
                                             return (
                                                 <BudgetCard
@@ -294,7 +293,7 @@ const Analytics: React.FC = () => {
                                     <Col className='mt-4' style={{ fontSize: '20px', fontWeight: 'bold' }}>Recent Transactions</Col>
                                 </Row>
 
-                                {transactionData.length > 0 ? (
+                                {regularTransactionData.length > 0 ? (
                                     <Row>
                                         <Table style={{
                                             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
@@ -309,7 +308,7 @@ const Analytics: React.FC = () => {
                                                     <th style={{ fontWeight: 'bold', border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>Description</th>
                                                 </tr>
 
-                                                {transactionData.slice(-5).map((transactionItem, index) => (
+                                                {regularTransactionData.slice(-5).map((transactionItem, index) => (
                                                     <tr key={index}>
                                                         <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>{transactionItem.account_name}</td>
                                                         <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>${transactionItem.amount}</td>

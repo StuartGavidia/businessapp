@@ -1,4 +1,4 @@
-import { BudgetFormData, StripeAccountData, TransactionFormData } from "../utils/types";
+import { BudgetFormData, StripeAccountData, RegularTransactionFormData, IncomeTransactionFormData } from "../utils/types";
 
 
 class BudgetServiceAPI {
@@ -173,14 +173,14 @@ class BudgetServiceAPI {
         }
     }
 
-    public async createTransaction(transactionData: TransactionFormData) {
-        return await fetch('/analytics/createTransaction', {
+    public async createRegularTransaction(regularTransactionData: RegularTransactionFormData) {
+        return await fetch('/analytics/createRegularTransaction', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
 
             },
-            body: JSON.stringify(transactionData)
+            body: JSON.stringify(regularTransactionData)
         })
             .then((response: Response) => {
                 if (!response.ok) {
@@ -195,10 +195,10 @@ class BudgetServiceAPI {
             })
     }
 
-    public async getTransactions(): Promise<TransactionFormData[]> {
+    public async getRegularTransactions(): Promise<RegularTransactionFormData[]> {
 
         try {
-            const response = await fetch('/analytics/fetchTransactionData', {
+            const response = await fetch('/analytics/fetchRegularTransactionData', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
