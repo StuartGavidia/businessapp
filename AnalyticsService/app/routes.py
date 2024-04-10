@@ -4,10 +4,11 @@ This module defines the different routes for the flask app
 
 import os
 from flask import Blueprint
-from app.models import Budget, StripeAccount, RegularTransaction, db
+from app.models import Budget, StripeAccount, RegularTransaction, IncomeTransaction, db
 from flask import Blueprint, jsonify, request, abort, make_response
 from app.decorators import token_required
 from app.utils import decode_jwt
+from datetime import datetime
 import stripe
 from stripe.error import StripeError
 
@@ -294,6 +295,46 @@ def delete_budget():
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+@routes.route("/analytics/createIncomeTransaction", methods=["POST"])
+     
+def create_income_transaction():
+    """
+    This route creates an income transaction
+    """
+    try:
+        token = request.cookies.get('user_cookie')
+        payload = None
+
+        payload = decode_jwt(token)
+        company_id = payload['company_id']
+
+        data = request.json
+        amount = data.get('amount', '')
+        descriptions = data.get('descriptions', '')
+        transaction_date = datetime.now().strftime('%Y-%m-%d')
+        
+        new_transaction = IncomeTransaction(
+            company_id=company_id,
+            amount=amount,
+            descriptions=descriptions,
+            transaction_date=transaction_date
+        )
+        
+        db.session.add(new_transaction)
+        db.session.commit()
+
+        return jsonify({"message": "Transaction successfully created"}), 201
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
+
+    
+
+    
 
 
     

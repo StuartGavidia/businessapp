@@ -24,3 +24,11 @@ CREATE TABLE regular_transaction (
     amount INT NOT NULL,
     descriptions VARCHAR (255) NOT NULL
 );
+
+CREATE TABLE income_transaction (
+    transaction_id INT PRIMARY KEY AUTO_INCREMENT,
+    company_id VARCHAR(255) NOT NULL,
+    amount INT NOT NULL,
+    descriptions VARCHAR (255) NOT NULL,
+    transaction_date DATETIME NOT NULL
+)

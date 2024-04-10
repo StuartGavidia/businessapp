@@ -224,6 +224,28 @@ class BudgetServiceAPI {
         }
     }
 
+    public async createIncomeTransaction(incomeTransactionData: IncomeTransactionFormData) {
+        return await fetch('/analytics/createIncomeTransaction', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+
+            },
+            body: JSON.stringify(incomeTransactionData)
+        })
+            .then((response: Response) => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.error);
+                    });
+                }
+                return response.json();
+            })
+            .then((data: { message: string }) => {
+                console.log(data.message);
+            })
+    }
+
     public async deleteBudget(account_name: string) {
         try {
             const response = await fetch('/analytics/deleteBudget', {

@@ -18,10 +18,15 @@ const TransactionModal: React.FC<ModalProps> = ({ showModal, onClose }) => {
     const [budgetData, setBudgetData] = useState<BudgetFormData[]>([]);
 
     const [regularTransactionFormData, setRegularTransactionFormData] = useState({
-        account_name: "",
+        account_name: '',
         amount: 0,
-        descriptions: ""
+        descriptions: ''
     });
+
+    const [incomeTransactionFormData, setIncomeTransactionFormData] = useState({
+        amount: 0,
+        descriptions: ''
+    })
 
     const [regularTransactionCreated, setRegularTransactionCreated] = useState(false)
 
@@ -46,10 +51,30 @@ const TransactionModal: React.FC<ModalProps> = ({ showModal, onClose }) => {
 
     };
 
-    const handleChange = (e: ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
-        const { name, value } = e.target;
+    const handleIncomeSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
 
-        setRegularTransactionFormData(prevState => ({ ...prevState, [name]: value }));
+        try {
+            await BudgetServiceAPI.getInstance().createIncomeTransaction(incomeTransactionFormData)
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                console.log(err.message);
+            } else {
+                console.log("An error occurred")
+            }
+        }
+    };
+
+
+    const handleChange = (e: ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+        const {name, value} = e.target;
+
+        if (selectedTransactionType === 'Regular') {
+            setRegularTransactionFormData(prevState => ({ ...prevState, [name]: value }));
+
+        } else {
+            setIncomeTransactionFormData(prevState => ({ ...prevState, [name]: value }))
+        }
     };
 
     useEffect(() => {
@@ -108,7 +133,7 @@ const TransactionModal: React.FC<ModalProps> = ({ showModal, onClose }) => {
                             </div>
 
                             {/* Select Amount Spent */}
-                            <Form.Group controlId="number" className="mb-3" style={{ marginTop: '15px' }}> 
+                            <Form.Group controlId="number" className="mb-3" style={{ marginTop: '15px' }}>
                                 <InputGroup>
                                     <InputGroup.Text>$</InputGroup.Text>
                                     <Form.Control
@@ -139,7 +164,7 @@ const TransactionModal: React.FC<ModalProps> = ({ showModal, onClose }) => {
 
                     ) :
 
-                        <Form onSubmit={handleRegularSubmit}>
+                        <Form onSubmit={handleIncomeSubmit}>
                             {/* Select Amount Spent */}
                             <Form.Group controlId="number" className="mb-3">
                                 <InputGroup>

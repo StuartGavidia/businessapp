@@ -24,7 +24,6 @@ export type BudgetFormData = {
     occurance: number,
     allowance: number,
     budget_date: string
-
 }
 
 export type StripeAccountData = {
@@ -39,6 +38,5 @@ export type RegularTransactionFormData = {
 
 export type IncomeTransactionFormData = {
     amount: number,
-    description: string,
-    date: string
+    descriptions: string
 }

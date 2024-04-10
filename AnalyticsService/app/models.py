@@ -51,5 +51,15 @@ class RegularTransaction(db.Model):
     descriptions = db.Column(db.String(255), nullable=False)
     budget_id = db.Column(db.Integer, nullable=False)
 
+class IncomeTransaction(db.Model):
+    __tablename__ = 'income_transaction'
+
+    transaction_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    company_id = db.Column(db.String(255), nullable=False)
+    amount = db.Column(db.Integer, nullable=False)
+    descriptions = db.Column(db.String(255), nullable=False)
+    transaction_date = db.Column(db.DateTime, nullable=False)
+
+
 
 
