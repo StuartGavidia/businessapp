@@ -11,3 +11,41 @@
     box-shadow: none;
   }
   
+  .recent-transaction-headers {
+    font-weight: bold;
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+
+  .recent-transaction-item {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+
+  .kpi-container {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    width: auto;
+    border-radius: 15px;
+    justify-content: center;
+    text-align: center;
+    margin-right: 20px;
+  }
+
+  .recharts-component {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    width: auto;
+    border-radius: 15px;
+    justify-content: center;
+  }
+
+  .recent-transaction-container {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border-radius: 15px;
+    justify-content: center;
+  }
+
