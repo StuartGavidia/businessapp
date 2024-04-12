@@ -24,7 +24,7 @@ const Analytics: React.FC = () => {
 
     const [budgetData, setBudgetData] = useState<BudgetFormData[]>([]);
 
-    const stripePromise = loadStripe('pk_test_51O4uCWFy63ZKr0XeJWxVbfQrS2XQNezYEVSMQGJ1dtBm1EUwnTHdt36jLKOZV4XssTSeiBpLgl9epXFZRSw1EKr500dvZwj033')
+    const stripePromise = loadStripe('')
 
     const [hasStripeAccount, setHasStripeAccount] = useState<boolean | null>(null);
 
@@ -180,61 +180,26 @@ const Analytics: React.FC = () => {
                                 <Col md={12}>
                                     ${stripeAccountBalance} {/* Placeholder */}
                                     <Row>
-                                        <Col className="mt-4"
-                                            style={{
-                                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                                                padding: '10px',
-                                                width: 'auto',
-                                                borderRadius: '15px',
-                                                justifyContent: 'center',
-                                                textAlign: 'center',
-                                                marginRight: '20px'
-                                            }}><div>
-                                                <div style={{ fontWeight: 'bold' }}>Net Income</div>
-                                                <div className="mt-2">$14,700</div>
-                                            </div>
+                                        <Col className='mt-4 kpi-container'>
+                                            <div style={{ fontWeight: 'bold' }}>Net Income</div>
+                                            <div className="mt-2">$14,700</div>
+
                                         </Col>
-                                        <Col className="mt-4"
-                                            style={{
-                                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                                                padding: '10px',
-                                                width: 'auto',
-                                                borderRadius: '15px',
-                                                justifyContent: 'center',
-                                                textAlign: 'center',
-                                                marginRight: '20px'
-                                            }}><div>
-                                                <div style={{ fontWeight: 'bold' }}>Expenses</div>
-                                                <div className="mt-2">$1,200</div>
-                                            </div>
+                                        <Col className='mt-4 kpi-container'>
+                                            <div style={{ fontWeight: 'bold' }}>Expenses</div>
+                                            <div className="mt-2">$1,200</div>
+
                                         </Col>
-                                        <Col className="mt-4"
-                                            style={{
-                                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                                                padding: '10px',
-                                                width: 'auto',
-                                                borderRadius: '15px',
-                                                justifyContent: 'center',
-                                                textAlign: 'center'
-                                            }}>
-                                            <div>
-                                                <div style={{ fontWeight: 'bold' }}> Budget Variance</div>
-                                                <div className="mt-2">$-2,555</div>
-                                            </div>
+                                        <Col className='mt-4 kpi-container'>
+                                            <div style={{ fontWeight: 'bold' }}> Budget Variance</div>
+                                            <div className="mt-2">$-2,555</div>
                                         </Col>
                                     </Row>
                                     <Row>
                                         <Col className='mt-4' style={{ fontSize: '20px', fontWeight: 'bold' }}>Your Analytics</Col>
                                     </Row>
                                     <Row>
-                                        <Col
-                                            style={{
-                                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                                                padding: '10px',
-                                                width: 'auto',
-                                                borderRadius: '15px',
-                                                justifyContent: 'center',
-                                            }}>
+                                        <Col className='recharts-component'>
                                             <Row>
                                                 <Pagination>
                                                     <Pagination.Prev onClick={handlePrevClick} />
@@ -295,24 +260,19 @@ const Analytics: React.FC = () => {
 
                                 {regularTransactionData.length > 0 ? (
                                     <Row>
-                                        <Table style={{
-                                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                                            padding: '10px',
-                                            borderRadius: '15px',
-                                            justifyContent: 'center',
-                                        }}>
+                                        <Table className='recent-transaction-container'>
                                             <thead>
                                                 <tr>
-                                                    <th style={{ fontWeight: 'bold', border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>Account Name</th>
-                                                    <th style={{ fontWeight: 'bold', border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>Amount</th>
-                                                    <th style={{ fontWeight: 'bold', border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>Description</th>
+                                                    <th className='recent-transaction-header'>Account Name</th>
+                                                    <th className='recent-transaction-header'>Amount</th>
+                                                    <th className='recent-transaction-header'>Description</th>
                                                 </tr>
 
                                                 {regularTransactionData.slice(-5).map((transactionItem, index) => (
                                                     <tr key={index}>
-                                                        <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>{transactionItem.account_name}</td>
-                                                        <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>${transactionItem.amount}</td>
-                                                        <td style={{ border: '1px solid #dddddd', textAlign: 'left', padding: '8px' }}>{transactionItem.descriptions}</td>
+                                                        <td className='recent-transaction-item'>{transactionItem.account_name}</td>
+                                                        <td className='recent-transaction-item'>${transactionItem.amount}</td>
+                                                        <td className='recent-transaction-item'>{transactionItem.descriptions}</td>
                                                     </tr>
                                                 ))}
                                             </thead>

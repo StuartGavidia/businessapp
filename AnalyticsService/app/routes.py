@@ -15,7 +15,7 @@ from stripe.error import StripeError
 routes = Blueprint('routes', __name__)
 
 #Set Stripe API Key
-stripe.api_key = "sk_test_51O4uCWFy63ZKr0XemD3A1rCloE3Su65QRVkFPIWiQ5wgemqAUJOSOJtoSeKVxkKpSXRdMjWp0nRn31rvtWrQ26sY00ffEdglnR"
+stripe.api_key = ""
 
 @routes.route("/analytics")
 def analytics():
@@ -23,8 +23,6 @@ def analytics():
     return {"message": "Analytics Service Data is here"}
 
 @routes.route("/analytics/budget", methods=['POST'])
-
-#add back authentication
 def create_budget():
     """
     This route creates a budget 
@@ -37,18 +35,17 @@ def create_budget():
     company_id = payload['company_id']
 
     data = request.json
-    company_id = payload['company_id']
     account_name = data.get('account_name', '')
     allowance = data.get('allowance', '')
     budget_date = data.get('budget_date', '')
-    occurance = data.get('occurance', '')
+    occurence = data.get('occurence', '')
 
     new_budget = Budget(
         company_id=company_id,
         account_name=account_name,
         allowance=allowance,
         budget_date=budget_date,
-        occurance=occurance,
+        occurence=occurence,
         budget_active=True
     )
     
@@ -58,7 +55,6 @@ def create_budget():
     return jsonify({"message": "Budget successfully created"}), 201
 
 @routes.route("/analytics/budget", methods=['GET'])
-
 def get_budget_data():
     try:
 
@@ -76,7 +72,6 @@ def get_budget_data():
         return jsonify({'error': str(e)}), 500
     
 @routes.route("/analytics/createStripeCustomer", methods=["POST"])
-
 def create_stripe_customer():
     
     try:
@@ -117,7 +112,6 @@ def create_stripe_customer():
                 return jsonify({"success": False, "error": str(e)}), 500
     
 @routes.route("/analytics/createFinancialConnectionsSession", methods=["POST"])
-
 def create_financial_connections_session():
 
     try:
@@ -147,7 +141,6 @@ def create_financial_connections_session():
         return jsonify({"error": str(e)}), 500
 
 @routes.route("/analytics/stripeAccountID", methods=["POST", "GET"]) 
-
 def store_stripe_account_id():
      
     try:
@@ -170,7 +163,6 @@ def store_stripe_account_id():
         return jsonify({"error": str(e)}), 500
 
 @routes.route("/analytics/checkStripeAccountID", methods=["GET"])
-
 def check_stripe_account_id():
      try:
           token = request.cookies.get('user_cookie')
@@ -190,7 +182,6 @@ def check_stripe_account_id():
         return jsonify({"error": str(e)}), 500
      
 @routes.route("/analytics/getStripeBalance", methods=["GET"])
-
 def get_stripe_balance():
      
      try:
@@ -213,8 +204,7 @@ def get_stripe_balance():
      except Exception as e:
          return jsonify({"error": str(e)}), 500
      
-@routes.route("/analytics/createRegularTransaction", methods=["POST"])
-     
+@routes.route("/analytics/createRegularTransaction", methods=["POST"]) 
 def create_regular_transaction():
     """
     This route creates a regular transaction
@@ -254,7 +244,6 @@ def create_regular_transaction():
         return jsonify({"error": str(e)}), 500
     
 @routes.route("/analytics/fetchRegularTransactionData", methods=["GET"])
-
 def fetch_regular_transaction_data():
     try:
         transactions = RegularTransaction.query.all()
@@ -265,7 +254,6 @@ def fetch_regular_transaction_data():
         return jsonify({'error': str(e)}), 500
     
 @routes.route("/analytics/deleteBudget", methods=["POST"])
-
 def delete_budget():
 
     try:
@@ -298,7 +286,6 @@ def delete_budget():
     
 
 @routes.route("/analytics/createIncomeTransaction", methods=["POST"])
-     
 def create_income_transaction():
     """
     This route creates an income transaction

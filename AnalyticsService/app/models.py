@@ -16,7 +16,7 @@ class Budget(db.Model):
     account_name = db.Column(db.String(255), nullable=False)
     budget_date = db.Column(db.DateTime, nullable=True)
     allowance = db.Column(db.Integer, nullable=False)
-    occurance = db.Column(db.Integer, nullable=False)
+    occurence = db.Column(db.Integer, nullable=False)
     budget_active = db.Column(db.Boolean, nullable=False)
 
 class StripeAccount(db.Model):

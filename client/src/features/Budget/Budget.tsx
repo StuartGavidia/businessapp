@@ -21,7 +21,7 @@ interface ModalProps {
 const Budget: React.FC<ModalProps> = ({ showModal, onClose }) => {
     const [formData, setFormData] = useState({
         account_name: "",
-        occurance: 0,
+        occurence: 0,
         allowance: 0,
         budget_date: "",
     })
@@ -95,7 +95,7 @@ const Budget: React.FC<ModalProps> = ({ showModal, onClose }) => {
                             <CalendarComp onSelect={handleChange} />
                         </Form.Group>
                         </div>
-                        <Form.Group controlId="occurance" className="mb-3">
+                        <Form.Group controlId="occurence" className="mb-3">
                             <Form.Label className="mb-3 prompt-label">Frequency</Form.Label>
                             <Form.Select style={{ fontWeight: 'lighter', border: '1px solid black' }}>
                                 <option value="0">One time</option>

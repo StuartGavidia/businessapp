@@ -21,7 +21,7 @@ export type SignInFormData = {
 
 export type BudgetFormData = {
     account_name: string,
-    occurance: number,
+    occurence: number,
     allowance: number,
     budget_date: string
 }

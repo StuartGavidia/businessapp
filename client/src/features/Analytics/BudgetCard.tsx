@@ -1,4 +1,5 @@
-import { Card, ProgressBar } from "react-bootstrap"
+import Card from "react-bootstrap/Card"
+import ProgressBar from "react-bootstrap/ProgressBar"
 import React, { useState } from 'react'
 import { currencyFormatter } from '../../utils/card'
 import { FontSizes } from "@fluentui/react";
