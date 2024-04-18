@@ -28,7 +28,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   };
 
   const applyTheme = (themeName: string) => {
-    console.log('HIIII')
     const lightTheme = localStorage.getItem('lightTheme') || 'casual';
     const theme = (themeName == 'light') ? themes[lightTheme.toLowerCase()] : themes['dark']
     
@@ -38,7 +37,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   };
 
   const toggleLightThemeChange = () => {
-    console.log('YO')
     if (themeName == 'light') {
       applyTheme('light')
     }

@@ -79,7 +79,6 @@ def register_user():
         position_name=position_name,
         status=status,
         company_id=company_id,
-        theme_color='Casual'
     )
 
     db.session.add(new_user)
@@ -116,7 +115,6 @@ def get_user():
         'manager_code': current_user.manager_code,
         'position_name':current_user.position_name,
         'company_code':company.company_code,
-        'theme_color': current_user.theme_color
     }
     
     return jsonify({"message": "User successfully retrieved",  "user_info": user_info}), 201

@@ -82,7 +82,6 @@ const Settings: React.FC<SettingsProps> = () => {
 
     
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        console.log(formData)
         e.preventDefault();
 
         //need to send this data to user service for register confirmation
@@ -101,7 +100,6 @@ const Settings: React.FC<SettingsProps> = () => {
 
 
     const changePassword = async (e: React.FormEvent<HTMLFormElement>) => {
-      console.log(formData)
       e.preventDefault();
 
       if (formData.password !== formData.confirmPassword) {
@@ -212,7 +210,7 @@ const Settings: React.FC<SettingsProps> = () => {
               <Form.Control
                 style={{color: "black"}}
                 type="text"
-                placeholder="N/A"
+                placeholder="Position Name (ex: Builder, Chef, Manager ... )"
                 name="positionName"
                 value = {formData.positionName}
                 onChange={handleChange}
@@ -223,7 +221,7 @@ const Settings: React.FC<SettingsProps> = () => {
               <Form.Control
                 style={{color: "black"}}
                 type="text"
-                placeholder="N/A"
+                placeholder="Company Code"
                 name="companyCode"
                 value = {formData.companyCode}
                 onChange={handleChange}
