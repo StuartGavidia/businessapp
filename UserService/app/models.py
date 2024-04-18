@@ -43,7 +43,7 @@ class User(db.Model):
     The Users table contains information related to all users
     """
     __tablename__ = 'users'
-
+    
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
@@ -54,6 +54,7 @@ class User(db.Model):
     manager_code = db.Column(db.String(10), unique=True)
     manager_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     company_id = db.Column(db.Integer, db.ForeignKey('companies.id'), nullable=False)
+    theme_color = db.Column(db.String(50), nullable=True)
     status = db.Column(db.Enum('Active', 'Inactive'), nullable=False, default='Active')
 
     # relationships
