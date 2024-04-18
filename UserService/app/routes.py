@@ -35,7 +35,7 @@ def register_user():
     manager_code = data.get('managerCode', '')
     company_code = data.get('companyCode', '')
     position_name = data.get('positionName', '')
-    
+
     #Perform validation
     #check if user or email already in use
     if User.query.filter_by(username=username).first():
@@ -78,7 +78,7 @@ def register_user():
         manager_id=manager.id,
         position_name=position_name,
         status=status,
-        company_id=company_id,
+        company_id=company_id
     )
 
     db.session.add(new_user)
@@ -220,7 +220,6 @@ def login_user():
     if not is_password_correct:
         abort(400, description="Incorrect Login")
     
-
     try:
         #creating jwt
         jwt_token = create_jwt(
