@@ -166,13 +166,6 @@ def update_user():
     db.session.add(record_to_update)
     db.session.commit()
 
-    #after succesfully registering user, clear the users from company cache
-    # cache_key = f"users_in_company_{company_id}"
-    # try:
-    #     cache.delete(cache_key)
-    # except redis.RedisError as e:
-    #     print(f"Unable to clear cache for {cache_key}: {e}")
-
     return jsonify({"message": "User successfully updated"}), 201
 
 
@@ -191,13 +184,6 @@ def update_password():
 
     db.session.add(record_to_update)
     db.session.commit()
-
-    #after succesfully registering user, clear the users from company cache
-    # cache_key = f"users_in_company_{company_id}"
-    # try:
-    #     cache.delete(cache_key)
-    # except redis.RedisError as e:
-    #     print(f"Unable to clear cache for {cache_key}: {e}")
 
     return jsonify({"message": "User successfully updated"}), 201
 
