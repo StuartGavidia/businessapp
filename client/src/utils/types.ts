@@ -33,10 +33,18 @@ export type StripeAccountData = {
 export type RegularTransactionFormData = {
     account_name: string,
     amount: number,
-    descriptions: string
+    descriptions: string,
+    transaction_date: string
 }
 
 export type IncomeTransactionFormData = {
     amount: number,
     descriptions: string
+}
+
+export type PlaidTransaction = {
+    amount: number,
+    category: string,
+    date: string,
+    name: string
 }
