@@ -97,7 +97,7 @@ def get_access_token():
     public_token = data.get('public_token', '')
     
     # Verify Access Token has been recieved in request body.
-    print("Access Token:", public_token)
+    #print("Access Token:", public_token)
 
     try:
         exchange_request = ItemPublicTokenExchangeRequest(
@@ -188,7 +188,7 @@ def get_transactions():
         # Return the 8 most recent transactions
         transactions = sorted(added, key=lambda t: t['date'])[-15:]
 
-        print(transactions)
+        #print(transactions)
 
         formatted_transactions = []
         
@@ -203,7 +203,7 @@ def get_transactions():
                 'transaction_date': formatted_date
             })
 
-        print("formatted transactions:", formatted_transactions)
+        #print("formatted transactions:", formatted_transactions)
 
         return jsonify(formatted_transactions), 201
     
@@ -410,6 +410,88 @@ def create_income_transaction():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
+@routes.route("/analytics/createPlaidBudgets", methods=["POST"])
+def create_plaid_budgets():
+
+    try:
+        token = request.cookies.get('user_cookie')
+        payload = None
+
+        payload = decode_jwt(token)
+        company_id = payload['company_id']
+        budget_date = datetime.now()
+
+        transactions = request.json
+
+        # Fetch existing budgets
+        existing_budgets = Budget.query.filter_by(company_id=company_id).all()
+        existing_budget_accounts = [budget.account_name for budget in existing_budgets]
+
+        #Fetch unique account names from Plaid Transaction Data
+        unique_plaid_accounts = set()
+
+        for transaction in transactions:
+            unique_plaid_accounts.add(transaction['account_name'][0])
+
+        #CREATE ALLOWANCE BY FINDING TOTAL SPEND LAST MONTH
+
+        if unique_plaid_accounts:
+            for account_name in unique_plaid_accounts:
+                if account_name not in existing_budget_accounts:
+
+                    current_date = datetime.now()
+
+                    first_day_last_month = current_date.replace(day=1) - timedelta(days=1)
+                    first_day_last_month_normalized = first_day_last_month.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+                    last_day_last_month = current_date.replace(day=1) - timedelta(days=1)
+                    last_day_last_month_normalized = last_day_last_month.replace(hour=0, minute=0, second=0, microsecond=0)        
+
+
+                    """ Debugging Time Comparison """
+
+                    """
+                    print("first day of last month", first_day_last_month_normalized)
+
+                    for transaction in transactions:
+                        transaction_date = datetime.strptime(transaction['transaction_date'], '%a, %d %b %Y')
+                        print("Transaction date:", transaction_date)
+                        if first_day_last_month_normalized <= transaction_date <= last_day_last_month_normalized:
+                            print("Transaction falls within the date range")
+                        else:
+                            print("Transaction does not fall within the date range")
+                    """
+                        
+                    # Filter transactions for this account last month
+                    transactions_last_month = [transaction for transaction in transactions 
+                                       if transaction['account_name'][0] == account_name and
+                                       first_day_last_month_normalized <= datetime.strptime(transaction['transaction_date'], '%a, %d %b %Y') <= last_day_last_month_normalized]
+                    
+                    print("Transactions last month for account", account_name, ":", transactions_last_month)
+                    
+                    # Sum total amount spent for this account last month
+                    allowance = abs(sum(transaction['amount'] for transaction in transactions_last_month))
+                    
+                    print("Total spent last month for account", account_name, ":", allowance)
+                            
+                    new_budget = Budget(
+                    company_id=company_id,
+                    account_name=account_name,
+                    allowance=allowance,
+                    budget_date=budget_date,
+                    occurence=4,
+                    budget_active=True
+
+                    )
+
+                    db.session.add(new_budget)
+
+            db.session.commit()
+
+        return jsonify({"message": "Plaid budget successfully created"}), 201
+    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
     

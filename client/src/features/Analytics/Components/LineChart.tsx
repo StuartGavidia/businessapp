@@ -1,4 +1,5 @@
 import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { RegularTransactionFormData } from '../../../utils/types';
 
 const lineChartData = [
     {
@@ -33,7 +34,9 @@ const lineChartData = [
     }
 ]
 
-const LineChartComponent = () => {
+const LineChartComponent = (props: RegularTransactionFormData) => {
+    const {transactionData} = props;
+
     return (
 
             <LineChart width={1000} height={500} margin={{ right: 30 }} data={lineChartData}>

@@ -34,7 +34,7 @@ export type RegularTransactionFormData = {
     account_name: string,
     amount: number,
     descriptions: string,
-    transaction_date: string
+    transaction_date: Date
 }
 
 export type IncomeTransactionFormData = {
@@ -42,9 +42,9 @@ export type IncomeTransactionFormData = {
     descriptions: string
 }
 
-export type PlaidTransaction = {
+export type PlaidTransactionData = {
+    account_name: string,
     amount: number,
-    category: string,
-    date: string,
-    name: string
+    descriptions: string,
+    transaction_date: Date
 }

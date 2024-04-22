@@ -1,4 +1,4 @@
-import { BudgetFormData, StripeAccountData, RegularTransactionFormData, IncomeTransactionFormData } from "../utils/types";
+import { BudgetFormData, RegularTransactionFormData, IncomeTransactionFormData, PlaidTransactionData } from "../utils/types";
 
 
 class BudgetServiceAPI {
@@ -188,6 +188,28 @@ class BudgetServiceAPI {
             console.error('Error fetching budget data:', error);
             throw error; 
         }
+    }
+
+    public async createPlaidBudgets(plaidTransactionData: PlaidTransactionData[]) {
+        return await fetch('/analytics/createPlaidBudgets', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+
+            },
+            body: JSON.stringify(plaidTransactionData)
+        })
+            .then((response: Response) => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.error);
+                    });
+                }
+                return response.json();
+            })
+            .then((data: { message: string }) => {
+                console.log(data.message);
+            })
     }
 
 

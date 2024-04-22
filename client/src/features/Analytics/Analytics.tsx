@@ -5,7 +5,7 @@ import Container from 'react-bootstrap/Container';
 import BudgetServiceAPI from '../../api/budgetServiceAPI';
 import Pagination from 'react-bootstrap/Pagination';
 import { useEffect, useState, useCallback } from 'react';
-import { BudgetFormData, PlaidTransaction, RegularTransactionFormData } from '../../utils/types';
+import { BudgetFormData, PlaidTransactionData, RegularTransactionFormData } from '../../utils/types';
 import { Button, FormControl, InputGroup, Navbar, Stack } from 'react-bootstrap';
 import BudgetCard from './BudgetCard';
 import AreaChart from './Components/AreaChart';
@@ -24,13 +24,24 @@ import React from 'react';
 
 const Analytics: React.FC = () => {
 
+    /* Get Last & First Day of Current Month for Plaid Transactions*/
+    function isTransactionInCurrentMonth(currTransactionDate: any) {
+        // Convert the string date to a Date object
+        const transactionDate = new Date(currTransactionDate);
+    
+        // Check if the transaction date is in the current month
+        const currentDate = new Date();
+        return transactionDate.getMonth() === currentDate.getMonth() &&
+            transactionDate.getFullYear() === currentDate.getFullYear();
+    }
+
     const [budgetData, setBudgetData] = useState<BudgetFormData[]>([]);
     const [chartStyle, setChartStyle] = useState('area')
     const [showTransactionModal, setShowTransactionModal] = useState(false)
     const [showBudgetModal, setShowBudgetModal] = useState(false)
     const [regularTransactionData, setRegularTransactionData] = useState<RegularTransactionFormData[]>([]);
 
-    /* pagination methods for recharts visualizations */
+    /* Pagination Methods for Recharts Visualizations (only using line-chart for now) */
     const handleNextClick = () => {
         if (chartStyle === 'line') setChartStyle('bar')
         else if (chartStyle === 'bar') setChartStyle('area')
@@ -64,8 +75,10 @@ const Analytics: React.FC = () => {
     const [transactionsMap, setTransactionsMap] = useState<Map<string, any[]>>(new Map());
     const [plaidUserCreated, setPlaidUserCreated] = useState(false);
     const [currentTransactionPage, setCurrentTransactionPage] = useState(1)
+    const [combinedTransactions, setCombinedTransactions] = useState<any[]>([]);
+    const [plaidBudgetsCreated, setPlaidBudgetsCreated] = useState(false);
 
-    const transactionsPerPage = 8;
+    const transactionsPerPage = 6;
 
 
     const paginateTransactions = (pageNumber: any) => setCurrentTransactionPage(pageNumber);
@@ -167,6 +180,15 @@ const Analytics: React.FC = () => {
         }
     };
 
+    const createPlaidBudgets = async () => {
+        try {
+            await BudgetServiceAPI.getInstance().createPlaidBudgets(plaidTransactionData);
+            setPlaidBudgetsCreated(true);
+        } catch (error) {
+            console.log('Error fetching Budget Data:', error);
+        }
+    };
+
     // Method for formatting and combining Plaid Transactions with Regular Transactions for List
     const createCurrentTransactions = (plaidTransactions: any[], regularTransactions: RegularTransactionFormData[], currentPage: number, transactionsPerPage: number) => {
 
@@ -175,18 +197,31 @@ const Analytics: React.FC = () => {
             account_name: [plaidTransaction.account_name[0]]
         }));
 
-
         const allTransactions = [...regularTransactions, ...formattedPlaidTransactions];
-
 
         const indexOfLastTransaction = currentTransactionPage * transactionsPerPage;
         const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
 
-
         const currentTransactions = allTransactions.slice(indexOfFirstTransaction, indexOfLastTransaction);
 
         return currentTransactions;
+    }
 
+    const createCombinedTransactions = (plaidTransactions: any[], regularTransactions: RegularTransactionFormData[]) => {
+
+        const formattedPlaidTransactions = plaidTransactions.map(plaidTransaction => ({
+            ...plaidTransaction,
+            amount: Math.abs(plaidTransaction.amount),
+            account_name: plaidTransaction.account_name[0]
+        }));
+
+        const allTransactions = [...regularTransactions, ...formattedPlaidTransactions];
+
+        allTransactions.forEach(transaction => {
+            console.log(transaction.account_name);
+        });
+
+        return allTransactions;
     }
 
     const currentTransactions = createCurrentTransactions(plaidTransactionData, regularTransactionData, currentTransactionPage, transactionsPerPage);
@@ -228,6 +263,7 @@ const Analytics: React.FC = () => {
 
     useEffect(() => {
 
+        createPlaidBudgets();
         fetchBudgetData();
         fetchRegularTransactionData();
         fetchPlaidUser();
@@ -243,8 +279,10 @@ const Analytics: React.FC = () => {
     }, [plaidUserCreated])
 
     useEffect(() => {
-        console.log("plaid transactions", plaidTransactionData)
-    }, [plaidTransactionData])
+        if (regularTransactionData.length > 0 && plaidTransactionData.length > 0) {
+            setCombinedTransactions(createCombinedTransactions(plaidTransactionData, regularTransactionData))
+        }
+    }, [regularTransactionData, plaidTransactionData])
 
 
     return (
@@ -310,8 +348,8 @@ const Analytics: React.FC = () => {
 
                                         {/* Search Transaction Form */}
                                         <Form>
-                                            <div>
-                                                <Form.Group controlId="account_name" className="mb-3" style={{ borderRadius: '5px', width: '100%' }}>
+                                            <div style={{ marginTop: '-18px'}}>
+                                                <Form.Group controlId="account_name" className="mb-3" style={{ borderRadius: '5px', width: '100%'}}>
                                                     {/* Expense Description */}
                                                     <Form.Group controlId="description" className="mb-3">
                                                         <Form.Label className="mb-3 prompt-label"></Form.Label>
@@ -410,28 +448,32 @@ const Analytics: React.FC = () => {
                                 <Row>
                                     <Col md={12} style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold' }}>Categories</Col>
                                 </Row>
-                                <Row>
+                                <Row style={{ marginTop: '7px' }}>
                                     <Col className='mt-4'>
-                                        <Button variant='outline-dark' size='sm' className='w-100' style={{ marginBottom: '16px' }} onClick={() => setShowBudgetModal(true)}>
+                                        <Button variant='outline-dark' size='sm' className='w-100' style={{ marginBottom: '15px' }} onClick={() => setShowBudgetModal(true)}>
                                             Create a New Budget
                                         </Button>
                                         <Budget showModal={showBudgetModal} onClose={() => setShowBudgetModal(false)} />
+                                        {plaidTransactionData.length > 0 && (
+                                            budgetData.map((budgetItem, index) => {
 
-                                        {budgetData.map((budgetItem, index) => {
+                                                const regularTransactionsForAccount = combinedTransactions.filter(transaction => transaction.account_name === budgetItem.account_name
+                                                    &&
+                                                    isTransactionInCurrentMonth(transaction.transaction_date)
+                                                );
 
-                                            const regularTransactionsForAccount = regularTransactionData.filter(transaction => transaction.account_name === budgetItem.account_name);
+                                                const totalSpend = regularTransactionsForAccount.reduce((total, transaction) => total + transaction.amount, 0);
 
-                                            const totalSpend = regularTransactionsForAccount.reduce((total, transaction) => total + transaction.amount, 0);
-
-                                            return (
-                                                <BudgetCard
-                                                    key={index}
-                                                    total_spend={totalSpend}
-                                                    account_name={budgetItem.account_name}
-                                                    allowance={budgetItem.allowance}
-                                                />
-                                            );
-                                        })}
+                                                return (
+                                                    <BudgetCard
+                                                        key={index}
+                                                        total_spend={totalSpend}
+                                                        account_name={budgetItem.account_name}
+                                                        allowance={budgetItem.allowance}
+                                                    />
+                                                );
+                                            })
+                                        )}
                                     </Col>
                                 </Row>
                             </Stack>
