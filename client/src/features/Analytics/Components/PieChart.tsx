@@ -1,4 +1,5 @@
-import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { useEffect, useState} from 'react';
+import { PieChart, Pie, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 const areaChartData = [
     {
@@ -33,31 +34,34 @@ const areaChartData = [
     }
 ]
 
-const PieChartComponent = () => {
+interface BarChartProps {
+    combinedTransactions: any[]
+}
+
+const PieChartComponent: React.FC<BarChartProps> = ({ combinedTransactions }) => {
+
+    const [pieChartData, setPieChartData] = useState<any[]>([]);
+    const today = new Date();
+    
+
+    useEffect(() => {
+
+    })
+
     return (
 
-            <AreaChart width={1000} height={500} margin={{ right: 30 }} data={areaChartData}>
-                <YAxis />
-                <XAxis dataKey='name' />
-                <CartesianGrid strokeDasharray='5 5'/>
-                <Tooltip />
-
-                <Area
-                type='monotone' 
-                dataKey='allowance'
-                stroke='#2563eb'
-                fill='black'
-                stackId='1'
-                />
-
-                <Area
-                type='monotone'
-                dataKey='expense'
-                stroke='#7c3aed'
-                fill='white'
-                stackId='1'
-                />
-            </AreaChart>
+        <PieChart>
+            <Pie 
+            dataKey=''
+            nameKey=''
+            cx='50%'
+            cy='50%'
+            innerRadius={60}
+            outerRadius={80}
+            fill="#82ca9d" label
+            
+            />
+        </PieChart>
 
     )
 };

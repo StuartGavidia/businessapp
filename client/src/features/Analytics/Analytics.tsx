@@ -28,7 +28,7 @@ const Analytics: React.FC = () => {
     function isTransactionInCurrentMonth(currTransactionDate: any) {
         // Convert the string date to a Date object
         const transactionDate = new Date(currTransactionDate);
-    
+
         // Check if the transaction date is in the current month
         const currentDate = new Date();
         return transactionDate.getMonth() === currentDate.getMonth() &&
@@ -42,30 +42,11 @@ const Analytics: React.FC = () => {
     const [regularTransactionData, setRegularTransactionData] = useState<RegularTransactionFormData[]>([]);
 
     /* Pagination Methods for Recharts Visualizations (only using line-chart for now) */
-    const handleNextClick = () => {
-        if (chartStyle === 'line') setChartStyle('bar')
-        else if (chartStyle === 'bar') setChartStyle('area')
-        else if (chartStyle === 'area') setChartStyle('line')
-
-    }
-
-    const handlePrevClick = () => {
-        if (chartStyle === 'line') setChartStyle('area')
-        else if (chartStyle === 'area') setChartStyle('bar')
-        else if (chartStyle === 'bar') setChartStyle('line')
-
-    }
 
     const renderChart = () => {
-        switch (chartStyle) {
-            case 'line':
-                return <LineChart />
-            case 'bar':
-                return <BarChart />
-            case 'area':
-                return <AreaChart />
 
-        }
+        return <LineChart combinedTransactions={combinedTransactions} />
+
     }
 
     //State variables for triggering Plaid Link
@@ -79,7 +60,6 @@ const Analytics: React.FC = () => {
     const [plaidBudgetsCreated, setPlaidBudgetsCreated] = useState(false);
 
     const transactionsPerPage = 6;
-
 
     const paginateTransactions = (pageNumber: any) => setCurrentTransactionPage(pageNumber);
 
@@ -190,7 +170,7 @@ const Analytics: React.FC = () => {
     };
 
     // Method for formatting and combining Plaid Transactions with Regular Transactions for List
-    const createCurrentTransactions = (plaidTransactions: any[], regularTransactions: RegularTransactionFormData[], currentPage: number, transactionsPerPage: number) => {
+    const createCurrentTransactions = (plaidTransactions: any[], regularTransactions: RegularTransactionFormData[], transactionsPerPage: number) => {
 
         const formattedPlaidTransactions = plaidTransactions.map(plaidTransaction => ({
             ...plaidTransaction,
@@ -217,14 +197,10 @@ const Analytics: React.FC = () => {
 
         const allTransactions = [...regularTransactions, ...formattedPlaidTransactions];
 
-        allTransactions.forEach(transaction => {
-            console.log(transaction.account_name);
-        });
-
         return allTransactions;
     }
 
-    const currentTransactions = createCurrentTransactions(plaidTransactionData, regularTransactionData, currentTransactionPage, transactionsPerPage);
+    const currentTransactions = createCurrentTransactions(plaidTransactionData, regularTransactionData, transactionsPerPage);
 
     const createTransactionMap = (combinedTransaction: any[]) => {
         const resultMap = new Map();
@@ -320,8 +296,10 @@ const Analytics: React.FC = () => {
                                     <Row>
                                         <Col className='recharts-component'>
                                             <Row>
+                                                {/* Include a base case if transactions don't exist */}
                                                 {/* Render Area Chart */}
-                                                {renderChart()}
+                                                {combinedTransactions &&
+                                                    renderChart()}
                                             </Row>
                                         </Col>
                                     </Row>
@@ -348,8 +326,8 @@ const Analytics: React.FC = () => {
 
                                         {/* Search Transaction Form */}
                                         <Form>
-                                            <div style={{ marginTop: '-18px'}}>
-                                                <Form.Group controlId="account_name" className="mb-3" style={{ borderRadius: '5px', width: '100%'}}>
+                                            <div style={{ marginTop: '-18px' }}>
+                                                <Form.Group controlId="account_name" className="mb-3" style={{ borderRadius: '5px', width: '100%' }}>
                                                     {/* Expense Description */}
                                                     <Form.Group controlId="description" className="mb-3">
                                                         <Form.Label className="mb-3 prompt-label"></Form.Label>
@@ -404,7 +382,7 @@ const Analytics: React.FC = () => {
                                                             <td className='recent-transaction-item padded-cell'>{transactionItem.descriptions}</td>
                                                             <td className='recent-transaction-item padded-cell'>{transactionItem.account_name}</td>
                                                             <td className='recent-transaction-item padded-cell'>{transactionItem.transaction_date}</td>
-                                                            <td className='transaction-amount padded-cell'>${transactionItem.amount}</td>
+                                                            <td className='transaction-amount padded-cell'>${Math.abs(transactionItem.amount)}</td>
                                                         </tr>
                                                     ))}
                                                 </tbody>
