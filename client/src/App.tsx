@@ -81,8 +81,8 @@ function App() {
           <Route path="calendar" element={<Calendar />}/>
           <Route path="communication" element={<Communication />}/>
           <Route path="settings" element={
-              <SettingsPage />
-        }/>       
+            <SettingsPage />
+          }/>       
         </Route>
       </Route>
       <Route path="*" element={<NotFoundPage />} />

@@ -35,6 +35,59 @@ class UserServiceAPI {
         })
     }
 
+    public async getUser(userId) {
+      return await fetch(`/users/get?username=${userId}`)
+                  .then(response => response.json())
+                  .then(data => {return data})
+                  .catch(error => console.error('Error:' + error))
+    }
+
+
+    public async updateUser(userData: RegistrationFormData) {
+      return await fetch('/users/update', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(userData)
+      })
+      .then((response: Response) => {
+          if (!response.ok) {
+              return response.json().then(data => {
+                  throw new Error(data.error);
+              });
+          }
+          return response.json();
+      })
+      .then((data: {message: string}) => {
+          console.log(data.message);
+      })
+  }
+
+
+  public async updatePassword(userData: RegistrationFormData) {
+    return await fetch('/users/updatePassword', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData)
+    })
+    .then((response: Response) => {
+        if (!response.ok) {
+            return response.json().then(data => {
+                throw new Error(data.error);
+            });
+        }
+        return response.json();
+    })
+    .then((data: {message: string}) => {
+        console.log(data.message);
+    })
+}
+  
+
+
     public async loginUser(userData: SignInFormData) {
         return fetch('/users/login', {
             method: 'POST',

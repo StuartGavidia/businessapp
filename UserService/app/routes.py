@@ -93,6 +93,100 @@ def register_user():
 
     return jsonify({"message": "User successfully registered"}), 201
 
+@routes.route("/users/get", methods=['GET'])
+def get_user():
+    """
+    This route retrieves login information for a user
+    """
+    #Perform validation
+    #check if user or email already in use
+    username = request.args.get('username')
+    current_user = User.query.filter_by(id=username).first()
+    if current_user == None:
+        abort(400, description="User does not exist")
+
+    company = Company.query.filter_by(id=current_user.company_id).first()
+
+    user_info = { 
+        'first_name':current_user.first_name,
+        'last_name':current_user.last_name,
+        'username':current_user.username,
+        'email':current_user.email,
+        'manager_code': current_user.manager_code,
+        'position_name':current_user.position_name,
+        'company_code':company.company_code,
+    }
+    
+    return jsonify({"message": "User successfully retrieved",  "user_info": user_info}), 201
+
+
+@routes.route("/users/update", methods=['POST'])
+def update_user():
+    """
+    This route registers a user
+    """
+    data = request.json  # Get JSON payload from the client
+    first_name = data.get('firstName', '')
+    last_name = data.get('lastName', '')
+    user_name = data.get('username', '')
+    email = data.get('email', '')
+    manager_code = data.get('managerCode', '')
+    company_code = data.get('companyCode', '')
+    position_name = data.get('positionName', '')
+    has_direct_reports = data.get('hasDirectReports', True)
+    #check manager code is correct
+    manager = User.query.filter_by(manager_code=manager_code).first()
+    if manager_code == '' or (not manager):
+        abort(400, description="Manager code does not exist")
+
+    #check company code is correct
+    company = Company.query.filter_by(company_code=company_code).first()
+    if company_code == '' or (not company):
+        abort(400, description="Company code does not exist")
+    company_id = company.id
+
+    current_manager_code = None
+    if has_direct_reports:
+        sample_code = generate_code()
+        all_manager_codes = get_all_manager_codes()
+        while sample_code in all_manager_codes:
+            sample_code = generate_code()
+        current_manager_code = sample_code
+
+    #hash password to prepare for storage
+    record_to_update = User.query.filter_by(username=user_name).first()
+    record_to_update.first_name = first_name
+    record_to_update.last_name = last_name
+    record_to_update.email = email
+    record_to_update.manager_code=current_manager_code
+    record_to_update.manager_id=manager.id
+    record_to_update.position_name=position_name
+    record_to_update.company_id=company_id
+
+    db.session.add(record_to_update)
+    db.session.commit()
+
+    return jsonify({"message": "User successfully updated"}), 201
+
+
+@routes.route("/users/updatePassword", methods=['POST'])
+def update_password():
+    """
+    This route registers a user
+    """
+    data = request.json  # Get JSON payload from the client
+    user_name = data.get('username', '')
+    password = data.get('password', '')
+    #hash password to prepare for storage
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+    record_to_update = User.query.filter_by(username=user_name).first()
+    record_to_update.password_hash = hashed_password
+
+    db.session.add(record_to_update)
+    db.session.commit()
+
+    return jsonify({"message": "User successfully updated"}), 201
+
 @routes.route("/users/login", methods=['POST'])
 def login_user():
     """
@@ -111,7 +205,7 @@ def login_user():
     is_password_correct = bcrypt.check_password_hash(user.password_hash, password)
     if not is_password_correct:
         abort(400, description="Incorrect Login")
-
+    
     try:
         #creating jwt
         jwt_token = create_jwt(

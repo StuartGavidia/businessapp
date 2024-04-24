@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import UserServiceAPI from '../../api/userServiceAPI'
 import SettingsProps from '../../interfaces/SettingsProps'
 import Form from 'react-bootstrap/Form';
@@ -8,6 +8,7 @@ import { themes } from '../../theme/themes';
 
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import { useAppConfig } from '../../providers/AppConfigProvider';
 
 const Settings: React.FC<SettingsProps> = () => {
     const [formData, setFormData] = useState({
@@ -28,12 +29,41 @@ const Settings: React.FC<SettingsProps> = () => {
 
     const handleThemeChange = (event) => {
       setSelectedLightTheme(event.target.value);
-      localStorage.setItem('lightTheme', event.target.value);
+      localStorage.setItem('lightTheme', event.target.value); 
+      if (localStorage.getItem('theme') == null) {
+        localStorage.setItem('theme', 'light')
+      }
       if (localStorage.getItem('theme') == 'light') {
         toggleLightThemeChange();
       }
     };
 
+
+    const { appConfig } = useAppConfig();
+    const appConfigUserId = appConfig.userId;
+    console.log(appConfigUserId)
+    useEffect( () => {
+      const fetchData = async (appConfigUserId) => {
+        const json = await UserServiceAPI.getInstance().getUser(appConfigUserId);
+        return json
+      }
+      
+     fetchData(appConfigUserId).then( (data) => {
+      changeFormData('firstName', data['user_info'].first_name)
+      changeFormData('lastName', data['user_info'].last_name)
+      changeFormData('username', data['user_info'].username)
+      changeFormData('email', data['user_info'].email)
+      changeFormData('managerCode', data['user_info'].manager_code)
+      changeFormData('companyCode', data['user_info'].company_code)
+      changeFormData('positionName', data['user_info'].position_name)
+     })
+
+    }, [appConfigUserId]);
+
+
+    const changeFormData = (name, value) => {
+      setFormData(prevState => ({ ...prevState, [name]: value }));
+    }
 
     const toggleDirectReports = (hasDirectReports: boolean) => {
       setFormData(prevState => ({ ...prevState, ['hasDirectReports']: hasDirectReports }))
@@ -52,17 +82,11 @@ const Settings: React.FC<SettingsProps> = () => {
 
     
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        console.log(formData)
         e.preventDefault();
-
-        if (formData.password !== formData.confirmPassword) {
-          setError("Passwords do not match");
-          return;
-        }
 
         //need to send this data to user service for register confirmation
         try {
-          await UserServiceAPI.getInstance().registerUser(formData);
+          await UserServiceAPI.getInstance().updateUser(formData);
           alert("Registration was succesful!")
           setError("");
         } catch (err: unknown) {
@@ -73,6 +97,29 @@ const Settings: React.FC<SettingsProps> = () => {
           }
         }
     };
+
+
+    const changePassword = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      if (formData.password !== formData.confirmPassword) {
+        setError("Passwords do not match");
+        return;
+      }
+
+      //need to send this data to user service for register confirmation
+      try {
+        await UserServiceAPI.getInstance().updatePassword(formData);
+        alert("Password was updated successfully!")
+        setError("");
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An error occurred");
+        }
+      }
+  };
 
     const divStyle = {
       width: '100%',
@@ -87,6 +134,7 @@ const Settings: React.FC<SettingsProps> = () => {
                 type="text"
                 placeholder="First Name"
                 name="firstName"
+                value = {formData.firstName}
                 onChange={handleChange}
                 required
               />
@@ -97,6 +145,7 @@ const Settings: React.FC<SettingsProps> = () => {
                 type="text"
                 placeholder="Last Name"
                 name="lastName"
+                value = {formData.lastName}
                 onChange={handleChange}
                 required
               />
@@ -106,9 +155,10 @@ const Settings: React.FC<SettingsProps> = () => {
                 style={{color: "black"}}
                 type="text"
                 placeholder="Username"
+                value = {formData.username}
                 name="username"
                 onChange={handleChange}
-                required
+                disabled
               />
             </Form.Group>
             <Form.Group controlId="email" className="mb-3">
@@ -117,26 +167,7 @@ const Settings: React.FC<SettingsProps> = () => {
                 type="email"
                 placeholder="Email"
                 name="email"
-                onChange={handleChange}
-                required
-              />
-            </Form.Group>
-            <Form.Group controlId="password" className="mb-3">
-              <Form.Control
-                style={{color: "black"}}
-                type="password"
-                placeholder="Password"
-                name="password"
-                onChange={handleChange}
-                required
-              />
-            </Form.Group>
-            <Form.Group controlId="confirmPassword" className="mb-3">
-              <Form.Control
-                style={{color: "black"}}
-                type="password"
-                placeholder="Confirm Password"
-                name="confirmPassword"
+                value = {formData.email}
                 onChange={handleChange}
                 required
               />
@@ -167,9 +198,11 @@ const Settings: React.FC<SettingsProps> = () => {
               <Form.Control
                 style={{color: "black"}}
                 type="text"
-                placeholder="Manager Code"
+                placeholder="N/A"
                 name="managerCode"
+                value = {!formData.hasDirectReports ? "": formData.managerCode}
                 onChange={handleChange}
+                disabled={!formData.hasDirectReports}
                 required
               />
             </Form.Group>
@@ -179,6 +212,7 @@ const Settings: React.FC<SettingsProps> = () => {
                 type="text"
                 placeholder="Position Name (ex: Builder, Chef, Manager ... )"
                 name="positionName"
+                value = {formData.positionName}
                 onChange={handleChange}
                 required
               />
@@ -189,6 +223,7 @@ const Settings: React.FC<SettingsProps> = () => {
                 type="text"
                 placeholder="Company Code"
                 name="companyCode"
+                value = {formData.companyCode}
                 onChange={handleChange}
                 required
               />
@@ -212,6 +247,32 @@ const Settings: React.FC<SettingsProps> = () => {
 
             <Button variant="primary" type="submit" className="w-100">
                 Save
+            </Button>
+          </Form>
+
+
+          <Form onSubmit={changePassword}>
+            <Form.Group controlId="password" className="mb-3">
+                <Form.Control
+                  style={{color: "black"}}
+                  type="password"
+                  placeholder="Password"
+                  name="password"
+                  onChange={handleChange}
+                />
+              </Form.Group>
+              <Form.Group controlId="confirmPassword" className="mb-3">
+                <Form.Control
+                  style={{color: "black"}}
+                  type="password"
+                  placeholder="Confirm Password"
+                  name="confirmPassword"
+                  onChange={handleChange}
+                />
+              </Form.Group>
+
+              <Button variant="primary" type="submit" className="w-100">
+                Change Password
             </Button>
           </Form>
         </div>
