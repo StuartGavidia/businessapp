@@ -137,3 +137,35 @@ class UserPermission(db.Model):
     # relationships
     user = db.relationship('User', back_populates='user_permissions')
     permission = db.relationship('Permission', back_populates='user_permissions')
+
+class Role(db.Model):
+    """
+    The Role table contains different roles that can be assigned to users.
+    """
+    __tablename__ = 'roles'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)
+    description = db.Column(db.String(255), nullable=True)
+
+    # relationships
+    users = db.relationship('User', secondary='user_roles', back_populates='roles')
+
+class UserRole(db.Model):
+    """
+    The UserRole table is a junction table to normalize the many-to-many relationships
+    between User and Role
+    """
+    __tablename__ = 'user_roles'
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), primary_key=True)
+
+    # relationships
+    user = db.relationship('User', back_populates='user_roles')
+    role = db.relationship('Role', back_populates='user_roles')
+
+User.user_roles = db.relationship('UserRole', back_populates='user', lazy='dynamic')
+Role.user_roles = db.relationship('UserRole', back_populates='role', lazy='dynamic')
+
+User.roles = db.relationship('Role', secondary='user_roles', back_populates='users')

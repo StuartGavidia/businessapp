@@ -7,7 +7,7 @@ import json
 import redis
 from flask_bcrypt import Bcrypt
 from flask import Blueprint, jsonify, request, abort, make_response
-from app.models import User, Company, db
+from app.models import User, Company, Role, CompanyFeature, Feature, db
 from app.utils import generate_code, create_jwt, decode_jwt
 from app.decorators import token_required
 
@@ -84,6 +84,11 @@ def register_user():
     db.session.add(new_user)
     db.session.commit()
 
+    role_name = 'Manager' if has_direct_reports else 'Employee'
+    role = Role.query.filter_by(name=role_name).first()
+    new_user.roles.append(role)
+    db.session.commit()
+
     #after succesfully registering user, clear the users from company cache
     cache_key = f"users_in_company_{company_id}"
     try:
@@ -107,7 +112,7 @@ def get_user():
 
     company = Company.query.filter_by(id=current_user.company_id).first()
 
-    user_info = { 
+    user_info = {
         'first_name':current_user.first_name,
         'last_name':current_user.last_name,
         'username':current_user.username,
@@ -116,7 +121,7 @@ def get_user():
         'position_name':current_user.position_name,
         'company_code':company.company_code,
     }
-    
+
     return jsonify({"message": "User successfully retrieved",  "user_info": user_info}), 201
 
 
@@ -205,7 +210,7 @@ def login_user():
     is_password_correct = bcrypt.check_password_hash(user.password_hash, password)
     if not is_password_correct:
         abort(400, description="Incorrect Login")
-    
+
     try:
         #creating jwt
         jwt_token = create_jwt(
@@ -331,6 +336,42 @@ def users_in_company():
         abort(400, description="Incorrect Login")
 
     return users_data
+
+@routes.route('/users/features', methods=['GET'])
+@token_required
+def get_user_features():
+    token = request.cookies.get('user_cookie')
+    payload = None
+
+    try:
+        payload = decode_jwt(token)
+    except Exception:
+        return jsonify({'message': 'Token is invalid!'}), 401
+
+    user_id = payload['user_id']
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    company = Company.query.get(user.company_id)
+    if not company:
+        return jsonify({'error': 'Company not found'}), 404
+
+    is_ceo = any(role.name == 'CEO' for role in user.roles)
+
+    if is_ceo:
+        features = Feature.query.filter(
+          (Feature.industry_id == company.industry_id) | (Feature.industry_id.is_(None))
+        ).all()
+    else:
+        features = Feature.query.join(CompanyFeature, Feature.id == CompanyFeature.feature_id)\
+          .filter(CompanyFeature.company_id == user.company_id,
+            CompanyFeature.enabled == True,
+            Feature.name != 'Analytics',
+            (Feature.industry_id == company.industry_id) | (Feature.industry_id.is_(None))).all()
+
+    feature_list = [feature.name for feature in features]
+    return jsonify(feature_list), 200
 
 @routes.errorhandler(400)
 def bad_request(error):
