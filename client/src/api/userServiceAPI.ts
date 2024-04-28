@@ -35,7 +35,7 @@ class UserServiceAPI {
         })
     }
 
-    public async getUser(userId) {
+    public async getUser(userId: any) {
       return await fetch(`/users/get?username=${userId}`)
                   .then(response => response.json())
                   .then(data => {return data})
@@ -85,7 +85,7 @@ class UserServiceAPI {
         console.log(data.message);
     })
 }
-  
+
 
 
     public async loginUser(userData: SignInFormData) {
@@ -145,6 +145,25 @@ class UserServiceAPI {
       const data = response.json();
       return data;
     }
+
+    public async getFeatures(): Promise<string[]> {
+      return fetch('/users/features', {
+          method: 'GET'
+      })
+      .then((response: Response) => {
+          if (!response.ok) {
+              return response.json().then(data => {
+                  throw new Error(data.error);
+              });
+          }
+          return response.json();
+      })
+      .catch((error: Error) => {
+          console.error('Error fetching features:', error);
+          throw error;
+      });
+    }
+
   }
 
 export default UserServiceAPI;
