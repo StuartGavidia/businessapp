@@ -100,7 +100,7 @@ class CommunicationServiceAPI {
         },
         body: JSON.stringify({
           conversationId: Math.random().toString(),
-          participants: ["12345", "67890", "11111"],
+          participants: [],
           createdAt: new Date().toISOString(),
           title: threadName,
         }),
