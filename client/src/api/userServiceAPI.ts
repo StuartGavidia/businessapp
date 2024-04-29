@@ -164,6 +164,24 @@ class UserServiceAPI {
       });
     }
 
+    public async getUserById() {
+      return fetch('/users/getById', {
+          method: 'GET'
+      })
+      .then((response: Response) => {
+          if (!response.ok) {
+              return response.json().then(data => {
+                  throw new Error(data.error);
+              });
+          }
+          return response.json();
+      })
+      .catch((error: Error) => {
+          console.error('Error fetching user:', error);
+          throw error;
+      });
+    }
+
   }
 
 export default UserServiceAPI;

@@ -16,6 +16,7 @@ import ProtectedRouteProps from './interfaces/ProtectedRouteProps'
 import AppConfigLayout from './layouts/AppConfigLayout'
 import { ThemeProvider } from './theme/ThemeContext';
 import Spinner from './components/Spinner/Spinner'
+import Team from './features/Team/Team'
 const ProtectedRoute: React.FC<ProtectedRouteProps> =  ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
@@ -61,7 +62,7 @@ function App() {
   }, []);
 
    if (loading) {
-    return <Spinner/> 
+    return <Spinner/>
    } else {
     return (
     <Routes>
@@ -80,9 +81,10 @@ function App() {
           <Route path="budget" element={<Budget />} />
           <Route path="calendar" element={<Calendar />}/>
           <Route path="communication" element={<Communication />}/>
+          <Route path="team" element={<Team />}/>
           <Route path="settings" element={
             <SettingsPage />
-          }/>       
+          }/>
         </Route>
       </Route>
       <Route path="*" element={<NotFoundPage />} />

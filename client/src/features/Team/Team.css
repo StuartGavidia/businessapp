@@ -1,0 +1,39 @@
+.team-page-container {
+  display: flex;
+  padding: 20px;
+}
+
+.team-members {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: var(--bs-background-color);
+  padding: 10px;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 600px;
+}
+
+.peers {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.manager, .subordinates {
+  display: flex;
+  justify-content: center;
+}
+
+.selected-user-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--bs-body-color);
+  justify-content: center;
+  align-items: center;
+  height: 600px;
+}

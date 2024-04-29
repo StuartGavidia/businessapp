@@ -14,8 +14,8 @@ import './Components/CalendarComp.css'
 import Modal from 'react-bootstrap/Modal'
 
 interface ModalProps {
-    showModal: boolean
-    onClose: () => void
+    showModal?: boolean
+    onClose?: () => void
 }
 
 const Budget: React.FC<ModalProps> = ({ showModal, onClose }) => {
@@ -120,7 +120,7 @@ const Budget: React.FC<ModalProps> = ({ showModal, onClose }) => {
                                     onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
                                     required />
                             </InputGroup>
-                            
+
                         </Form.Group>
                         <Button variant="dark" type="submit" className="w-100">
                             Save
