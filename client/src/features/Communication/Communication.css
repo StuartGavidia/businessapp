@@ -3,3 +3,17 @@
     width: 100%;
     height: 100%;
 }
+
+.rounded-border {
+  border: 4px solid #3A4D39;
+  border-radius: 10px;
+}
+
+.rounded-message {
+  border: 4px solid #3A4D39;
+  border-radius: 10px;
+}
+
+.colored-background {
+  background-color: #ffffff;
+}

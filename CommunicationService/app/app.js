@@ -41,10 +41,12 @@ await client.connect();
 const database = client.db('SampleDB');
 
 // Define the /createThread route here
-app.post('/communication/createThread', (req, res) => {
+app.post('/communication/createThread', authenticate, (req, res) => {
   // connect to the server
+  const userId = req.user.user_id.toString();
   const collection = database.collection('Conversations');
   const doc = req.body;
+  doc.participants.push(userId);
   collection.insertOne(doc, (err) => {
     if (err) {
       console.error('Error inserting document: ', err);
@@ -56,12 +58,16 @@ app.post('/communication/createThread', (req, res) => {
 });
 
 // Getting Message Results by Conversation ID
-app.get('/communication/messages/:conversationID', async (req, res) => {
+app.get('/communication/messages/:conversationID', authenticate, async (req, res) => {
   // connect to the server
   const { conversationID } = req.params;
+  const userID = req.user.user_id;
   try {
     const collection = database.collection('Messages');
     const messages = await collection.find({ conversationId: conversationID }).toArray();
+    for(let i = 0; i < messages.length; i++){
+      messages[i].mine = userID === messages[i].senderId;
+    }
     res.json(messages);
   } catch (error) {
     console.error(error);
@@ -85,13 +91,20 @@ app.post('/communication/conversations/addMessage', authenticate, (req, res) => 
   });
 });
 
-// Adding participant to conversation
+//Adding participant to conversation
 app.put('/communication/conversations/addParticipant', async (req, res) => {
   const conversationID = req.body.conversationId;
   const userID = req.body.userId;
   try {
     const collection = database.collection('Conversations');
 
+    // First, check if the participant already exists in the conversation
+    const conversation = await collection.findOne({ conversationId: conversationID });
+    if (conversation && conversation.participants.includes(userID)) {
+      return res.status(400).json({ error: 'Participant already exists in the conversation.' });
+    }
+
+    // If the participant doesn't exist, proceed to add them
     const result = await collection.updateOne(
       { conversationId: conversationID },
       { $addToSet: { participants: userID } },

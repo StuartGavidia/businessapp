@@ -1,4 +1,4 @@
-import { ChatMessage, FluentThemeProvider, MessageThread, SendBox } from '@azure/communication-react';
+import { ChatMessage, MessageThread, SendBox } from '@azure/communication-react';
 import { useEffect, useState} from 'react';
 import {Stack} from '@fluentui/react';
 import CommunicationServiceAPI from '../../../api/communicationServiceAPI';
@@ -20,21 +20,20 @@ export const DefaultMessageThreadExample: React.FC<{ conversationId: string }> =
   }, [conversationId]); // Empty dependency array means this effect runs once after the initial render
 
   return (
-    <FluentThemeProvider>
       <div>
        <MessageThreadContent messages={messages} setMessages={setMessages} conversationId={conversationId}/>
       </div>
-    </FluentThemeProvider>
   );
 };
 
-// @ts-ignore
 const MessageThreadContent = ({ messages, setMessages, conversationId }) => {
+
   return (
     <Stack>
       <MessageThread
         userId={'1'}
         messages={messages}
+        styles={{ root: { background: 'blue' } }}
       />
       <SendBox
         onSendMessage={async (content: any) => {

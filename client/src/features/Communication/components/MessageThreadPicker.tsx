@@ -1,8 +1,8 @@
 import React from 'react';
-import { Stack, DefaultButton } from '@fluentui/react';
-import { FluentProvider, webLightTheme } from '@fluentui/react-components';
+import { Stack } from '@fluentui/react';
 import StartConversationModal from "./NewThread";
 import AddParticipantModal from "./AddParticipants.tsx";
+import Button from "react-bootstrap/Button";
 
 interface messageThreadType {
   id: number,
@@ -19,15 +19,17 @@ class MessageThreadPicker extends React.Component<{ messageThreads: any, onSelec
     return (
       <Stack verticalAlign="start" tokens={{childrenGap: 10}} styles={{root: {width: '250px'}}}>
         <Stack horizontal verticalAlign="center">
-          <FluentProvider theme={webLightTheme}><StartConversationModal/></FluentProvider>
-          <FluentProvider theme={webLightTheme}><AddParticipantModal conversationId={conversationId}/></FluentProvider>
+          <StartConversationModal/>
+          <AddParticipantModal conversationId={conversationId}/>
         </Stack>
         {messageThreads.map((messageThread: messageThreadType) => (
-          <DefaultButton
+          <Button
             key={messageThread.id}
-            text={messageThread.title}
             onClick={() => handleSelect(messageThread.id)}
-          />
+            className="button-color"
+          >
+            {messageThread.title}
+          </Button>
         ))}
       </Stack>
     );
