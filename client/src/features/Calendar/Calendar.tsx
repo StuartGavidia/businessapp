@@ -66,7 +66,7 @@ interface EmployeeHashMap {
 
 const Calendar:React.FC = () => {
 
-  
+
   const { appConfig } = useAppConfig();
   const appConfigUserId = appConfig.userId;
   const [showEventModal, setShowEventModal] = useState(false)
@@ -104,7 +104,9 @@ const Calendar:React.FC = () => {
     position_name: string,
     status: string,
     user_id: string,
-    username: string
+    username: string,
+    manager_id: string,
+    email: string
   }
 
   const [events, setEvents] = useState<Event[]>([])

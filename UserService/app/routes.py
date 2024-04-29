@@ -7,7 +7,7 @@ import json
 import redis
 from flask_bcrypt import Bcrypt
 from flask import Blueprint, jsonify, request, abort, make_response
-from app.models import User, Company, Role, CompanyFeature, Feature, db
+from app.models import User, Company, Role, CompanyFeature, Feature, Permission, UserPermission, db
 from app.utils import generate_code, create_jwt, decode_jwt
 from app.decorators import token_required
 
@@ -123,7 +123,6 @@ def get_user():
     }
 
     return jsonify({"message": "User successfully retrieved",  "user_info": user_info}), 201
-
 
 @routes.route("/users/update", methods=['POST'])
 def update_user():
@@ -304,6 +303,8 @@ def users_in_company():
                 'company_id': user.company_id,
                 'position_name': user.position_name,
                 'status': user.status,
+                'manager_id': user.manager_id,
+                'email': user.email,
                 'picture': None
             } for user in users_in_company])
 
@@ -327,7 +328,10 @@ def users_in_company():
                 'last_name': user.last_name,
                 'company_id': user.company_id,
                 'position_name': user.position_name,
-                'status': user.status
+                'status': user.status,
+                'manager_id': user.manager_id,
+                'email': user.email,
+                'picture': None
             } for user in users_in_company]
         except Exception as e: # pylint: disable=redefined-outer-name
             return jsonify({'message': 'Could not fetch users', 'error': str(e)}), 500
@@ -372,6 +376,110 @@ def get_user_features():
 
     feature_list = [feature.name for feature in features]
     return jsonify(feature_list), 200
+
+@routes.route('/users/permissions/check', methods=['GET'])
+@token_required
+def check_permissions():
+    user_id = request.args.get('user_id')
+    permission_name = request.args.get('permission_name')
+
+    permission = Permission.query.join(UserPermission).filter(
+        UserPermission.user_id == user_id,
+        Permission.name == permission_name,
+        UserPermission.granted.is_(True)
+    ).first()
+    if permission:
+        return jsonify({'has_permission': True}), 200
+    return jsonify({'has_permission': False}), 200
+
+@routes.route('/users/update_member', methods=['POST'])
+@token_required
+def update_team_member():
+    user_id = request.json.get('user_id')
+    new_manager_id = request.json.get('new_manager_id')
+
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    new_manager = User.query.get(new_manager_id)
+    if not new_manager or not new_manager.has_direct_reports:
+        return jsonify({'error': 'New manager is not valid'}), 400
+
+    user.manager_id = new_manager_id
+    db.session.commit()
+    return jsonify({'message': 'Team member moved successfully'}), 200
+
+def is_in_management_chain(manager_id, employee_id):
+    current_manager_id = User.query.get(employee_id).manager_id
+    while current_manager_id:
+        if current_manager_id == manager_id:
+            return True
+        current_manager_id = User.query.get(current_manager_id).manager_id
+    return False
+
+@routes.route('/users/permissionsAssign', methods=['POST'])
+@token_required
+def assign_permission():
+    manager_id = request.json.get('manager_id')
+    employee_id = request.json.get('employee_id')
+    permission_id = request.json.get('permission_id')
+
+    if not is_in_management_chain(manager_id, employee_id):
+        return jsonify({'error': 'Unauthorized action'}), 403
+
+    user_permission = UserPermission(user_id=employee_id, permission_id=permission_id, granted=True)
+    db.session.add(user_permission)
+    db.session.commit()
+    return jsonify({'message': 'Permission assigned successfully'}), 200
+
+@routes.route('/users/permissionsRevoke', methods=['POST'])
+@token_required
+def revoke_permission():
+    manager_id = request.json.get('manager_id')
+    employee_id = request.json.get('employee_id')
+    permission_id = request.json.get('permission_id')
+
+    if not is_in_management_chain(manager_id, employee_id):
+        return jsonify({'error': 'Unauthorized action'}), 403
+
+    user_permission = UserPermission.query.filter_by(user_id=employee_id, permission_id=permission_id).first()
+    if user_permission:
+        db.session.delete(user_permission)
+        db.session.commit()
+        return jsonify({'message': 'Permission revoked successfully'}), 200
+    return jsonify({'error': 'Permission not found or already revoked'}), 404
+
+@routes.route("/users/getById", methods=['GET'])
+@token_required
+def get_user_by_id():
+    """
+    This route retrieves login information for a user
+    """
+    token = request.cookies.get('user_cookie')
+    payload = None
+
+    try:
+        payload = decode_jwt(token)
+    except Exception:
+        return jsonify({'message': 'Token is invalid!'}), 401
+
+    user_id = payload['user_id']
+    current_user = User.query.get(user_id)
+    if not current_user:
+        return jsonify({'error': 'User not found'}), 404
+
+    user_info = {
+        'id': current_user.id,
+        'first_name': current_user.first_name,
+        'last_name': current_user.last_name,
+        'username': current_user.username,
+        'email': current_user.email,
+        'manager_id': current_user.manager_id,
+        'position_name': current_user.position_name,
+    }
+
+    return jsonify(user_info), 201
 
 @routes.errorhandler(400)
 def bad_request(error):
