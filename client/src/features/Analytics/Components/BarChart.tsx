@@ -1,63 +1,63 @@
-import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import { useEffect, useState } from 'react';
 
-const barChartData = [
-    {
-        name: 'Jan',
-        allowance: 2500,
-        expense: 1500
-    },
-    {
-        name: 'Feb',
-        allowance: 5500,
-        expense: 4500
-    },
-    {
-        name: 'Mar',
-        allowance: 2400,
-        expense: 4500
-    },
-    {
-        name: 'Apr',
-        allowance: 7800,
-        expense: 6500
-    },
-    {
-        name: 'May',
-        allowance: 2300,
-        expense: 1200
-    },
-    {
-        name: 'Jun',
-        allowance: 4500,
-        expense: 3700
-    }
-]
+interface BarChartProps {
+    combinedTransactions: any[]
+}
 
-const BarChartComponent = () => {
+const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+const BarChartComponent: React.FC<BarChartProps> = ({ combinedTransactions }) => {
+    const [barChartData, setBarChartData] = useState<any[]>([])
+
+    useEffect(() => {
+        const today = new Date();
+        const monthsInYear = 12;
+
+        const monthlyTotals = Array.from({ length: monthsInYear }, (_, index) => {
+            const month = (today.getMonth() - index + 12) % 12; // Calculate previous months
+            const year = today.getFullYear() - Math.floor(index / 12); // Adjust year if needed
+
+            // Filter transactions for the specific month and year
+            const monthlyTransactions = combinedTransactions.filter((transaction: any) => {
+                const transactionDate = new Date(transaction.transaction_date);
+                return (
+                    transactionDate.getMonth() === month &&
+                    transactionDate.getFullYear() === year
+                );
+            });
+
+            // Calculate total amount spent in the month
+            const totalAmount = monthlyTransactions.reduce((total, transaction) => total + transaction.amount, 0);
+
+            // Format data for Recharts
+            return { name: monthNames[month], expense: totalAmount };
+        });
+
+        // Reverse the array to have the latest month first
+        setBarChartData(monthlyTotals.reverse());
+    }, [combinedTransactions]);
+
+    const formatYAxis = (tick: any) => `$${tick}`;
+
     return (
 
-            <BarChart width={1000} height={500} margin={{ right: 30 }} data={barChartData}>
-                <YAxis />
-                <XAxis dataKey='name' />
-                <CartesianGrid strokeDasharray='5 5'/>
-                <Tooltip />
+        <BarChart width={1000} height={600} margin={{ right: 30 }} data={barChartData}>
+            <YAxis tickFormatter={formatYAxis}/>
+            <XAxis dataKey='name' />
+            <CartesianGrid strokeDasharray='5 5' />
+            <Tooltip />
 
-                <Bar
-                type='monotone' 
-                dataKey='allowance'
-                stroke='#2563eb'
-                fill='black'
-                stackId='1'
-                />
-
-                <Bar
+            <Bar
                 type='monotone'
                 dataKey='expense'
-                stroke='#7c3aed'
-                fill='white'
+                stroke='#3a4d39'
+                fill='#3a4d39'
                 stackId='1'
-                />
-            </BarChart>
+                barSize={20}
+            />
+
+        </BarChart>
 
     )
 };

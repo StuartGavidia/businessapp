@@ -4,8 +4,6 @@ CREATE TABLE budget (
     company_id VARCHAR(255) NOT NULL,
     account_name VARCHAR(255) UNIQUE NOT NULL,
     allowance INT NOT NULL,
-    occurence INT NOT NULL,
-    budget_date DATETIME NOT NULL,
     budget_active BOOLEAN NOT NULL
 );  
 

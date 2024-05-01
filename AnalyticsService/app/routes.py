@@ -188,8 +188,6 @@ def get_transactions():
         # Return the 8 most recent transactions
         transactions = sorted(added, key=lambda t: t['date'])[-15:]
 
-        #print(transactions)
-
         formatted_transactions = []
         
         for transaction in transactions:
@@ -202,8 +200,6 @@ def get_transactions():
                 'descriptions': transaction['name'],
                 'transaction_date': formatted_date
             })
-
-        #print("formatted transactions:", formatted_transactions)
 
         return jsonify(formatted_transactions), 201
     
@@ -245,15 +241,11 @@ def create_budget():
     data = request.json
     account_name = data.get('account_name', '')
     allowance = data.get('allowance', '')
-    budget_date = data.get('budget_date', '')
-    occurence = data.get('occurence', '')
 
     new_budget = Budget(
         company_id=company_id,
         account_name=account_name,
         allowance=allowance,
-        budget_date=budget_date,
-        occurence=occurence,
         budget_active=True
     )
     
@@ -465,21 +457,15 @@ def create_plaid_budgets():
                     # Filter transactions for this account last month
                     transactions_last_month = [transaction for transaction in transactions 
                                        if transaction['account_name'][0] == account_name and
-                                       first_day_last_month_normalized <= datetime.strptime(transaction['transaction_date'], '%a, %d %b %Y') <= last_day_last_month_normalized]
-                    
-                    print("Transactions last month for account", account_name, ":", transactions_last_month)
+                                       first_day_last_month_normalized <= datetime.strptime(transaction['transaction_date'], '%a, %d %b %Y') <= last_day_last_month_normalized]        
                     
                     # Sum total amount spent for this account last month
                     allowance = abs(sum(transaction['amount'] for transaction in transactions_last_month))
-                    
-                    print("Total spent last month for account", account_name, ":", allowance)
                             
                     new_budget = Budget(
                     company_id=company_id,
                     account_name=account_name,
                     allowance=allowance,
-                    budget_date=budget_date,
-                    occurence=4,
                     budget_active=True
 
                     )

@@ -6,11 +6,11 @@ import BudgetServiceAPI from '../../api/budgetServiceAPI';
 import Pagination from 'react-bootstrap/Pagination';
 import { useEffect, useState, useCallback } from 'react';
 import { BudgetFormData, PlaidTransactionData, RegularTransactionFormData } from '../../utils/types';
-import { Button, FormControl, InputGroup, Navbar, Stack } from 'react-bootstrap';
+import { Button, FormControl, InputGroup, Stack, Accordion } from 'react-bootstrap';
 import BudgetCard from './BudgetCard';
-import AreaChart from './Components/AreaChart';
 import BarChart from './Components/BarChart';
 import LineChart from './Components/LineChart';
+import PieChart from './Components/PieChart';
 import { stringify } from 'querystring';
 import Table from 'react-bootstrap/Table';
 import TransactionModal from './Components/TransactionsModal';
@@ -25,41 +25,71 @@ import React from 'react';
 const Analytics: React.FC = () => {
 
     /* Get Last & First Day of Current Month for Plaid Transactions*/
-    function isTransactionInCurrentMonth(currTransactionDate: any) {
-        // Convert the string date to a Date object
+    const isTransactionInCurrentMonth = (currTransactionDate: any) => {
         const transactionDate = new Date(currTransactionDate);
 
-        // Check if the transaction date is in the current month
         const currentDate = new Date();
         return transactionDate.getMonth() === currentDate.getMonth() &&
             transactionDate.getFullYear() === currentDate.getFullYear();
     }
 
+    /* Current Budget Month */
+    const today = new Date();
+    const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+    const currentMonth = months[today.getMonth()];
+    const currentYear = today.getFullYear()
+
     const [budgetData, setBudgetData] = useState<BudgetFormData[]>([]);
-    const [chartStyle, setChartStyle] = useState('area')
     const [showTransactionModal, setShowTransactionModal] = useState(false)
     const [showBudgetModal, setShowBudgetModal] = useState(false)
     const [regularTransactionData, setRegularTransactionData] = useState<RegularTransactionFormData[]>([]);
-
-    /* Pagination Methods for Recharts Visualizations (only using line-chart for now) */
-
-    const renderChart = () => {
-
-        return <LineChart combinedTransactions={combinedTransactions} />
-
-    }
-
-    //State variables for triggering Plaid Link
     const [token, setToken] = useState(null);
     const [balance, setBalance] = useState('');
     const [plaidTransactionData, setPlaidTransactionData] = useState<any[]>([]);
-    const [transactionsMap, setTransactionsMap] = useState<Map<string, any[]>>(new Map());
     const [plaidUserCreated, setPlaidUserCreated] = useState(false);
     const [currentTransactionPage, setCurrentTransactionPage] = useState(1)
     const [combinedTransactions, setCombinedTransactions] = useState<any[]>([]);
     const [plaidBudgetsCreated, setPlaidBudgetsCreated] = useState(false);
+    const [spendStats, setSpendStats] = useState({ totalSpendLastMonth: 0, totalSpendThisMonth: 0 })
+    const [chartStyle, setChartStyle] = useState('line')
 
-    const transactionsPerPage = 6;
+    /* Pagination Methods for Recharts Visualizations (only using line-chart for now) */
+
+    const renderLineChart = () => {
+        return <LineChart combinedTransactions={combinedTransactions} />
+
+    }
+
+    const renderPieChart = () => {
+        return <PieChart combinedTransactions={combinedTransactions} />
+    }
+
+    const handleNextClick = () => {
+        if (chartStyle === 'line') setChartStyle('bar')
+        else if (chartStyle === 'bar') setChartStyle('line')
+
+    }
+
+    const handlePrevClick = () => {
+        if (chartStyle === 'line') setChartStyle('bar')
+        else if (chartStyle === 'bar') setChartStyle('line')
+
+    }
+
+    const renderChart = () => {
+        switch (chartStyle) {
+            case 'line':
+                return <LineChart combinedTransactions={combinedTransactions} />
+            case 'bar':
+                return <BarChart combinedTransactions={combinedTransactions} />
+
+        }
+    }
+
+    const transactionsPerPage = 8;
 
     const paginateTransactions = (pageNumber: any) => setCurrentTransactionPage(pageNumber);
 
@@ -155,6 +185,7 @@ const Analytics: React.FC = () => {
         try {
             const data = await BudgetServiceAPI.getInstance().getBudget();
             setBudgetData(data);
+            console.log(budgetData)
         } catch (error) {
             console.log('Error fetching Budget Data:', error);
         }
@@ -172,63 +203,104 @@ const Analytics: React.FC = () => {
     // Method for formatting and combining Plaid Transactions with Regular Transactions for List
     const createCurrentTransactions = (plaidTransactions: any[], regularTransactions: RegularTransactionFormData[], transactionsPerPage: number) => {
 
-        const formattedPlaidTransactions = plaidTransactions.map(plaidTransaction => ({
-            ...plaidTransaction,
-            account_name: [plaidTransaction.account_name[0]]
-        }));
+        if (plaidTransactions.length > 0) {
+            const formattedPlaidTransactions = plaidTransactions.map(plaidTransaction => ({
+                ...plaidTransaction,
+                account_name: [plaidTransaction.account_name[0]]
+            }));
 
-        const allTransactions = [...regularTransactions, ...formattedPlaidTransactions];
+            const allTransactions = [...regularTransactions, ...formattedPlaidTransactions];
+            const sortedTransactions = allTransactions.sort((a, b) => {
+                // Assuming both regular and Plaid transactions have a 'transaction_date' field
+                const dateA = new Date(a.transaction_date).getTime();
+                const dateB = new Date(b.transaction_date).getTime();
 
-        const indexOfLastTransaction = currentTransactionPage * transactionsPerPage;
-        const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
+                // Sorting in descending order by date
+                return dateB - dateA;
+            });
 
-        const currentTransactions = allTransactions.slice(indexOfFirstTransaction, indexOfLastTransaction);
+            const indexOfLastTransaction = currentTransactionPage * transactionsPerPage;
+            const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
 
-        return currentTransactions;
+            // Slice the sorted transactions to get the transactions for the current page
+            const currentTransactions = sortedTransactions.slice(indexOfFirstTransaction, indexOfLastTransaction);
+
+            return currentTransactions;
+
+        } else {
+
+            const allTransactions = [...regularTransactions];
+            const indexOfLastTransaction = currentTransactionPage * transactionsPerPage;
+            const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
+            const currentTransactions = allTransactions.slice(indexOfFirstTransaction, indexOfLastTransaction);
+
+            return currentTransactions
+        }
     }
 
     const createCombinedTransactions = (plaidTransactions: any[], regularTransactions: RegularTransactionFormData[]) => {
 
-        const formattedPlaidTransactions = plaidTransactions.map(plaidTransaction => ({
-            ...plaidTransaction,
-            amount: Math.abs(plaidTransaction.amount),
-            account_name: plaidTransaction.account_name[0]
-        }));
+        if (plaidTransactions.length > 0) {
+            const formattedPlaidTransactions = plaidTransactions.map(plaidTransaction => ({
+                ...plaidTransaction,
+                amount: Math.abs(plaidTransaction.amount),
+                account_name: plaidTransaction.account_name[0]
+            }));
 
-        const allTransactions = [...regularTransactions, ...formattedPlaidTransactions];
+            const allTransactions = [...regularTransactions, ...formattedPlaidTransactions];
 
-        return allTransactions;
+            console.log("Spend Stats", allTransactions)
+
+            return allTransactions;
+
+        } else {
+
+            const allTransactions = [...regularTransactions];
+
+            return allTransactions;
+
+        }
+    }
+
+    const createSpendStats = (combinedTransactions: any[]) => {
+        const today = new Date();
+
+        // Create array containing transactions from current month
+        const currentMonthTransactions = combinedTransactions.filter((transaction: any) => {
+            const transactionDate = new Date(transaction.transaction_date);
+
+            return (
+                transactionDate.getMonth() === today.getMonth() &&
+                transactionDate.getFullYear() === today.getFullYear()
+            );
+        });
+
+        // Create array containing transactions from last month
+        const firstDayOfLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        const lastMonthTransactions = combinedTransactions.filter((transaction: any) => {
+            const transactionDate = new Date(transaction.transaction_date);
+
+            return (
+                transactionDate.getMonth() === firstDayOfLastMonth.getMonth() &&
+                transactionDate.getFullYear() === firstDayOfLastMonth.getFullYear()
+            )
+        })
+
+        const totalSpendLastMonth = lastMonthTransactions.reduce((total: any, transaction: any) => total + transaction.amount, 0);
+        const totalSpendThisMonth = currentMonthTransactions.reduce((total: any, transaction: any) => total + transaction.amount, 0);
+
+        return {
+            totalSpendLastMonth,
+            totalSpendThisMonth
+        };
     }
 
     const currentTransactions = createCurrentTransactions(plaidTransactionData, regularTransactionData, transactionsPerPage);
-
-    const createTransactionMap = (combinedTransaction: any[]) => {
-        const resultMap = new Map();
-
-
-        combinedTransaction.forEach(transaction => {
-            const { transaction_date, ...rest } = transaction;
-
-            if (resultMap.has(transaction_date)) {
-                resultMap.get(transaction_date).push(rest);
-
-            } else {
-                resultMap.set(transaction_date, [rest]);
-
-            }
-
-        })
-
-        console.log("result map:", resultMap);
-
-        return resultMap;
-    }
 
     // If Link Token doesn't exist, create a Link Token for current user
     useEffect(() => {
 
         if (token == null) {
-            console.log("Link token doesn't exist for user!")
             createLinkToken();
         }
         else {
@@ -239,12 +311,17 @@ const Analytics: React.FC = () => {
 
     useEffect(() => {
 
-        createPlaidBudgets();
         fetchBudgetData();
         fetchRegularTransactionData();
         fetchPlaidUser();
 
-    }, []);
+    }, [plaidBudgetsCreated, plaidUserCreated]);
+
+    useEffect(() => {
+
+        createPlaidBudgets();
+
+    }, [plaidTransactionData])
 
     useEffect(() => {
 
@@ -255,10 +332,21 @@ const Analytics: React.FC = () => {
     }, [plaidUserCreated])
 
     useEffect(() => {
-        if (regularTransactionData.length > 0 && plaidTransactionData.length > 0) {
+        if (regularTransactionData.length > 0 || plaidTransactionData.length > 0) {
             setCombinedTransactions(createCombinedTransactions(plaidTransactionData, regularTransactionData))
         }
+        console.log(regularTransactionData)
     }, [regularTransactionData, plaidTransactionData])
+
+    useEffect(() => {
+        setSpendStats(createSpendStats(combinedTransactions))
+
+    }, [combinedTransactions])
+
+    useEffect(() => {
+        console.log("Spend Stats", spendStats)
+
+    }, [spendStats])
 
 
     return (
@@ -276,30 +364,23 @@ const Analytics: React.FC = () => {
                                     ${balance}
                                     <Row>
                                         <Col className='mt-4 kpi-container'>
-                                            <div style={{ fontWeight: 'bold' }}>Net Income</div>
-                                            <div className="mt-2">$14,700</div>
-
-                                        </Col>
-                                        <Col className='mt-4 kpi-container'>
-                                            <div style={{ fontWeight: 'bold' }}>Expenses</div>
-                                            <div className="mt-2">$1,200</div>
-
-                                        </Col>
-                                        <Col className='mt-4 kpi-container'>
-                                            <div style={{ fontWeight: 'bold' }}> Budget Variance</div>
-                                            <div className="mt-2">$-2,555</div>
+                                            <div className="mt-2"><span style={{ fontWeight: 'bold' }}>${spendStats.totalSpendThisMonth.toFixed(0)}</span> spent</div>
+                                            <Row>
+                                                <div className="mt-2"><span style={{ fontWeight: 'bold' }}>${spendStats.totalSpendLastMonth.toFixed(0)}</span> spent last month</div>
+                                            </Row>
                                         </Col>
                                     </Row>
                                     <Row>
-                                        <Col className='mt-4' style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px' }}>Your Analytics</Col>
+                                        <Col className='mt-4' style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px' }}>{currentMonth}, {currentYear}</Col>
                                     </Row>
                                     <Row>
                                         <Col className='recharts-component'>
                                             <Row>
-                                                {/* Include a base case if transactions don't exist */}
-                                                {/* Render Area Chart */}
-                                                {combinedTransactions &&
-                                                    renderChart()}
+                                                <Pagination>
+                                                    <Pagination.Prev onClick={handlePrevClick} />
+                                                    <Pagination.Next onClick={handleNextClick} />
+                                                </Pagination>
+                                                {renderChart()}
                                             </Row>
                                         </Col>
                                     </Row>
@@ -319,7 +400,7 @@ const Analytics: React.FC = () => {
                                     <Col className='mt-4'>
                                         {/* If Plaid User Exists, Display Button */}
                                         {!plaidUserCreated &&
-                                            <Button variant='outline-dark' size='sm' style={{ marginBottom: '-15px' }} className='w-100' onClick={() => open()}>
+                                            <Button variant='outline-dark' size='sm' style={{ marginBottom: '2px' }} className='w-100' onClick={() => open()}>
                                                 Connect your Bank Account
                                             </Button>
                                         }
@@ -363,7 +444,7 @@ const Analytics: React.FC = () => {
                                 </Row>
                                 {/* Recent Transactions */}
 
-                                {regularTransactionData.length > 0 && plaidTransactionData.length > 0 ? (
+                                {regularTransactionData.length > 0 || plaidTransactionData.length > 0 ? (
                                     <Row>
                                         <div className="transactions-container">
                                             <nav className="pagination-container">
@@ -376,6 +457,14 @@ const Analytics: React.FC = () => {
                                                 </ul>
                                             </nav>
                                             <table className='recent-transaction-container'>
+                                                <thead>
+                                                    <tr>
+                                                        <th className='recent-transaction-header padded-cell'>Vendor</th>
+                                                        <th className='recent-transaction-header padded-cell'>Account</th>
+                                                        <th className='recent-transaction-header padded-cell'>Date</th>
+                                                        <th className='transaction-amount padded-cell'>Amount</th>
+                                                    </tr>
+                                                </thead>
                                                 <tbody>
                                                     {currentTransactions.map((transactionItem, index) => (
                                                         <tr key={index}>
@@ -392,26 +481,6 @@ const Analytics: React.FC = () => {
                                 ) : (
                                     <Row>
                                         <div>No exisiting transactions</div>
-                                    </Row>
-                                )}
-
-                                {regularTransactionData.length > 0 && plaidTransactionData.length < 0 ? (
-                                    <table className='recent-transaction-container'>
-                                        <tbody>
-                                            {regularTransactionData.slice(-5).map((transactionItem, index) => (
-                                                <tr key={index}>
-                                                    <td className='recent-transaction-item padded-cell'>{transactionItem.descriptions}</td>
-                                                    <td className='recent-transaction-item padded-cell'>{transactionItem.account_name}</td>
-                                                    <td className='transaction-amount padded-cell'>${transactionItem.amount}</td>
-                                                </tr>
-
-                                            ))}
-                                        </tbody>
-                                    </table>
-
-                                ) : (
-                                    <Row>
-                                        <div>{ /* No Transactions Exist? */}</div>
                                     </Row>
                                 )}
 
@@ -432,7 +501,11 @@ const Analytics: React.FC = () => {
                                             Create a New Budget
                                         </Button>
                                         <Budget showModal={showBudgetModal} onClose={() => setShowBudgetModal(false)} />
-                                        {plaidTransactionData.length > 0 && (
+                                        <Row>
+                                            <Col className='mt-4' style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '10px', textAlign: 'right', marginRight: '10px' }}> {`${currentMonth}, ${currentYear}`}</Col>
+                                        </Row>
+
+                                        {budgetData.length > 0 ? (
                                             budgetData.map((budgetItem, index) => {
 
                                                 const regularTransactionsForAccount = combinedTransactions.filter(transaction => transaction.account_name === budgetItem.account_name
@@ -448,12 +521,31 @@ const Analytics: React.FC = () => {
                                                         total_spend={totalSpend}
                                                         account_name={budgetItem.account_name}
                                                         allowance={budgetItem.allowance}
+                                                        currentMonthTransactions={regularTransactionsForAccount}
                                                     />
                                                 );
                                             })
+
+                                        ) : (
+                                            <Row>
+                                                <div>No exisiting budgets</div>
+                                            </Row>
+
                                         )}
                                     </Col>
                                 </Row>
+                                {combinedTransactions.length > 0 &&
+                                    <Row>
+                                        <Col className='recharts-component'> <div style={{ fontWeight: 'bold', fontSize: '16px' }}>Cost Allocation</div>
+                                            <Row>
+                                                {/* Include a base case if transactions don't exist */}
+                                                {/* Render Area Chart */}
+
+                                                {renderPieChart()}
+                                            </Row>
+                                        </Col>
+                                    </Row>
+                                }
                             </Stack>
                         </Container>
                     </Col>

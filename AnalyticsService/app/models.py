@@ -14,9 +14,7 @@ class Budget(db.Model):
     budget_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     company_id = db.Column(db.String(255), nullable=False)
     account_name = db.Column(db.String(255), nullable=False)
-    budget_date = db.Column(db.DateTime, nullable=True)
     allowance = db.Column(db.Integer, nullable=False)
-    occurence = db.Column(db.Integer, nullable=False)
     budget_active = db.Column(db.Boolean, nullable=False)
 
 class PlaidItem(db.Model):

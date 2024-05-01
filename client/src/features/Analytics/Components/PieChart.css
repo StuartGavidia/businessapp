@@ -1,0 +1,22 @@
+.LegendList {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    list-style: none;
+  }
+  
+  .LegendList li {
+    align-items: center;
+  }
+  
+  .BulletLabel {
+    display: flex;
+    align-items: center;
+  }
+  
+  .CirecleBullet {
+    border-radius: 50%;
+  }
+  
+  .BulletLabelText {
+    margin-left: 10px;
+  }

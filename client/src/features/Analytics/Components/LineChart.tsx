@@ -22,8 +22,6 @@ const LineChartComponent: React.FC<LineChartProps> = ({ combinedTransactions }) 
             );
         });
 
-        console.log("currentMonthTransactions", currentMonthTransactions)
-
         {/* Create array containing transactions from last month */ }
         const lastMonthTransactions = combinedTransactions.filter((transaction: any) => {
             const transactionDate = new Date(transaction.transaction_date)
@@ -38,12 +36,9 @@ const LineChartComponent: React.FC<LineChartProps> = ({ combinedTransactions }) 
         })
 
         const totalSpendLastMonth = lastMonthTransactions.reduce((total: any, transactions: any) => total + transactions.amount, 0);
-        console.log("total spent last month", totalSpendLastMonth)
-
-        console.log("lastMonthTransactions:", lastMonthTransactions)
 
         // Create cumulative expenses data for each day of the month
-        
+
         const currentDay = today.getDate();
         const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
 
@@ -67,21 +62,16 @@ const LineChartComponent: React.FC<LineChartProps> = ({ combinedTransactions }) 
             return { name: day.toString(), expense: cumulativeExpense, totalLastMonth: cumulativeLastMonthSpend };
         });
 
-        console.log("cumulative", cumulativeExpensesData)
-
         setLineChartData(cumulativeExpensesData);
-
-        // Optionally, return a cleanup function
-        return () => {
-            // Cleanup logic here
-        };
 
     }, [combinedTransactions]);
 
+    const formatYAxis = (tick: any) => `$${tick}`;
+
     return (
 
-        <LineChart width={1000} height={500} margin={{ right: 30 }} data={lineChartData}>
-            <YAxis />
+        <LineChart width={1000} height={600} margin={{ right: 30 }} data={lineChartData}>
+            <YAxis tickFormatter={formatYAxis}/>
             <XAxis dataKey='name' />
             <CartesianGrid strokeDasharray='5 5' />
             <Tooltip />
