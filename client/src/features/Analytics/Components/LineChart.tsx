@@ -1,4 +1,4 @@
-import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip} from 'recharts';
 
 const lineChartData = [
     {
@@ -43,11 +43,11 @@ const LineChartComponent = () => {
                 <Tooltip />
 
                 <Line
-                type='monotone' 
+                type='monotone'
                 dataKey='allowance'
                 stroke='#2563eb'
                 fill='black'
-            
+
                 />
 
                 <Line

@@ -6,15 +6,12 @@ import BudgetServiceAPI from '../../api/budgetServiceAPI'
 import Pagination from 'react-bootstrap/Pagination';
 import { useEffect, useState } from 'react';
 import { BudgetFormData, StripeAccountData, RegularTransactionFormData } from '../../utils/types';
-import { FontWeights } from '@fluentui/react';
-import { Button, Navbar, Stack } from 'react-bootstrap';
+import { Button, Stack } from 'react-bootstrap';
 import BudgetCard from './BudgetCard';
 import { loadStripe } from '@stripe/stripe-js';
 import AreaChart from './Components/AreaChart';
 import BarChart from './Components/BarChart'
 import LineChart from './Components/LineChart'
-import { render } from '@fullcalendar/core/preact.js';
-import { stringify } from 'querystring';
 import Table from 'react-bootstrap/Table';
 import TransactionModal from './Components/TransactionsModal';
 import Budget from '../Budget/Budget';

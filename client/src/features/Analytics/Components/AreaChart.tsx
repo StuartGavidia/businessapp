@@ -1,4 +1,4 @@
-import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 const areaChartData = [
     {
@@ -43,7 +43,7 @@ const AreaChartComponent = () => {
                 <Tooltip />
 
                 <Area
-                type='monotone' 
+                type='monotone'
                 dataKey='allowance'
                 stroke='#2563eb'
                 fill='black'

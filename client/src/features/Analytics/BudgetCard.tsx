@@ -2,12 +2,10 @@ import Card from "react-bootstrap/Card"
 import ProgressBar from "react-bootstrap/ProgressBar"
 import React, { useState } from 'react'
 import { currencyFormatter } from '../../utils/card'
-import { FontSizes } from "@fluentui/react";
 import BudgetServiceAPI from "../../api/budgetServiceAPI";
 import CloseButton from 'react-bootstrap/CloseButton'
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
-import { BudgetFormData } from "../../utils/types";
 
 interface BudgetCardProps {
     total_spend: number

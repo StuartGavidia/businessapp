@@ -235,7 +235,7 @@ const Settings: React.FC<SettingsProps> = () => {
 
             <div>
               <select value={selectedLightTheme || ''} onChange={handleThemeChange}>
-                  {Object.keys(themes).map((key, index) => {
+                  {Object.keys(themes).map((key) => {
                       if (key != 'dark') {
                         return <option value={key}>{capitalizeKey(key)}</option>
                       }
