@@ -11,9 +11,13 @@ from app.models import User, Company, Role, CompanyFeature, Feature, Permission,
 from app.utils import generate_code, create_jwt, decode_jwt
 from app.decorators import token_required
 
+cache_host = os.environ.get('CACHE_HOST', 'caching-layer')
+cache_port = int(os.environ.get('CACHE_PORT', 6379))
+cache_db = int(os.environ.get('CACHE_DB', 0))
+
 routes = Blueprint('routes', __name__)
 bcrypt = Bcrypt()
-cache = redis.Redis(host='caching-layer', port=6379, db=0)
+cache = redis.Redis(host=cache_host, port=cache_port, db=cache_db)
 
 @routes.route("/users")
 def users():

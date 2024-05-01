@@ -5,11 +5,11 @@ const jwt = require('jsonwebtoken');
 const cookie = require('cookie');
 
 const pool = new Pool({
-  user: 'username',
-  host: 'calendar-db',
-  database: 'calendar-db',
-  password: 'password',
-  port: 5432,
+  user: process.env.DB_USER || 'username',
+  host: process.env.DB_HOST || 'calendar-db',
+  database: process.env.DB_NAME || 'calendar-db',
+  password: process.env.DB_PASS || 'password',
+  port: process.env.DB_PORT || 5432,
 });
 
 const app = express();
