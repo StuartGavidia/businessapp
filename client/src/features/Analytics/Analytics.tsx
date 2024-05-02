@@ -149,8 +149,22 @@ const Analytics: React.FC = () => {
         const data = await response.json();
         var resultArray = []
 
+        console.log("plaid transactions", data)
+
         for (var i = 0; i < data.length; i++) {
             resultArray.push(data[i])
+        }
+
+        const transactions = [
+            { account_name: ['Travel'], amount: -250, descriptions: 'United Airlines', transaction_date: 'Thu, 1 May 2024' },
+            { account_name: ['Travel'], amount: 5.4, descriptions: 'Uber 063015 SF**POOL**', transaction_date: 'Thu, 1 May 2024' },
+            { account_name: ['Travel'], amount: 6.33, descriptions: 'Uber 072515 SF**POOL**', transaction_date: 'Thu, 1 May 2024' },
+            { account_name: ['Food and Drink'], amount: 89.4, descriptions: 'Starbucks', transaction_date: 'Thu, 1 May 2024' }
+        ];
+
+        for (let i = 0; i < transactions.length; i++) {
+            const transaction = transactions[i];
+            resultArray.push(transaction);
         }
 
         setPlaidTransactionData(resultArray)
