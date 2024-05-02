@@ -26,6 +26,7 @@ const Settings: React.FC<SettingsProps> = () => {
     const [error, setError] = useState("");
     const [selectedLightTheme, setSelectedLightTheme] = useState(localStorage.getItem('lightTheme'));
     const { toggleLightThemeChange} = useTheme();
+    const [isEditable, setIsEditable] = useState(false);
 
     const handleThemeChange = (event) => {
       setSelectedLightTheme(event.target.value);
@@ -136,6 +137,7 @@ const Settings: React.FC<SettingsProps> = () => {
                 name="firstName"
                 value = {formData.firstName}
                 onChange={handleChange}
+                readOnly={!isEditable}
                 required
               />
             </Form.Group>
@@ -147,6 +149,7 @@ const Settings: React.FC<SettingsProps> = () => {
                 name="lastName"
                 value = {formData.lastName}
                 onChange={handleChange}
+                readOnly={!isEditable}
                 required
               />
             </Form.Group>
@@ -158,6 +161,7 @@ const Settings: React.FC<SettingsProps> = () => {
                 value = {formData.username}
                 name="username"
                 onChange={handleChange}
+                readOnly={!isEditable}
                 disabled
               />
             </Form.Group>
@@ -169,6 +173,7 @@ const Settings: React.FC<SettingsProps> = () => {
                 name="email"
                 value = {formData.email}
                 onChange={handleChange}
+                readOnly={!isEditable}
                 required
               />
             </Form.Group>
@@ -179,6 +184,7 @@ const Settings: React.FC<SettingsProps> = () => {
                 variant="primary"
                 checked={formData.hasDirectReports}
                 value="1"
+                readOnly={!isEditable}
                 onChange={() => toggleDirectReports(true)}
               >
                 Has Direct Reports
@@ -189,6 +195,7 @@ const Settings: React.FC<SettingsProps> = () => {
                 variant="primary"
                 checked={!formData.hasDirectReports}
                 value="2"
+                readOnly={!isEditable}
                 onChange={() => toggleDirectReports(false)}
             >
               Has No Direct Reports
@@ -202,6 +209,7 @@ const Settings: React.FC<SettingsProps> = () => {
                 name="managerCode"
                 value = {!formData.hasDirectReports ? "": formData.managerCode}
                 onChange={handleChange}
+                readOnly={!isEditable}
                 disabled={!formData.hasDirectReports}
                 required
               />
@@ -213,6 +221,7 @@ const Settings: React.FC<SettingsProps> = () => {
                 placeholder="Position Name (ex: Builder, Chef, Manager ... )"
                 name="positionName"
                 value = {formData.positionName}
+                readOnly={!isEditable}
                 onChange={handleChange}
                 required
               />
@@ -224,6 +233,7 @@ const Settings: React.FC<SettingsProps> = () => {
                 placeholder="Company Code"
                 name="companyCode"
                 value = {formData.companyCode}
+                readOnly={!isEditable}
                 onChange={handleChange}
                 required
               />
@@ -244,10 +254,14 @@ const Settings: React.FC<SettingsProps> = () => {
               {selectedLightTheme && <p>Theme Will Be: {selectedLightTheme}</p>}
            </div>
 
+          {isEditable && (
+              <Button variant="primary" type="submit" className="w-100">
+                  Save
+              </Button>) 
+          }
 
-            <Button variant="primary" type="submit" className="w-100">
-                Save
-            </Button>
+
+        
           </Form>
 
 
@@ -258,6 +272,7 @@ const Settings: React.FC<SettingsProps> = () => {
                   type="password"
                   placeholder="Password"
                   name="password"
+                  readOnly={!isEditable}
                   onChange={handleChange}
                 />
               </Form.Group>
@@ -268,13 +283,29 @@ const Settings: React.FC<SettingsProps> = () => {
                   placeholder="Confirm Password"
                   name="confirmPassword"
                   onChange={handleChange}
+                  readOnly={!isEditable}
                 />
               </Form.Group>
 
+            {isEditable && (
               <Button variant="primary" type="submit" className="w-100">
                 Change Password
             </Button>
+            )}
           </Form>
+
+          {isEditable && (
+              <Button variant="primary" onClick={() => setIsEditable(false)} className="w-100">
+                Cancel
+              </Button>
+            )
+          } 
+
+          {!isEditable && (
+              <Button variant="primary" onClick={() => setIsEditable(true)} type="submit" className="w-100">
+                  Edit
+              </Button>)
+          }
         </div>
     )
 }
