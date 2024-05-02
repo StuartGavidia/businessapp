@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calendar-service-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: calendar-service
+  template:
+    metadata:
+      labels:
+        app: calendar-service
+    spec:
+      containers:
+      - name: calendar-service
+        image: stuartgavidia/businessapp:calendarservicev1.1
+        ports:
+        - containerPort: 5104
+        env:
+          - name: DB_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: calendar-service-config
+                key: DB_HOST
+          - name: DB_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: calendar-service-config
+                key: DB_PORT
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: calendar-service-secrets
+                key: DB_USER
+          - name: DB_PASS
+            valueFrom:
+              secretKeyRef:
+                name: calendar-service-secrets
+                key: DB_PASS
+          - name: DB_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: calendar-service-config
+                key: DB_NAME
