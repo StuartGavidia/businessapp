@@ -22,12 +22,14 @@ export type SignInFormData = {
 export type BudgetFormData = {
     account_name: string,
     allowance: number
+
 }
 
 export type RegularTransactionFormData = {
     account_name: string,
     amount: number,
     descriptions: string,
+
 }
 
 export type IncomeTransactionFormData = {
@@ -40,4 +42,5 @@ export type PlaidTransactionData = {
     amount: number,
     descriptions: string,
     transaction_date: Date
+
 }

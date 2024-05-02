@@ -1,3 +1,4 @@
+
 import './Analytics.css';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -22,9 +23,12 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { usePlaidLink } from "react-plaid-link";
 import React from 'react';
 
-const Analytics: React.FC = () => {
 
-    /* Get Last & First Day of Current Month for Plaid Transactions*/
+
+
+const Analytics: React.FC = () => {
+    
+        /* Get Last & First Day of Current Month for Plaid Transactions*/
     const isTransactionInCurrentMonth = (currTransactionDate: any) => {
         const transactionDate = new Date(currTransactionDate);
 
@@ -60,6 +64,7 @@ const Analytics: React.FC = () => {
 
     const renderLineChart = () => {
         return <LineChart combinedTransactions={combinedTransactions} />
+
 
     }
 
@@ -188,6 +193,7 @@ const Analytics: React.FC = () => {
                 setPlaidUserCreated(true)
             } else {
                 setPlaidUserCreated(false)
+
             }
 
         } catch (error) {
@@ -363,6 +369,43 @@ const Analytics: React.FC = () => {
     }, [spendStats])
 
 
+
+    const createFinancialConnectionSession = async () => {
+        try {
+            const client_secret = await BudgetServiceAPI.getInstance().createFinancialConnectionSession()
+
+            const stripe = await stripePromise;
+
+            const financialConnectionsSessionResult = await stripe?.collectFinancialConnectionsAccounts({
+                clientSecret: client_secret,
+            });
+
+            try {
+
+                let accountId = financialConnectionsSessionResult?.financialConnectionsSession?.accounts[0].id
+                if (accountId) {
+                    let accountData: StripeAccountData = {
+                        accountId: accountId
+                    };
+
+                    await BudgetServiceAPI.getInstance().storeStripeAccountID(accountData);
+                    setHasStripeAccount(true);
+                }
+
+            } catch (err: unknown) {
+                if (err instanceof Error) {
+                    console.log(err.message);
+                } else {
+                    console.log("An error occurred")
+                }
+            }
+
+        } catch (error) {
+
+            console.error('Error initiating Financial Connections session:', error);
+        }
+    }
+
     return (
         <>
             <Container fluid>
@@ -382,6 +425,7 @@ const Analytics: React.FC = () => {
                                             <Row>
                                                 <div className="mt-2"><span style={{ fontWeight: 'bold' }}>${spendStats.totalSpendLastMonth.toFixed(0)}</span> spent last month</div>
                                             </Row>
+
                                         </Col>
                                     </Row>
                                     <Row>
@@ -560,6 +604,7 @@ const Analytics: React.FC = () => {
                                         </Col>
                                     </Row>
                                 }
+
                             </Stack>
                         </Container>
                     </Col>

@@ -4,6 +4,8 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import Row from 'react-bootstrap/Row';
 import Tab from 'react-bootstrap/Tab';
 import { Link, useLocation } from "react-router-dom"
+import { useState, useEffect } from 'react';
+import UserServiceAPI from '../../api/userServiceAPI'
 
 interface NavRoute {
   name: string,
@@ -17,6 +19,22 @@ interface SidebarProps {
 
 const Sidebar:React.FC<SidebarProps> = ({toggleShow}) => {
     const location = useLocation();
+
+    const [features, setFeatures] = useState<string[]>([]);
+    const requiredFeatures = ['Dashboard', 'Team', 'Inbox', 'Settings']
+
+    useEffect(() => {
+      const fetchFeatures = async () => {
+          try {
+              const featureNames = await UserServiceAPI.getInstance().getFeatures();
+              setFeatures(featureNames);
+          } catch (error) {
+              console.error('Error fetching features:', error);
+          }
+      };
+
+      fetchFeatures();
+    }, []);
 
     const routes: NavRoute[] = [
       {
@@ -62,28 +80,30 @@ const Sidebar:React.FC<SidebarProps> = ({toggleShow}) => {
                 </div>
                 {
                   routes.map((route: NavRoute, index: number) => {
-                    return (
-                      <ListGroup.Item
-                        action
-                        as={Link}
-                        to={route.route}
-                        active={location.pathname === route.route}
-                        style={
-                          {
-                            backgroundColor: location.pathname === route.route ? 'var(--sidebar-text-color-active)' : 'var(--bs-background-color)',
-                            border: 'none',
-                            color: 'var(--sidebar-text-color)'
+                    if (features.includes(route.name) || requiredFeatures.includes(route.name)) {
+                      return (
+                        <ListGroup.Item
+                          action
+                          as={Link}
+                          to={route.route}
+                          active={location.pathname === route.route}
+                          style={
+                            {
+                              backgroundColor: location.pathname === route.route ? 'var(--sidebar-text-color-active)' : 'var(--bs-background-color)',
+                              border: 'none',
+                              color: 'var(--sidebar-text-color)'
+                            }
                           }
-                        }
-                        className="mb-2"
-                        key={index}
-                      >
-                        <div className="feature-wrapper">
-                          <i className={route.icon}></i>
-                          <p>{route.name}</p>
-                        </div>
-                      </ListGroup.Item>
-                    )
+                          className="mb-2"
+                          key={index}
+                        >
+                          <div className="feature-wrapper">
+                            <i className={route.icon}></i>
+                            <p>{route.name}</p>
+                          </div>
+                        </ListGroup.Item>
+                      )
+                    }
                   })
                 }
               </ListGroup>

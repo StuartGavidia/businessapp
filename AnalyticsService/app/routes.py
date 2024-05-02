@@ -13,7 +13,6 @@ from flask import Blueprint, jsonify, request, abort, make_response
 from app.decorators import token_required
 from app.utils import decode_jwt
 from datetime import datetime
-
 import plaid
 from plaid.api import plaid_api
 from plaid.model.link_token_create_request import LinkTokenCreateRequest
@@ -289,6 +288,7 @@ def create_regular_transaction():
         descriptions = data.get('descriptions', '')
         transaction_date = datetime.now().strftime('%Y-%m-%d')
 
+
         budgets = Budget.query.filter_by(company_id=company_id, account_name=account_name, budget_active=True)
         budget_data = [{'budget_id': budget.budget_id} for budget in budgets]
 
@@ -301,6 +301,7 @@ def create_regular_transaction():
             descriptions=descriptions,
             budget_id=budget_id,
             transaction_date=transaction_date
+
         )
         
         db.session.add(new_transaction)
@@ -401,7 +402,7 @@ def create_income_transaction():
     
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+  
 @routes.route("/analytics/createPlaidBudgets", methods=["POST"])
 def create_plaid_budgets():
 

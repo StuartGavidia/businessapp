@@ -14,14 +14,17 @@ import './Components/CalendarComp.css'
 import Modal from 'react-bootstrap/Modal'
 
 interface ModalProps {
+
     showModal: boolean
     onClose: () => void
+
 }
 
 const Budget: React.FC<ModalProps> = ({ showModal, onClose }) => {
     const [formData, setFormData] = useState({
         account_name: "",
         allowance: 0
+
 
     })
 
@@ -89,7 +92,9 @@ const Budget: React.FC<ModalProps> = ({ showModal, onClose }) => {
                                 onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
                             />
                         </Form.Group>
+
                         </div>
+
                         <Form.Group controlId="number" className="mb-3">
                             <Form.Label className="mb-3 prompt-label">Allowance</Form.Label>
                             <InputGroup>
@@ -105,7 +110,7 @@ const Budget: React.FC<ModalProps> = ({ showModal, onClose }) => {
                                     onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
                                     required />
                             </InputGroup>
-                            
+
                         </Form.Group>
                         <Button variant="dark" type="submit" className="w-100">
                             Save

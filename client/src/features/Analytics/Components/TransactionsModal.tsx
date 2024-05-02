@@ -197,7 +197,9 @@ const TransactionModal: React.FC<ModalProps> = ({ showModal, onClose }) => {
                     }
 
                 </div>
+
                 <div style={{ marginTop: '10px' }}>{regularTransactionCreated && <p>Transaction created!</p>}</div>
+
             </Modal.Body>
         </Modal>
     )

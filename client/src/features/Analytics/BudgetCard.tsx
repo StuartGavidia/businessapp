@@ -2,11 +2,14 @@ import Card from "react-bootstrap/Card"
 import ProgressBar from "react-bootstrap/ProgressBar"
 import React, { useState } from 'react'
 import { currencyFormatter } from '../../utils/card'
+
 import BudgetServiceAPI from "../../api/budgetServiceAPI";
 import CloseButton from 'react-bootstrap/CloseButton'
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
+
 import { Accordion, useAccordionButton } from "react-bootstrap";
+
 
 interface BudgetCardProps {
     total_spend: number;
@@ -16,7 +19,9 @@ interface BudgetCardProps {
 }
 
 const BudgetCard: React.FC<BudgetCardProps> = (props) => {
+
     const { total_spend, account_name, allowance, currentMonthTransactions } = props
+
 
     function getProgresBarVariant(total_spend: number, allowance: number) {
         const ratio = total_spend / allowance;
@@ -31,6 +36,7 @@ const BudgetCard: React.FC<BudgetCardProps> = (props) => {
     }
 
     const [showDeleteBudgetModal, setShowDeleteBudgetModal] = useState(false)
+
     const [budgetDeleted, setBudgetDeleted] = useState(false)
 
     const handleDelete = async (account_name: string) => {
@@ -56,6 +62,7 @@ const BudgetCard: React.FC<BudgetCardProps> = (props) => {
     const closeModal = () => {
         setShowDeleteBudgetModal(false)
     }
+
 
     const CustomToggle = ({ children, eventKey }: { children: string, eventKey: string }) => {
         const decoratedOnClick = useAccordionButton(eventKey)
@@ -130,6 +137,7 @@ const BudgetCard: React.FC<BudgetCardProps> = (props) => {
                 </Accordion.Collapse>
             </Card>
         </Accordion>
+
     )
 }
 

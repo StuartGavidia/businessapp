@@ -12,6 +12,7 @@ CREATE TABLE plaid_item (
     company_id VARCHAR(255) UNIQUE NOT NULL,
     access_token VARCHAR(255) UNIQUE NOT NULL,
     item_id VARCHAR(255) UNIQUE NOT NULL
+
 );
 
 CREATE TABLE regular_transaction (
@@ -22,6 +23,7 @@ CREATE TABLE regular_transaction (
     amount INT NOT NULL,
     descriptions VARCHAR (255) NOT NULL,
     transaction_date DATETIME NOT NULL
+
 );
 
 CREATE TABLE income_transaction (
