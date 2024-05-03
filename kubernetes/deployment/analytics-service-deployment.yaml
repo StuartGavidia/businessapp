@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: analytics-service
-          image: stuartgavidia/businessapp:analyticsservicev1.12
+          image: stuartgavidia/businessapp:analyticsservicev1.14
           ports:
             - containerPort: 5000
           env:
@@ -48,3 +48,28 @@ spec:
                 configMapKeyRef:
                   name: analytics-service-config
                   key: FLASK_ENV
+            - name: PLAID_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: analytics-service-secrets
+                  key: PLAID_CLIENT_ID
+            - name: PLAID_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: analytics-service-secrets
+                  key: PLAID_SECRET
+            - name: PLAID_ENV
+              valueFrom:
+                secretKeyRef:
+                  name: analytics-service-secrets
+                  key: PLAID_ENV
+            - name: PLAID_PRODUCTS
+              valueFrom:
+                secretKeyRef:
+                  name: analytics-service-secrets
+                  key: PLAID_PRODUCTS
+            - name: PLAID_COUNTRY_CODES
+              valueFrom:
+                secretKeyRef:
+                  name: analytics-service-secrets
+                  key: PLAID_COUNTRY_CODES

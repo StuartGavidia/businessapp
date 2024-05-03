@@ -1,0 +1,51 @@
+name: Deploy Kubernetes Services
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push Docker images
+      run: |
+        services="UserService AnalyticsService CommunicationService CalendarService api-gateway client"
+        for service in $services; do
+          docker build -t mydockerhubusername/$service:latest ./$service
+          docker push mydockerhubusername/$service:latest
+        done
+
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v1
+
+    - name: Set up Kubeconfig
+      uses: azure/k8s-set-context@v1
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.KUBECONFIG }}
+
+    - name: Update Kubernetes deployment manifests
+      run: |
+        services="UserService AnalyticsService CommunicationService CalendarService api-gateway client"
+        for service in $services; do
+          sed -i "s|image: mydockerhubusername/$service:.*|image: mydockerhubusername/$service:latest|" ./kubernetes/deployments/$service-deployment.yaml
+        done
+
+    - name: Deploy to Kubernetes
+      run: |
+        manifests=$(find ./kubernetes/deployments -name '*-deployment.yaml')
+        for manifest in $manifests; do
+          kubectl apply -f $manifest
+        done
