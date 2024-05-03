@@ -1,4 +1,4 @@
-import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 const barChartData = [
     {
@@ -43,7 +43,7 @@ const BarChartComponent = () => {
                 <Tooltip />
 
                 <Bar
-                type='monotone' 
+                type='monotone'
                 dataKey='allowance'
                 stroke='#2563eb'
                 fill='black'

@@ -21,4 +21,4 @@ USER 1001
 COPY . ./
 
 # Run Gunicorn
-CMD ["gunicorn", "app:app", "-b", "0.0.0.0:5000", "--log-level", "info"]
+CMD ["gunicorn", "app.app:app", "-b", "0.0.0.0:5000", "--log-level", "info"]

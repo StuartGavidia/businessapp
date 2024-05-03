@@ -27,9 +27,9 @@ const Settings: React.FC<SettingsProps> = () => {
     const [selectedLightTheme, setSelectedLightTheme] = useState(localStorage.getItem('lightTheme'));
     const { toggleLightThemeChange} = useTheme();
 
-    const handleThemeChange = (event) => {
+    const handleThemeChange = (event: any) => {
       setSelectedLightTheme(event.target.value);
-      localStorage.setItem('lightTheme', event.target.value); 
+      localStorage.setItem('lightTheme', event.target.value);
       if (localStorage.getItem('theme') == null) {
         localStorage.setItem('theme', 'light')
       }
@@ -43,11 +43,11 @@ const Settings: React.FC<SettingsProps> = () => {
     const appConfigUserId = appConfig.userId;
     console.log(appConfigUserId)
     useEffect( () => {
-      const fetchData = async (appConfigUserId) => {
+      const fetchData = async (appConfigUserId: any) => {
         const json = await UserServiceAPI.getInstance().getUser(appConfigUserId);
         return json
       }
-      
+
      fetchData(appConfigUserId).then( (data) => {
       changeFormData('firstName', data['user_info'].first_name)
       changeFormData('lastName', data['user_info'].last_name)
@@ -61,7 +61,7 @@ const Settings: React.FC<SettingsProps> = () => {
     }, [appConfigUserId]);
 
 
-    const changeFormData = (name, value) => {
+    const changeFormData = (name: any, value: any) => {
       setFormData(prevState => ({ ...prevState, [name]: value }));
     }
 
@@ -74,13 +74,13 @@ const Settings: React.FC<SettingsProps> = () => {
 
       setFormData(prevState => ({ ...prevState, [name]: value }));
     };
-    
-    
-    const capitalizeKey = (key) => {
+
+
+    const capitalizeKey = (key: any) => {
       return key.charAt(0).toUpperCase() + key.slice(1);
     }
 
-    
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -234,8 +234,8 @@ const Settings: React.FC<SettingsProps> = () => {
             }
 
             <div>
-              <select value={selectedLightTheme} onChange={handleThemeChange}>
-                  {Object.keys(themes).map((key, index) => {
+              <select value={selectedLightTheme || ''} onChange={handleThemeChange}>
+                  {Object.keys(themes).map((key) => {
                       if (key != 'dark') {
                         return <option value={key}>{capitalizeKey(key)}</option>
                       }

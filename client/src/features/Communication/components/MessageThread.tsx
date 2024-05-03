@@ -26,8 +26,8 @@ export const DefaultMessageThreadExample: React.FC<{ conversationId: string }> =
   );
 };
 
-const MessageThreadContent = ({ messages, setMessages, conversationId }) => {
-
+const MessageThreadContent: React.FC<{ messages: any; setMessages: any; conversationId: any; }> = ({ messages, setMessages, conversationId }) => {
+  
   return (
     <Stack>
       <MessageThread

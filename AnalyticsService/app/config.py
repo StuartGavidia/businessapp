@@ -19,7 +19,12 @@ class Config:
 
 class ProductionConfig(Config):
     """Production configuration."""
-    SQLALCHEMY_DATABASE_URI = f'mysql+pymysql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}'
+    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+    ssl_args = {
+        'ssl_ca': os.path.join(BASE_DIR, '..', 'certs', 'DigiCertGlobalRootCA.crt.pem'),
+    }
+
+    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}?ssl_ca={ssl_args['ssl_ca']}"
 
 class DevelopmentConfig(Config):
     """Development configuration."""

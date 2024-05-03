@@ -1,5 +1,3 @@
-import { SetBooleanState } from "../utils/types";
-
 interface SettingsProps {
 }
 

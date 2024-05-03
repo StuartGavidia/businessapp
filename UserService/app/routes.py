@@ -11,9 +11,13 @@ from app.models import User, Company, Role, CompanyFeature, Feature, Permission,
 from app.utils import generate_code, create_jwt, decode_jwt
 from app.decorators import token_required
 
+cache_host = os.environ.get('CACHE_HOST', 'caching-layer')
+cache_port = int(os.environ.get('CACHE_PORT', 6379))
+cache_db = int(os.environ.get('CACHE_DB', 0))
+
 routes = Blueprint('routes', __name__)
 bcrypt = Bcrypt()
-cache = redis.Redis(host='caching-layer', port=6379, db=0)
+cache = redis.Redis(host=cache_host, port=cache_port, db=cache_db)
 
 @routes.route("/users")
 def users():
@@ -227,15 +231,18 @@ def login_user():
 
         env = os.environ.get('FLASK_ENV', 'development')
         if env == 'production':
-            secure_flag = True
+            secure_flag = False
+            samesite_flag = 'Lax'
         elif env == 'testing':
             secure_flag = False
+            samesite_flag = 'Strict'
         else:
             secure_flag = False
+            samesite_flag = 'Strict'
 
         #add jwt to cookie
         res.set_cookie(
-            'user_cookie', jwt_token, httponly=True, secure=secure_flag, samesite='Strict')
+            'user_cookie', jwt_token, httponly=True, secure=secure_flag, samesite=samesite_flag)
         return res, 200
     except Exception as e:
         print(e)
@@ -251,15 +258,18 @@ def logout():
 
     env = os.environ.get('FLASK_ENV', 'development')
     if env == 'production':
-        secure_flag = True
+        secure_flag = False
+        samesite_flag = 'Lax'
     elif env == 'testing':
         secure_flag = False
+        samesite_flag = 'Strict'
     else:
         secure_flag = False
+        samesite_flag = 'Strict'
 
     #set the cookie's expiration date to a past date, effectively removing it
     res.set_cookie(
-        'user_cookie', '', expires=0, httponly=True, secure=secure_flag, samesite='Strict')
+        'user_cookie', '', expires=0, httponly=True, secure=secure_flag, samesite=samesite_flag)
 
     return res, 200
 
