@@ -368,44 +368,6 @@ const Analytics: React.FC = () => {
 
     }, [spendStats])
 
-
-
-    const createFinancialConnectionSession = async () => {
-        try {
-            const client_secret = await BudgetServiceAPI.getInstance().createFinancialConnectionSession()
-
-            const stripe = await stripePromise;
-
-            const financialConnectionsSessionResult = await stripe?.collectFinancialConnectionsAccounts({
-                clientSecret: client_secret,
-            });
-
-            try {
-
-                let accountId = financialConnectionsSessionResult?.financialConnectionsSession?.accounts[0].id
-                if (accountId) {
-                    let accountData: StripeAccountData = {
-                        accountId: accountId
-                    };
-
-                    await BudgetServiceAPI.getInstance().storeStripeAccountID(accountData);
-                    setHasStripeAccount(true);
-                }
-
-            } catch (err: unknown) {
-                if (err instanceof Error) {
-                    console.log(err.message);
-                } else {
-                    console.log("An error occurred")
-                }
-            }
-
-        } catch (error) {
-
-            console.error('Error initiating Financial Connections session:', error);
-        }
-    }
-
     return (
         <>
             <Container fluid>
