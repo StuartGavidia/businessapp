@@ -5,7 +5,7 @@ This module tests the routes.py class
 
 import pytest
 from flask import url_for
-from app.app import create_app
+from app.app import setup_app
 from app.models import db as _db
 from app.config import TestingConfig
 
@@ -14,7 +14,7 @@ def app():
     """
     Fixture to create app
     """
-    _app = create_app(TestingConfig)
+    _app = setup_app(TestingConfig)
     return _app
 
 @pytest.fixture(scope='function')
