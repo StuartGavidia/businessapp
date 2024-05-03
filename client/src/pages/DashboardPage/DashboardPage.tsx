@@ -72,7 +72,7 @@ const DashboardPage:React.FC = () => {
               <Navbar style={{ width: "100%" }}>
                 <i className="bi bi-list ps-3" onClick={toggleShow} style={{fontSize: '3rem', cursor: "pointer"}}></i>
                 <Container fluid>
-                  <Navbar.Brand style={{color: `var(--bs-body-color)`}}>Tactic Service</Navbar.Brand>
+                  <Navbar.Brand style={{color: `var(--bs-body-color)`}}>Ibiz Service</Navbar.Brand>
                   <Navbar.Toggle />
                   <Navbar.Collapse className="justify-content-end pe-4">
                     <InputGroup className="w-50 me-3">

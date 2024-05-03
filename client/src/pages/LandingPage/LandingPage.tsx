@@ -3,8 +3,8 @@ import Header from '../../components/Header/Header'
 import Footer from '../../components/Footer/Footer'
 import Feature from '../../components/Feature/Feature'
 import FeatureData from '../../interfaces/FeatureData'
-import Price from '../../components/Price/Price'
-import PriceData from '../../interfaces/PriceData'
+// import Price from '../../components/Price/Price'
+// import PriceData from '../../interfaces/PriceData'
 import Contact from '../../components/Contact/Contact'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -42,21 +42,21 @@ const LandingPage:React.FC = () => {
             icon: "bi-wallet2"
         }
     ]
-    const prices: PriceData[] = [
-        {
-            price: "250",
-            backgroundColor: "#87CEEB"
-        },
-        {
-            price: "500",
-            backgroundColor: "#67C9F1"
+    // const prices: PriceData[] = [
+    //     {
+    //         price: "250",
+    //         backgroundColor: "#87CEEB"
+    //     },
+    //     {
+    //         price: "500",
+    //         backgroundColor: "#67C9F1"
 
-        },
-        {
-            price: "1000",
-            backgroundColor: "#2EB7EF"
-        }
-    ]
+    //     },
+    //     {
+    //         price: "1000",
+    //         backgroundColor: "#2EB7EF"
+    //     }
+    // ]
 
     return (
         <>
@@ -72,7 +72,7 @@ const LandingPage:React.FC = () => {
             </Row>
           </Container>
           <Container fluid="md">
-            <h2 className="text-center my-4" id="features">Features</h2>
+            <h2 className="text-center my-5" id="features">Features</h2>
             <Row className="justify-content-center d-flex">
                 {
                   features.map((feature: FeatureData, i: number) => {
@@ -92,8 +92,8 @@ const LandingPage:React.FC = () => {
             </Row>
           </Container>
           <Container fluid="md">
-            <h2 className="text-center mb-4" id="prices">Pricing</h2>
-            <Row className="justify-content-center align-items-center g-0">
+            {/* <h2 className="text-center mb-4" id="prices">Pricing</h2> */}
+            {/* <Row className="justify-content-center align-items-center g-0">
               {
                 prices.map((currentPrice:PriceData, i:number) => {
                   return (
@@ -111,10 +111,10 @@ const LandingPage:React.FC = () => {
                   )
                 })
               }
-            </Row>
+            </Row> */}
           </Container>
           <Container fluid="md">
-            <h2 className="text-center" id="contact">Contact us</h2>
+            <h2 className="text-center my-5" id="contact">Contact us</h2>
             <Contact />
           </Container>
           <Footer />

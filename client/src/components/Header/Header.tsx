@@ -16,7 +16,7 @@ const Header:React.FC = () => {
     return (
       <Navbar key='sm' expand='sm' className="bg-body-tertiary mb-3" sticky="top">
         <Container fluid>
-          <Navbar.Brand href="#"><img src="./assets/images/businessLogo.png" alt="Pro Connect Logo" style={{height: 32, width: 32}}/> ABC</Navbar.Brand>
+          <Navbar.Brand href="#"><img src="./assets/images/businessLogo.png" alt="Pro Connect Logo" style={{height: 32, width: 32}}/> Ibiz</Navbar.Brand>
           <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-sm`} />
           <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="me-auto">
