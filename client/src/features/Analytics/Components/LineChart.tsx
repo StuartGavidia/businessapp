@@ -1,5 +1,5 @@
 
-import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line } from 'recharts';
+import {XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line } from 'recharts';
 
 import { useEffect, useState } from 'react';
 

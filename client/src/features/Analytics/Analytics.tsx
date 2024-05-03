@@ -6,25 +6,19 @@ import Container from 'react-bootstrap/Container';
 import BudgetServiceAPI from '../../api/budgetServiceAPI';
 import Pagination from 'react-bootstrap/Pagination';
 import { useEffect, useState, useCallback } from 'react';
-import { BudgetFormData, PlaidTransactionData, RegularTransactionFormData } from '../../utils/types';
-import { Button, FormControl, InputGroup, Stack, Accordion } from 'react-bootstrap';
+import { BudgetFormData, RegularTransactionFormData } from '../../utils/types';
+import { Button, FormControl, InputGroup, Stack } from 'react-bootstrap';
 import BudgetCard from './BudgetCard';
 import BarChart from './Components/BarChart';
 import LineChart from './Components/LineChart';
 import PieChart from './Components/PieChart';
-import { stringify } from 'querystring';
-import Table from 'react-bootstrap/Table';
 import TransactionModal from './Components/TransactionsModal';
 import Budget from '../Budget/Budget';
 import Form from 'react-bootstrap/Form';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
-
 import { usePlaidLink } from "react-plaid-link";
 import React from 'react';
-
-
-
 
 const Analytics: React.FC = () => {
     
@@ -61,12 +55,6 @@ const Analytics: React.FC = () => {
     const [chartStyle, setChartStyle] = useState('line')
 
     /* Pagination Methods for Recharts Visualizations (only using line-chart for now) */
-
-    const renderLineChart = () => {
-        return <LineChart combinedTransactions={combinedTransactions} />
-
-
-    }
 
     const renderPieChart = () => {
         return <PieChart combinedTransactions={combinedTransactions} />
