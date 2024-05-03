@@ -63,7 +63,7 @@ def analytics():
 def create_link_token():
 
     # Create a link_token for the given user
-    request = LinkTokenCreateRequest(
+    plaid_request = LinkTokenCreateRequest(
             products=[Products("transactions")],
             client_name="PLU Capstone",
             country_codes=[CountryCode('US')],
@@ -72,14 +72,14 @@ def create_link_token():
                 client_user_id=str(time.time())
             )
         )
-    
-    response = client.link_token_create(request)
-    # Send the data to the client
+
+    response = client.link_token_create(plaid_request)
     return jsonify(response.to_dict())
-    
+
+
 @routes.route('/analytics/setAccessToken', methods=['POST'])
 def get_access_token():
-    
+
     # Initialize access_token and item_id
     access_token = None
     item_id = None
@@ -94,14 +94,14 @@ def get_access_token():
     # Grab Public Token for Access Token Exchange
     data = request.json
     public_token = data.get('public_token', '')
-    
+
     # Verify Access Token has been recieved in request body.
     #print("Access Token:", public_token)
 
     try:
         exchange_request = ItemPublicTokenExchangeRequest(
             public_token=public_token)
-        
+
         exchange_response = client.item_public_token_exchange(exchange_request)
         access_token = exchange_response['access_token']
         item_id = exchange_response['item_id']
@@ -117,10 +117,10 @@ def get_access_token():
         db.session.commit()
 
         return jsonify(exchange_response.to_dict())
-    
+
     except plaid.ApiException as e:
         return json.loads(e.body)
-    
+
 @routes.route('/analytics/balance', methods=['GET'])
 def get_balance():
 
@@ -139,10 +139,10 @@ def get_balance():
         )
         response = client.accounts_balance_get(balance_request)
         return jsonify(response.to_dict())
-    
+
     except plaid.ApiException as e:
         return json.loads(e.body)
-    
+
 @routes.route("/analytics/transactions", methods=["GET"])
 def get_transactions():
 
@@ -188,7 +188,7 @@ def get_transactions():
         transactions = sorted(added, key=lambda t: t['date'])[-15:]
 
         formatted_transactions = []
-        
+
         for transaction in transactions:
             formatted_date = transaction['date'].strftime('%a, %d %b %Y')
 
@@ -201,10 +201,10 @@ def get_transactions():
             })
 
         return jsonify(formatted_transactions), 201
-    
+
     except plaid.ApiException as e:
         return json.loads(e.body)
-    
+
 @routes.route("/analytics/getPlaidUser", methods=['GET'])
 def getPlaidUser():
 
@@ -221,14 +221,14 @@ def getPlaidUser():
             return jsonify({"exists": True}), 201
         else:
             return jsonify({"exists": False}), 201
-        
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @routes.route("/analytics/budget", methods=["POST"])
 def create_budget():
     """
-    This route creates a budget 
+    This route creates a budget
     """
 
     token = request.cookies.get('user_cookie')
@@ -247,7 +247,7 @@ def create_budget():
         allowance=allowance,
         budget_active=True
     )
-    
+
     db.session.add(new_budget)
     db.session.commit()
 
@@ -266,11 +266,11 @@ def get_budget_data():
         budgets = Budget.query.filter_by(company_id=company_id, budget_active=True)
         budget_data = [{'budget_id': budget.budget_id, 'account_name': budget.account_name, 'allowance': budget.allowance} for budget in budgets]
         return jsonify(budget_data)
-    
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-     
-@routes.route("/analytics/createRegularTransaction", methods=["POST"]) 
+
+@routes.route("/analytics/createRegularTransaction", methods=["POST"])
 def create_regular_transaction():
     """
     This route creates a regular transaction
@@ -303,21 +303,21 @@ def create_regular_transaction():
             transaction_date=transaction_date
 
         )
-        
+
         db.session.add(new_transaction)
         db.session.commit()
 
         return jsonify({"message": "Transaction successfully created"}), 201
-    
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
 @routes.route("/analytics/fetchRegularTransactionData", methods=["GET"])
 def fetch_regular_transaction_data():
     try:
         transactions = RegularTransaction.query.all()
         transaction_data = []
-        
+
         for transaction in transactions:
             formatted_date = transaction.transaction_date.strftime('%a, %d %b %Y')
 
@@ -326,21 +326,21 @@ def fetch_regular_transaction_data():
                 'account_name': transaction.account_name,
                 'amount': transaction.amount,
                 'descriptions': transaction.descriptions,
-                'transaction_date': formatted_date 
+                'transaction_date': formatted_date
             })
 
         return jsonify(transaction_data)
-    
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
+
 @routes.route("/analytics/deleteBudget", methods=["POST"])
 def delete_budget():
 
     try:
         token = request.cookies.get('user_cookie')
         payload = None
-        
+
         payload = decode_jwt(token)
         company_id = payload['company_id']
 
@@ -361,10 +361,10 @@ def delete_budget():
             return jsonify({"message": "Budget successfully deleted!"}), 201
         else:
             return jsonify(None), 200
-        
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
 
 @routes.route("/analytics/createIncomeTransaction", methods=["POST"])
 def create_income_transaction():
@@ -387,22 +387,22 @@ def create_income_transaction():
 
         # Format the date as 'Wed, 21 Feb 2024'
         formatted_date = transaction_date.strftime('%a, %d %b %Y')
-        
+
         new_transaction = IncomeTransaction(
             company_id=company_id,
             amount=amount,
             descriptions=descriptions,
             transaction_date=formatted_date
         )
-        
+
         db.session.add(new_transaction)
         db.session.commit()
 
         return jsonify({"message": "Transaction successfully created"}), 201
-    
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-  
+
 @routes.route("/analytics/createPlaidBudgets", methods=["POST"])
 def create_plaid_budgets():
 
@@ -438,7 +438,7 @@ def create_plaid_budgets():
                     first_day_last_month_normalized = first_day_last_month.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
                     last_day_last_month = current_date.replace(day=1) - timedelta(days=1)
-                    last_day_last_month_normalized = last_day_last_month.replace(hour=0, minute=0, second=0, microsecond=0)        
+                    last_day_last_month_normalized = last_day_last_month.replace(hour=0, minute=0, second=0, microsecond=0)
 
 
                     """ Debugging Time Comparison """
@@ -454,15 +454,15 @@ def create_plaid_budgets():
                         else:
                             print("Transaction does not fall within the date range")
                     """
-                        
+
                     # Filter transactions for this account last month
-                    transactions_last_month = [transaction for transaction in transactions 
+                    transactions_last_month = [transaction for transaction in transactions
                                        if transaction['account_name'][0] == account_name and
-                                       first_day_last_month_normalized <= datetime.strptime(transaction['transaction_date'], '%a, %d %b %Y') <= last_day_last_month_normalized]        
-                    
+                                       first_day_last_month_normalized <= datetime.strptime(transaction['transaction_date'], '%a, %d %b %Y') <= last_day_last_month_normalized]
+
                     # Sum total amount spent for this account last month
                     allowance = abs(sum(transaction['amount'] for transaction in transactions_last_month))
-                            
+
                     new_budget = Budget(
                     company_id=company_id,
                     account_name=account_name,
@@ -476,17 +476,16 @@ def create_plaid_budgets():
             db.session.commit()
 
         return jsonify({"message": "Plaid budget successfully created"}), 201
-    
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
-    
-
-    
 
 
-    
 
 
-    
+
+
+
+
