@@ -75,7 +75,7 @@ const Sidebar:React.FC<SidebarProps> = ({toggleShow}) => {
             <Col>
               <ListGroup className="p-2">
                 <div style={{display: "flex", justifyContent: "space-between", color: 'var(--sidebar-text-color)'}}>
-                  <h1 className="mb-4">TS</h1>
+                  <h1 className="mb-4">IS</h1>
                   <p style={{cursor: "pointer"}} onClick={() => toggleShow()}>X</p>
                 </div>
                 {

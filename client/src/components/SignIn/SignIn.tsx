@@ -56,15 +56,15 @@ const SignIn: React.FC<SignInProps> = ({ setIsLoggingIn }) => {
         <Stack direction="horizontal" gap={3}>
           <Image
             src="./assets/images/businessLogo.png"
-            alt="ABC Logo"
+            alt="Ibiz Logo"
             style={{ width: '3rem', height: '3rem' }}
           />
-          <h2>ABC</h2>
+          <h2>Ibiz</h2>
         </Stack>
         <div className="mt-5">
           <Row className="align-items-center">
             <Col>
-              <p className="h2">Sign in to abc</p>
+              <p className="h2">Sign in to Ibiz</p>
             </Col>
             <Col>
               <p className="signin-helper" onClick={() => setIsLoggingIn(false)}>Register</p>

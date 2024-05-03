@@ -7,9 +7,9 @@ const Footer:React.FC = () => {
         <div className="d-flex justify-content-between align-items-center">
           <span>
             <img src="./assets/images/businessLogo.png" alt="Pro Connect Logo" style={{height: 32, width: 32}}/>
-            ABC
+            Ibiz
           </span>
-          <span>© 2023 - Tache</span>
+          <span>© 2023 - Ibiz</span>
         </div>
       </Container>
     )
