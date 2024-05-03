@@ -3,6 +3,6 @@ kind: ConfigMap
 metadata:
   name: calendar-service-config
 data:
-  DB_HOST: your-calendar-db-host.azure.com
+  DB_HOST: c-calendar-db.54yazqmxrv5caz.postgres.cosmos.azure.com
   DB_PORT: "5432"
-  DB_NAME: calendar_db
+  DB_NAME: citus

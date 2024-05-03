@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: api-gateway
-        image: stuartgavidia/businessapp:apigateway1.5
+        image: stuartgavidia/businessapp:apigateway1.7
         ports:
         - containerPort: 80

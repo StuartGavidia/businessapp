@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: stuartgavidia/businessapp:userservicev1.4
+          image: stuartgavidia/businessapp:userservicev1.16
           ports:
             - containerPort: 5000
           env:
@@ -58,3 +58,8 @@ spec:
                 configMapKeyRef:
                   name: user-service-config
                   key: CACHE_DB
+            - name: FLASK_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: user-service-config
+                  key: FLASK_ENV

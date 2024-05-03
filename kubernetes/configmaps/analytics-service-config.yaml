@@ -3,6 +3,7 @@ kind: ConfigMap
 metadata:
   name: analytics-service-config
 data:
-  DATABASE_HOST: analytics-db-host.azure.com
+  DATABASE_HOST: analytics-service.mysql.database.azure.com
   DATABASE_PORT: "3306"
-  MYSQL_DATABASE: analytics_db
+  MYSQL_DATABASE: analytics-db
+  FLASK_ENV: production

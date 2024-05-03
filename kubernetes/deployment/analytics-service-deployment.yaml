@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: analytics-service
-          image: stuartgavidia/businessapp:analyticsv1.8
+          image: stuartgavidia/businessapp:analyticsservicev1.10
           ports:
             - containerPort: 5000
           env:
@@ -43,3 +43,8 @@ spec:
                 configMapKeyRef:
                   name: analytics-service-config
                   key: MYSQL_DATABASE
+            - name: FLASK_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: analytics-service-config
+                  key: FLASK_ENV

@@ -3,9 +3,10 @@ kind: ConfigMap
 metadata:
   name: user-service-config
 data:
-  DATABASE_HOST: database-host.azure.com
+  DATABASE_HOST: user-dbs.mysql.database.azure.com
   DATABASE_PORT: "3306"
-  MYSQL_DATABASE: user_db
-  CACHE_HOST: redis-host.azure.com
-  CACHE_PORT: "6379"
+  MYSQL_DATABASE: user-db
+  CACHE_HOST: 20.150.192.168
+  CACHE_PORT: "80"
   CACHE_DB: "0"
+  FLASK_ENV: production

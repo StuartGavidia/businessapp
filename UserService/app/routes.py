@@ -231,15 +231,18 @@ def login_user():
 
         env = os.environ.get('FLASK_ENV', 'development')
         if env == 'production':
-            secure_flag = True
+            secure_flag = False
+            samesite_flag = 'Lax'
         elif env == 'testing':
             secure_flag = False
+            samesite_flag = 'Strict'
         else:
             secure_flag = False
+            samesite_flag = 'Strict'
 
         #add jwt to cookie
         res.set_cookie(
-            'user_cookie', jwt_token, httponly=True, secure=secure_flag, samesite='Strict')
+            'user_cookie', jwt_token, httponly=True, secure=secure_flag, samesite=samesite_flag)
         return res, 200
     except Exception as e:
         print(e)
@@ -255,15 +258,18 @@ def logout():
 
     env = os.environ.get('FLASK_ENV', 'development')
     if env == 'production':
-        secure_flag = True
+        secure_flag = False
+        samesite_flag = 'Lax'
     elif env == 'testing':
         secure_flag = False
+        samesite_flag = 'Strict'
     else:
         secure_flag = False
+        samesite_flag = 'Strict'
 
     #set the cookie's expiration date to a past date, effectively removing it
     res.set_cookie(
-        'user_cookie', '', expires=0, httponly=True, secure=secure_flag, samesite='Strict')
+        'user_cookie', '', expires=0, httponly=True, secure=secure_flag, samesite=samesite_flag)
 
     return res, 200
 

@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
 const cookie = require('cookie');
+const fs = require('fs');
 
 const pool = new Pool({
   user: process.env.DB_USER || 'username',
@@ -10,6 +11,10 @@ const pool = new Pool({
   database: process.env.DB_NAME || 'calendar-db',
   password: process.env.DB_PASS || 'password',
   port: process.env.DB_PORT || 5432,
+  ssl: {
+    rejectUnauthorized: false,
+    ca: fs.readFileSync('certs/azure-root.crt').toString()
+  }
 });
 
 const app = express();
