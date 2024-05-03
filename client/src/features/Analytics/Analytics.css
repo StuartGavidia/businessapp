@@ -10,18 +10,28 @@
   .accordion-button:focus {
     box-shadow: none;
   }
-  
-  .recent-transaction-headers {
-    font-weight: bold;
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-  }
 
   .recent-transaction-item {
     border: 1px solid #dddddd;
     text-align: left;
+  }
+  
+
+  .recent-transaction-date {
+    border: 1px solid #dddddd;
+    text-align: left;
+    font-weight: bold;
+  }
+
+  .transaction-amount {
+    border: 1px solid #dddddd;
+    text-align: right;
     padding: 8px;
+    font-weight: bold;
+  }
+
+  .padded-cell {
+    padding: 14px; 
   }
 
   .kpi-container {
@@ -44,8 +54,20 @@
 
   .recent-transaction-container {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 10px;
     border-radius: 15px;
     justify-content: center;
   }
+
+  .transaction-rollup-container {
+    justify-content: center;
+  }
+
+  .pagination-container {
+    display: inline-block; 
+}
+
+.recent-transaction-header {
+  border: 1px solid #dddddd;
+  text-align: center;
+}
 

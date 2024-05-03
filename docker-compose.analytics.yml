@@ -10,7 +10,8 @@ services:
     environment:
       - DATABASE_HOST=analytics-db
       - DATABASE_PORT=3306
-      - FLASK_APP=app.app:create_app
+      - FLASK_APP=app.app.py
+      - FLASK_ENV=development
     ports:
       - "5002:5000"
     volumes:

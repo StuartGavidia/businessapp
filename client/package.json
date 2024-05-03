@@ -19,6 +19,8 @@
     "@babel/preset-env": "^7.23.9",
     "@fluentui/react": "^8.112.3",
     "@fluentui/react-components": "^9.37.3",
+    "@fortawesome/free-solid-svg-icons": "^6.5.2",
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@fullcalendar/core": "^6.1.9",
     "@fullcalendar/daygrid": "^6.1.9",
     "@fullcalendar/interaction": "^6.1.9",
@@ -38,6 +40,7 @@
     "react-chartjs-2": "^5.2.0",
     "react-date-range": "^2.0.0-alpha.4",
     "react-dom": "^18.2.0",
+    "react-plaid-link": "^3.5.1",
     "react-router-dom": "^6.16.0",
     "react-select": "^5.7.7",
     "recharts": "^2.12.4"

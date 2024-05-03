@@ -1,53 +1,59 @@
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend, AreaChart, Area } from 'recharts';
+import { RegularTransactionFormData } from '../../../utils/types';
+import { useEffect, useState } from 'react';
 
-const areaChartData = [
-    {
-        name: 'Jan',
-        allowance: 2500,
-        expense: 1500
-    },
-    {
-        name: 'Feb',
-        allowance: 5500,
-        expense: 4500
-    },
-    {
-        name: 'Mar',
-        allowance: 2400,
-        expense: 4500
-    },
-    {
-        name: 'Apr',
-        allowance: 7800,
-        expense: 6500
-    },
-    {
-        name: 'May',
-        allowance: 2300,
-        expense: 1200
-    },
-    {
-        name: 'Jun',
-        allowance: 4500,
-        expense: 3700
-    }
-]
+const AreaChartComponent = (props: any) => {
+    const { transactionData } = props;
+    const [lineChartData, setLineChartData] = useState<any[]>([])
 
-const AreaChartComponent = () => {
+    useEffect(() => {
+        // Filter transactions for the current month
+        const currentMonthTransactions = transactionData.filter((transaction: any) => {
+            const transactionDate = new Date(transaction.transaction_date);
+            const currentDate = new Date();
+            return (
+                transactionDate.getMonth() === currentDate.getMonth() &&
+                transactionDate.getFullYear() === currentDate.getFullYear()
+            );
+        });
+
+        console.log("currentMonthTransactions", currentMonthTransactions)
+    
+        // Create cumulative expenses data for each day of the month
+        const currentDate = new Date();
+        const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+        const cumulativeExpensesData = Array.from({ length: daysInMonth }, (_, index) => {
+            const day = index + 1;
+            const dailyTransactions = currentMonthTransactions.filter((transaction: any) => {
+                const transactionDate = new Date(transaction.transaction_date);
+                return transactionDate.getDate() <= day;
+            });
+            const cumulativeExpense = dailyTransactions.reduce((total: any, transaction: any) => total + transaction.amount, 0);
+            return { name: day.toString(), expense: cumulativeExpense };
+        });
+    
+        setLineChartData(cumulativeExpensesData);
+    
+        // Optionally, return a cleanup function
+        return () => {
+            // Cleanup logic here
+        };
+    }, [transactionData]);
+
     return (
 
-            <AreaChart width={1000} height={500} margin={{ right: 30 }} data={areaChartData}>
+            <AreaChart width={1000} height={500} margin={{ right: 30 }} data={lineChartData}>
                 <YAxis />
                 <XAxis dataKey='name' />
                 <CartesianGrid strokeDasharray='5 5'/>
                 <Tooltip />
 
                 <Area
-                type='monotone'
-                dataKey='allowance'
+                type='monotone' 
+                dataKey='expense'
                 stroke='#2563eb'
                 fill='black'
-                stackId='1'
+            
                 />
 
                 <Area
@@ -55,7 +61,7 @@ const AreaChartComponent = () => {
                 dataKey='expense'
                 stroke='#7c3aed'
                 fill='white'
-                stackId='1'
+
                 />
             </AreaChart>
 

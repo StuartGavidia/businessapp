@@ -21,22 +21,26 @@ export type SignInFormData = {
 
 export type BudgetFormData = {
     account_name: string,
-    occurence: number,
-    allowance: number,
-    budget_date: string
-}
+    allowance: number
 
-export type StripeAccountData = {
-    accountId: string,
 }
 
 export type RegularTransactionFormData = {
     account_name: string,
     amount: number,
-    descriptions: string
+    descriptions: string,
+
 }
 
 export type IncomeTransactionFormData = {
     amount: number,
     descriptions: string
+}
+
+export type PlaidTransactionData = {
+    account_name: string,
+    amount: number,
+    descriptions: string,
+    transaction_date: Date
+
 }
