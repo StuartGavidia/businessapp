@@ -5,7 +5,7 @@ import Modal from 'react-bootstrap/Modal';
 import CommunicationServiceAPI from '../../../api/communicationServiceAPI';
 import UserServiceAPI from "../../../api/userServiceAPI.ts";
 
-const AddParticipantModal = ({ conversationId }) => {
+const AddParticipantModal = ({ conversationId }: { conversationId: string }) => {
   const [userId, setUserId] = useState('');
   const [employeeOptions, setEmployeeOptions] = useState([{ key: '', text: '' }]);
   const [loading, setLoading] = useState(true);
@@ -15,7 +15,7 @@ const AddParticipantModal = ({ conversationId }) => {
     const fetchEmployeeOptions = async () => {
       try {
         const employees = await UserServiceAPI.getInstance().usersInCompany();
-        const userIds = employees.map(user => ({
+        const userIds = employees.map((user: any) => ({
           key: user.user_id.toString(),
           text: `${user.first_name} ${user.last_name}`,
         }));

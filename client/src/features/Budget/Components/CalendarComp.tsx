@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, KeyboardEvent, MouseEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Calendar } from "react-date-range";
 import format from 'date-fns/format'
 import './CalendarComp.css'
@@ -8,7 +8,7 @@ import 'react-date-range/dist/theme/default.css';
 
 interface CalendarCompProps {
   onSelect: (date: Date) => void;
-  
+
 }
 
 const CalendarComp: React.FC<CalendarCompProps> = ({ onSelect }) => {

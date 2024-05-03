@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: stuartgavidia/businessapp:userservicev1.16
+          ports:
+            - containerPort: 5000
+          env:
+            - name: DATABASE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: user-service-config
+                  key: DATABASE_HOST
+            - name: DATABASE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: user-service-config
+                  key: DATABASE_PORT
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-secrets
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-secrets
+                  key: MYSQL_PASSWORD
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: user-service-config
+                  key: MYSQL_DATABASE
+            - name: CACHE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: user-service-config
+                  key: CACHE_HOST
+            - name: CACHE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: user-service-config
+                  key: CACHE_PORT
+            - name: CACHE_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: user-service-config
+                  key: CACHE_DB
+            - name: FLASK_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: user-service-config
+                  key: FLASK_ENV

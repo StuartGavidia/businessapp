@@ -46,7 +46,7 @@ interface EmployeeDatabase {
 
 const Team: React.FC = () => {
     const [teamMembers, setTeamMembers] = useState<User[]>([]);
-    const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [, setCurrentUser] = useState<User | null>(null);
     const [allSubordinates, setAllSubordinates] = useState<User[]>([]);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [manager, setManager] = useState<User | null | undefined>(null);
