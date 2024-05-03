@@ -1,5 +1,4 @@
-import { LineChart, Line, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend, AreaChart, Area } from 'recharts';
-import { RegularTransactionFormData } from '../../../utils/types';
+import {  XAxis, YAxis, CartesianGrid, Tooltip, AreaChart, Area } from 'recharts';
 import { useEffect, useState } from 'react';
 
 const AreaChartComponent = (props: any) => {
@@ -18,7 +17,7 @@ const AreaChartComponent = (props: any) => {
         });
 
         console.log("currentMonthTransactions", currentMonthTransactions)
-    
+
         // Create cumulative expenses data for each day of the month
         const currentDate = new Date();
         const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
@@ -31,9 +30,9 @@ const AreaChartComponent = (props: any) => {
             const cumulativeExpense = dailyTransactions.reduce((total: any, transaction: any) => total + transaction.amount, 0);
             return { name: day.toString(), expense: cumulativeExpense };
         });
-    
+
         setLineChartData(cumulativeExpensesData);
-    
+
         // Optionally, return a cleanup function
         return () => {
             // Cleanup logic here
@@ -49,11 +48,11 @@ const AreaChartComponent = (props: any) => {
                 <Tooltip />
 
                 <Area
-                type='monotone' 
+                type='monotone'
                 dataKey='expense'
                 stroke='#2563eb'
                 fill='black'
-            
+
                 />
 
                 <Area

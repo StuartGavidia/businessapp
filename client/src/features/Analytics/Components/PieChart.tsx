@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { PieChart, Pie, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell } from 'recharts';
+import { PieChart, Pie, Legend, Cell } from 'recharts';
 import './PieChart.css'
 
 interface BarChartProps {
@@ -101,7 +101,7 @@ const PieChartComponent: React.FC<BarChartProps> = ({ combinedTransactions }) =>
         innerRadius={100}
         outerRadius={140}
       >
-        {pieChartData.map((account_name, index) => (
+        {pieChartData.map((_, index) => (
           <Cell
             key={`cell-${index}`}
             fill={colors[index % colors.length]}

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: react-app
-        image: stuartgavidia/businessapp:clientv1.1
+        image: stuartgavidia/businessapp:clientv1.4
         ports:
         - containerPort: 80
         resources:

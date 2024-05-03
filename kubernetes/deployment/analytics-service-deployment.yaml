@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: analytics-service
-          image: stuartgavidia/businessapp:analyticsservicev1.10
+          image: stuartgavidia/businessapp:analyticsservicev1.12
           ports:
             - containerPort: 5000
           env:
